@@ -15,51 +15,16 @@ nav a {
     text-decoration: none;
     color: #333;
     margin: 0 10px;
-}
-nav a {
-    text-decoration: none;
-    color: #333;
-    margin: 0 10px;
     padding: 5px 0;
-    border-bottom: 2px solid transparent; /* מוסיף גבול תחתון שקוף כדי לשמור על גובה קבוע של הקישורים */
+    border-bottom: 2px solid transparent;
 }
 
-nav a:hover {
+nav a:hover, nav a.active {
     text-decoration: underline;
+    border-bottom: 2px solid #007bff;
 }
 
-nav a.active {
-    color: #007bff; /* משנה את צבע הטקסט של הקישור הפעיל */
-    border-bottom: 2px solid #007bff; /* מוסיף גבול תחתון בצבע כדי להדגיש את הקישור הפעיל */
-}
-
-
-.box-item {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: box-shadow 0.3s ease-in-out;
-}
-
-.box-item:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-/* עיצוב הכותרת והמספר של כל מוצר */
-.box-item h1 {
-    font-size: 24px;
-    margin: 0 0 10px 0;
-}
-
-.box-item div {
-    font-size: 20px;
-    margin-bottom: 20px;
-}
-
-/* עיצוב הכפתורים */
+/* עיצוב כפתורים */
 button {
     background-color: #008cba;
     color: white;
@@ -73,4 +38,71 @@ button {
 
 button:hover {
     background-color: #005f73;
+}
+
+/* עיצוב טפסי הוספת מוצר וספק חדשים */
+.new-product, .new-supplier, .box-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.new-product label, .new-supplier label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.new-product input, .new-supplier input,
+.new-product select, .new-supplier select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+/* עיצוב הצגת המוצרים */
+.show-nameProduct, .show-quantity, .show-supplier, .box-item h1, .box-item div {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.box-item:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+
+body, div {
+    direction: rtl;
+    text-align: right;
+}
+
+/* עיצוב הכותרת לכל ספק */
+.show-supplier {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* עיצוב פרטי המוצר */
+.show-nameProduct, .show-quantity {
+    background-color: #f9f9f9;
+    border-right: 5px solid #007bff; /* שינוי משמאל לימין */
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+/* הוספת רווח בין הספקים */
+.supplier-container { /* הוחלף מ-div[key] לשם כיתה מסוים */
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 10px;
 }

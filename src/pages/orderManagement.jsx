@@ -5,6 +5,24 @@ import { URL } from "../services/service";
 export const OrderManagement = () => {
     const [ifCreateProdact, setIfCreateProdact] = useState(false);
     const [ifCreateSupplier, setIfCreateSupplier] = useState(false);
+    const [groupedProducts, setGroupedProducts] = useState({});
+
+    useEffect( () => {
+        const getAllProductsAndSort = async () => {
+            try {
+                const res = await $.get(`${URL}/products/getAllProducts`);
+
+                const groupBySupplier = res.data.allProducts.reduce((acc, product) => {
+                    acc[product.supplier] = acc[product.supplier] || [];
+                    acc[product.supplier].push(product);
+                    return acc;
+                }, {});
+                setGroupedProducts(groupBySupplier);
+            }catch (err) {
+                console.log(err);
+            }
+        }; getAllProductsAndSort();
+    },[])
     return(
         <>
             <h1>ניהול מלאי</h1>
@@ -12,6 +30,17 @@ export const OrderManagement = () => {
             {!ifCreateSupplier && <button onClick={() => setIfCreateSupplier(old => !old)}>יצירת ספק חדש</button>}
             {ifCreateProdact && <NewProduct /> }
             {ifCreateSupplier && <NewSupplier /> }
+            {groupedProducts&& Object.entries(groupedProducts).map(([supplier, products]) => (
+                <div key={supplier} className="supplier-container">
+                    <h2 className="show-supplier">ספק: {supplier}</h2>
+                    {products.map(product => (
+                        <div key={product._id}>
+                            <p className="show-nameProduct">שם מוצר: {product.nameProduct}</p>
+                            <p className="show-quantity">כמות: {product.quantity}</p>
+                        </div>
+                    ))}
+                </div>
+            ))}
         </>
     )
 }
@@ -106,4 +135,15 @@ const NewSupplier = () => {
             <button onClick={handleSaveNewSupplier}>שמור ספק חדש</button>
         </div>
     )
-}
+};
+
+// const ShowOrders = props => {
+//     const { nameProduct, quantity, supplier} = props;
+//     return (
+//         <>
+//             <span className="show-nameProduct">{nameProduct}</span>
+//             <span className="show-quantity">{quantity}</span>
+//             <span className="show-supplier">{supplier}</span>
+//         </>
+//     )
+// }
