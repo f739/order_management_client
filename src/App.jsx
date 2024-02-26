@@ -7,7 +7,8 @@ export function Layout () {
     <>
       <nav>
         <NavLink to='/'>home</NavLink> ||
-        <NavLink to='/orders'>orders</NavLink>
+        <NavLink to='/orders'>orders</NavLink> ||
+        <NavLink to='/privateArea'>privateArea</NavLink>
       </nav>
       <Outlet />
     </>
