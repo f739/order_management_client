@@ -1,12 +1,12 @@
-/* עיצוב הכללי של הדף */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
     background-color: #f4f4f4;
+    direction: rtl;
+    text-align: right;
 }
 
-/* עיצוב הניווט */
 nav {
     margin-bottom: 20px;
 }
@@ -16,7 +16,6 @@ nav a {
     color: #333;
     margin: 0 10px;
     padding: 5px 0;
-    border-bottom: 2px solid transparent;
 }
 
 nav a:hover, nav a.active {
@@ -24,7 +23,6 @@ nav a:hover, nav a.active {
     border-bottom: 2px solid #007bff;
 }
 
-/* עיצוב כפתורים */
 button {
     background-color: #008cba;
     color: white;
@@ -33,14 +31,12 @@ button {
     margin: 5px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
 button:hover {
     background-color: #005f73;
 }
 
-/* עיצוב טפסי הוספת מוצר וספק חדשים */
 .new-product, .new-supplier, .box-item {
     background-color: #fff;
     border: 1px solid #ddd;
@@ -48,40 +44,22 @@ button:hover {
     padding: 20px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: box-shadow 0.3s ease-in-out;
 }
 
-.new-product label, .new-supplier label {
+.new-product label, .new-supplier label, .new-product input, .new-supplier input,
+.new-product select, .new-supplier select, .box-item h1, .box-item div {
     display: block;
-    margin-bottom: 10px;
+    width: 100%;
+    margin-top: 5px;
 }
 
 .new-product input, .new-supplier input,
 .new-product select, .new-supplier select {
-    width: 100%;
     padding: 8px;
-    margin-top: 5px;
     border-radius: 4px;
     border: 1px solid #ddd;
 }
 
-/* עיצוב הצגת המוצרים */
-.show-nameProduct, .show-quantity, .show-supplier, .box-item h1, .box-item div {
-    font-size: 20px;
-    margin-bottom: 20px;
-}
-
-.box-item:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-
-body, div {
-    direction: rtl;
-    text-align: right;
-}
-
-/* עיצוב הכותרת לכל ספק */
 .show-supplier {
     color: #007bff;
     border-bottom: 2px solid #007bff;
@@ -89,20 +67,35 @@ body, div {
     margin-bottom: 15px;
 }
 
-/* עיצוב פרטי המוצר */
-.show-nameProduct, .show-quantity {
-    background-color: #f9f9f9;
-    border-right: 5px solid #007bff; /* שינוי משמאל לימין */
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
-
-/* הוספת רווח בין הספקים */
-.supplier-container { /* הוחלף מ-div[key] לשם כיתה מסוים */
+.supplier-container {
     margin-bottom: 20px;
     padding: 20px;
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     border-radius: 10px;
+}
+
+.show-product {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border-right: 5px solid #007bff;
+}
+
+.show-nameProduct, .show-quantity {
+    margin: 0;
+    padding: 0;
+}
+
+.show-nameProduct {
+    flex-grow: 1;
+}
+
+.show-quantity {
+    min-width: 50px;
+    text-align: right;
 }
