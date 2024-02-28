@@ -6,9 +6,8 @@ export function Layout () {
   return (
     <>
       <nav>
-        <NavLink to='/'>home</NavLink> ||
-        <NavLink to='/orders'>orders</NavLink> ||
-        <NavLink to='/privateArea'>privateArea</NavLink>
+        <NavLink to='/orders'>הזמנות חדשות</NavLink> ||
+        <NavLink to='/privateArea'>אזור אישי</NavLink>
       </nav>
       <Outlet />
     </>

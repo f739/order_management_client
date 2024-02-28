@@ -1,12 +1,15 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 
 export const PrivateArea = () => {
 
     return(
         <>
-            <h1>PrivateArea</h1>
-            <NavLink to='../orderManagement'>orderManagement</NavLink> ||
-            <NavLink to='../createUsers'>createUsers</NavLink>
+        <nav>
+            <NavLink to='./orderManagement'>הזמנות חדשות</NavLink> ||
+            <NavLink to='./oldOrders'>הזמנות בתהליך</NavLink> ||
+            <NavLink to='./createUsers'>משתמשים</NavLink>
+        </nav>
+            <Outlet />
         </>
     )
 }

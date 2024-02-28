@@ -7,7 +7,7 @@ body {
     text-align: right;
 }
 
-nav {
+/* nav {
     margin-bottom: 20px;
 }
 
@@ -21,7 +21,7 @@ nav a {
 nav a:hover, nav a.active {
     text-decoration: underline;
     border-bottom: 2px solid #007bff;
-}
+} */
 
 button {
     background-color: #008cba;
@@ -60,11 +60,15 @@ button:hover {
     border: 1px solid #ddd;
 }
 
-.show-supplier {
+.show-supplier, .show-supplier-old {
     color: #007bff;
     border-bottom: 2px solid #007bff;
     padding-bottom: 5px;
     margin-bottom: 15px;
+}
+.show-supplier-old {
+    color: #f4c45c;
+    border-bottom: 2px solid #f4c45c;
 }
 
 .supplier-container {
@@ -75,7 +79,7 @@ button:hover {
     border-radius: 10px;
 }
 
-.show-product {
+.show-product, .show-old-order {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -85,7 +89,9 @@ button:hover {
     border-radius: 5px;
     border-right: 5px solid #007bff;
 }
-
+.show-old-order {
+    border-right: 5px solid #f4c45c;
+}
 .show-nameProduct, .show-quantity {
     margin: 0;
     padding: 0;
@@ -99,3 +105,32 @@ button:hover {
     min-width: 50px;
     text-align: right;
 }
+
+nav {
+    background-color: transparent;
+    padding: 10px 0;
+}
+
+nav a {
+    text-decoration: none;
+    color: #666; 
+    padding: 5px 10px;
+    transition: border-bottom 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+nav a:hover, nav a.active {
+    color: #444; 
+    border-bottom: 2px solid #444; 
+}
+
+.nav {
+  background-color: rgb(125, 211, 125);  
+}
+
+
+
+
+
+
+
+

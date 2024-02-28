@@ -27,7 +27,7 @@ export const OrderManagement = () => {
     },[])
     return(
         <>
-            <h1>ניהול מלאי</h1>
+            <h1>הזמנות חדשות</h1>
             {!ifCreateProdact && <button onClick={() => setIfCreateProdact(old => !old)}>יצירת מוצר חדש</button>}
             {!ifCreateSupplier && <button onClick={() => setIfCreateSupplier(old => !old)}>יצירת ספק חדש</button>}
             {ifCreateProdact && <NewProduct /> }
@@ -54,11 +54,29 @@ const SupplierProducts = props => {
 }
 
 const Product = ({product}) => {
+    const done = async (product) => {
+        try {
+            const res = await $.put(`${URL}/products/0/${product._id}/changeQuantity`);
+            console.log(res);
+            if (res) {
+                try {
+                    const resAnOldOrder = await $.post(`${URL}/products/creatingAnOldOrder`, product);
+                    console.log(resAnOldOrder);
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        }catch (err) {
+            console.log(err);
+        }
+    }
+
     return (
         <>
             <div className="show-product">
                 <p className="show-nameProduct">שם מוצר: {product.nameProduct}</p>
                 <p className="show-quantity">כמות: {product.quantity}</p>
+                <button onClick={e => done(product)}>ההזמנה בוצעה</button>
             </div>
         </>
     )

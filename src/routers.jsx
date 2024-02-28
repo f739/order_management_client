@@ -5,6 +5,7 @@ import { Orders } from './pages/orders';
 import { PrivateArea } from './pages/privateArea'; 
 import { OrderManagement } from './pages/orderManagement.jsx';
 import { CreateUsers } from './pages/createUsers.jsx';
+import { OldOrders } from './pages/oldOrders.jsx';
 
 export const routers = createBrowserRouter([{
     element: <Layout />,
@@ -20,9 +21,12 @@ export const routers = createBrowserRouter([{
         {
             path: "/privateArea",
             element: <PrivateArea />,
+            children: [
+                {path: "orderManagement", element: <OrderManagement /> },
+                {path: "createUsers", element: <CreateUsers /> },
+                {path: "oldOrders", element: <OldOrders /> },
+            ]
         },
-        {path: "/orderManagement", element: <OrderManagement /> },
-        {path: "/createUsers", element: <CreateUsers /> },
   
     ]
 }])
