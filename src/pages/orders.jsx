@@ -16,15 +16,21 @@ export const Orders = () => {
             }
         }; getAllProducts();
     },[newQuantity])
-    const sendFormOrders = async () => {
-        await $.post(`${URL}/`)
+    const SendAnInvitation = async () => {
+        try {
+            const res = await $.post(`${URL}/orders/sendAnInvitation`,{});
+            console.log(res.data);
+        }catch (err) {
+            console.log(err.response.data.error);
+        }    
     }
     return(
         <>
             <h1>דף הזמנת מוצרים</h1>
+            <button onClick={SendAnInvitation}>שלח הזמנה</button>
             { itemsList && itemsList.map( item => (
                 <div className="box-item"  key={item._id}>
-                    <ItemsBox nameProduct={item.nameProduct} quantity={item.quantity} setNewQuantity={setNewQuantity} id={item._id}/>
+                    <ItemsBox nameProduct={item.nameProduct} temporaryQuantity={item.temporaryQuantity} setNewQuantity={setNewQuantity} id={item._id}/>
                 </div>
             ))}
         </>
