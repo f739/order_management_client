@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
-import { NewProduct } from "../components/NewProducts";
-import { NewSupplier } from "../components/NewSupplier";
-import $ from 'axios';
 import { URL } from "../services/service";
+import $ from 'axios';
 
 export const OrderManagement = () => {
-    const [ifCreateProdact, setIfCreateProdact] = useState(false);
-    const [ifCreateSupplier, setIfCreateSupplier] = useState(false);
     const [groupedProducts, setGroupedProducts] = useState({});
 
     useEffect( () => {
@@ -27,11 +23,7 @@ export const OrderManagement = () => {
     },[])
     return(
         <>
-            <h1>הזמנות חדשות</h1>
-            {!ifCreateProdact && <button onClick={() => setIfCreateProdact(old => !old)}>יצירת מוצר חדש</button>}
-            {!ifCreateSupplier && <button onClick={() => setIfCreateSupplier(old => !old)}>יצירת ספק חדש</button>}
-            {ifCreateProdact && <NewProduct /> }
-            {ifCreateSupplier && <NewSupplier /> }
+            <h1>הזמנות לטיפול</h1>
             {groupedProducts && Object.entries(groupedProducts).map(([supplier, products]) => (
                 <SupplierProducts supplier={supplier} products={products} key={supplier}/>
             ))}

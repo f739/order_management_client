@@ -1,0 +1,60 @@
+/* עיצוב טופס יחידת מידה חדשה */
+.new-measure {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.new-measure label, .new-measure input {
+    display: block;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.new-measure input {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+/* עיצוב הצגת יחידות המידה */
+.show-measure {
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border-right: 5px solid #007bff;
+}
+
+.show-measure div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.show-measure div span {
+    margin: 0;
+    padding: 0;
+}
+
+.show-measure div button {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.show-measure div button:hover {
+    background-color: #cc0000;
+}

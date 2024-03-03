@@ -1,0 +1,64 @@
+/* עיצוב טופס מוצר חדש */
+.new-product {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.new-product label, .new-product input, .new-product select {
+    display: block;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.new-product input, .new-product select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+/* עיצוב הצגת מוצרים */
+.show-products {
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border-left: 5px solid #007bff;
+}
+
+.show-products .title {
+    margin-bottom: 20px;
+}
+
+.show-products div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.show-products div span {
+    margin: 0;
+    padding: 0;
+}
+
+.show-products div button {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.show-products div button:hover {
+    background-color: #cc0000;
+}
