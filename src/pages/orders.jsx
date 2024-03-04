@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ItemsBox } from "../components/ItemsBox";
 import { URL } from '../services/service';
 import $ from "axios";
+import '../css/orders.css'
 
 export const Orders = () => {
     const [itemsList, setItemList] = useState([]);
@@ -10,6 +11,7 @@ export const Orders = () => {
         const getAllProducts = async () => {
             try {
                 const res = await $.get(`${URL}/products/getAllProducts`);
+                console.log(res.data.allProducts);
                 setItemList(res.data.allProducts)
             }catch (err) {
                 console.log(err);
@@ -30,7 +32,12 @@ export const Orders = () => {
             <button onClick={SendAnInvitation}>שלח הזמנה</button>
             { itemsList && itemsList.map( item => (
                 <div className="box-item"  key={item._id}>
-                    <ItemsBox nameProduct={item.nameProduct} temporaryQuantity={item.temporaryQuantity} setNewQuantity={setNewQuantity} id={item._id}/>
+                    <ItemsBox nameProduct={item.nameProduct} 
+                    temporaryQuantity={item.temporaryQuantity} 
+                    unitOfMeasure={item.unitOfMeasure}
+                    category={item.category}
+                    setNewQuantity={setNewQuantity} 
+                    id={item._id}/>
                 </div>
             ))}
         </>

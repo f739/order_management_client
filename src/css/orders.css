@@ -1,0 +1,74 @@
+.box-product-from-the-order {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    direction: rtl; /* שינוי כיוון הטקסט והפריטים */
+}
+
+.box-product-from-the-order h1 {
+    margin-left: auto; /* דוחף את שם המוצר לצד השמאלי */
+}
+
+.box-product-from-the-order span {
+    margin: 0 10px; /* מוסיף מרווחים בין קטגוריה ליחידת מידה */
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* דוחף את הקונטרולים לצד הימני */
+}
+
+.quantity-controls button {
+    background-color: #008cba;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 5px; /* מוסיף מרווח בין הכפתורים */
+}
+
+.quantity-controls button:hover {
+    background-color: #005f73;
+}
+
+.quantity-controls span {
+    margin: 0 5px; /* מוסיף מרווח בין הכפתורים לספרה */
+}
+
+
+/* עיצוב דף הזמנת מוצרים */
+.orders-page h1 {
+    text-align: center;
+    color: #333;
+}
+
+.orders-page button {
+    display: block;
+    margin: 20px auto;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.orders-page button:hover {
+    background-color: #0056b3;
+}
+
+.box-item {
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border-left: 5px solid #007bff;
+}

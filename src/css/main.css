@@ -21,7 +21,7 @@ button:hover {
     background-color: #005f73;
 }
 
-.new-product, .new-supplier, .box-item {
+.new-product, .new-supplier {
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -31,7 +31,7 @@ button:hover {
 }
 
 .new-product label, .new-supplier label, .new-product input, .new-supplier input,
-.new-product select, .new-supplier select, .box-item h1, .box-item div {
+.new-product select, .new-supplier select {
     display: block;
     width: 100%;
     margin-top: 5px;
