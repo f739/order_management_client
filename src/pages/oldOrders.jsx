@@ -1,68 +1,84 @@
 import { useState ,useEffect } from "react";
 import { URL } from "../services/service";
 import $ from 'axios';
-
+import '../css/oldOrders.css';
+import Camera from "../components/Camera";
 
 export const OldOrders = () => {
     const [groupedOrders, setGroupedOrders] = useState({});
 
-    useEffect( () => {
+    useEffect(() => {
         const getAllOrders = async () => {
             try {
-                const res = await $.get(`${URL}/products/getOldOrders`);
-                console.log(res);
+                const res = await $.get(`${URL}/oldOrders/getOldOrders`);
                 const groupBySupplier = res.data.oldOrders.reduce((acc, order) => {
-                    acc[order.supplier] = acc[order.supplier] || [];
-                    acc[order.supplier].push(order);
+                    acc[order.supplier.nameSupplier] = acc[order.supplier.nameSupplier] || [];
+                    acc[order.supplier.nameSupplier].push(order);
                     return acc;
                 }, {});
                 setGroupedOrders(groupBySupplier);
             } catch (err) {
                 console.log(err);
             }
-        }; getAllOrders();
-    }, [])
+        };
+        getAllOrders();
+    }, []);
+
     return (
         <>
-            {groupedOrders && Object.entries(groupedOrders).map(([supplier, orders]) => (
-                <OldVendorOrders key={supplier} orders={orders} supplier={supplier} />
+            {groupedOrders && Object.entries(groupedOrders).map(([supplierName, orders]) => (
+                <div key={supplierName} className="supplier-container">      
+                    <h3 className="supplier-title"> ספק: {supplierName}</h3>
+                    {orders.map(order => (
+                        <OldVendorOrders key={order._id} date={order.date} time={order.time} 
+                        orderList={order.orderList} supplierName={supplierName} />
+                    ))}
+                </div>
             ))}
         </>
-    )
-}
+    );
+};
 
-const OldVendorOrders = props => {
-    const {supplier, orders } = props;
+
+const OldVendorOrders = ({ orderList, date, time }) => {
+    const orderListSorted = orderList.sort((a, b) => a.category.localeCompare(b.category));
+    const [orderListAfterFilter, setOrderListAfterFilter] = useState(orderListSorted);
+
     return (
-        <>
-            <div className="supplier-container">
-                <h2 className="show-supplier-old">ספק: {supplier}</h2>
-                {orders.map(order => (
-                    <ShowOldOrder key={order._id} order={order} />
-                ))}
+        <div className="order-container">
+            <div>
+                <h3>{date}</h3>
+                <h3>{time}</h3>
             </div>
-        </>
-    )
-}
-
-const ShowOldOrder = ({order}) => {
-    const styleIfWasReceived = {
-        backgroundColor: "rgb(125, 211, 125)", 
-    };
-    const wasReceived = async () => {
-        try {
-            const res = await $.put(`${URL}/products/${order._id}/wasReceived`);
-            console.log(res.data);
-        }catch (err) {
-            console.log(err);
-        }
-    }
-    return (
-        <div className="show-old-order" style={order.ifWasReceived ? styleIfWasReceived: null} >
-            <p className="show-nameProduct">שם מוצר: {order.nameProduct}</p>
-            <p className="show-quantity">כמות: {order.quantity}</p>
-            {order.ifWasReceived && <p>ההזמנה התקבלה בהצלחה</p> }
-            {!order.ifWasReceived && <button onClick={wasReceived}>ההזמנה התקבלה</button>}
+            {orderListAfterFilter.map(order => (
+                <ShowOldOrder key={order._id}
+                id={order._id}
+                setOrderListAfterFilter={setOrderListAfterFilter}
+                nameProduct={order.nameProduct}
+                temporaryQuantity={order.temporaryQuantity}
+                unitOfMeasure={order.unitOfMeasure}
+                category={order.category} />
+            ))}
+            <Camera />
         </div>
-    )
-}
+    );
+};
+
+
+const ShowOldOrder = ({ id, setOrderListAfterFilter, nameProduct, temporaryQuantity, unitOfMeasure, category }) => {
+    const wasReceived = async () => {
+        setOrderListAfterFilter(oldList => oldList.filter(order => order._id !== id));
+    };
+
+    return (
+        <div className="order-item">
+            <div className="order-details">
+                <p className="show-nameProduct">{nameProduct}</p>
+                <p className="show-quantity">{temporaryQuantity}</p>
+                <p className="show-unit-of-measure">{unitOfMeasure}</p>
+                <p className="show-category">{category}</p>
+            </div>
+            <button className="received-button" onClick={wasReceived}>V</button>
+        </div>
+    );
+};

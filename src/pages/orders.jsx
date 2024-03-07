@@ -5,14 +5,14 @@ import $ from "axios";
 import '../css/orders.css'
 
 export const Orders = () => {
-    const [itemsList, setItemList] = useState([]);
+    const [itemsList, setItmesList] = useState([]);
     const [newQuantity, setNewQuantity] = useState(null)
     useEffect( () => {
         const getAllProducts = async () => {
             try {
                 const res = await $.get(`${URL}/products/getAllProducts`);
                 console.log(res.data.allProducts);
-                setItemList(res.data.allProducts)
+                setItmesList(res.data.allProducts)
             }catch (err) {
                 console.log(err);
             }

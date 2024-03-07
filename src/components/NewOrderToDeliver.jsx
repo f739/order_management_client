@@ -6,9 +6,9 @@ import $ from 'axios';
 
 export const NewOrderToDeliver = props => {
     const { orderList } = props;
-    const [allSuppleirs, setAllSuppliers] = useState([]);
+    const [allSuppliers, setAllSuppliers] = useState([]);
     const [emailForm, setEmailForm] = useState(
-        {emailSupplier: '', titleMessage: '', messageContent: '', orderList }
+        {supplier: null, titleMessage: '', messageContent: '', orderList }
     )
     useEffect( () => {
         const getSuppliers = async () => {
@@ -21,6 +21,14 @@ export const NewOrderToDeliver = props => {
             }
         }; getSuppliers();
     },[]);
+
+    const handleSupplierChange = (e) => {
+        const supplier = allSuppliers.find(supplier => supplier._id === e.target.value);
+        setEmailForm(oldForm => ({
+            ...oldForm,
+            supplier
+        }));
+    }
 
     const sendOrder = async () => {
         try {
@@ -36,11 +44,11 @@ export const NewOrderToDeliver = props => {
             <div className="box-send-email">
             <label>
                 אל:
-                    { allSuppleirs && <select className="supplier-select" name="emailSupplier" 
-                    onChange={e => handleFormHook(e.target, setEmailForm)}>
+                    { allSuppliers && <select className="supplier-select" name="supplier" 
+                    onChange={handleSupplierChange}>
                         <option value="">--בחר אפשרות--</option>
-                        { allSuppleirs.map( supplier => (
-                            <option value={supplier.email} key={supplier._id}>
+                        { allSuppliers.map( supplier => (
+                            <option value={supplier._id} key={supplier._id}>
                                 {supplier.nameSupplier} ({supplier.email})
                             </option>
                         ))}
