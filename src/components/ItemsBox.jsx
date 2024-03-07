@@ -24,7 +24,7 @@ export const ItemsBox = props => {
             <h1>{nameProduct}</h1>
             <span>{category}</span>
             <span>{unitOfMeasure}</span>
-            <ShowNote note={note} id={id} />
+            <ShowNote note={note} id={id} className="note" />
             <div className="quantity-controls">
                 <button onClick={addItem}>+</button>
                 <span>{temporaryQuantity}</span>
