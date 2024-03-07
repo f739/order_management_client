@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { URL } from "../services/service";
+import { handleFormHook } from "./HandleFormHook";
 import $ from 'axios';
 import '../css/suppliers.css'
 export const Supplier = () => {
@@ -18,16 +19,6 @@ export const Supplier = () => {
         }; getSuppliers();
     },[]);
 
-    const handleFormNewSupplier = ({target}) => {
-        const { value, name } = target;
-        console.log(name , value);
-        setNewsupplier( old => {
-            return {
-                ...old,
-                [name]: value
-            }
-        })
-    }
     const handleSaveNewSupplier  = async () => {
         try {
             const res = await $.post(`${URL}/suppliers/newSupplier`, newsupplier);
@@ -41,15 +32,15 @@ export const Supplier = () => {
             <div className="new-supplier">
                 <label>
                     שם ספק:
-                    <input type="text" name="nameSupplier" onChange={handleFormNewSupplier}/> 
+                    <input type="text" name="nameSupplier" onChange={e => handleFormHook(e.target, setNewsupplier)}/> 
                 </label>
                 <label>
                     פלאפון ספק:
-                <input type="tel" name="tel" onChange={handleFormNewSupplier}/> 
+                <input type="tel" name="tel" onChange={e => handleFormHook(e.target, setNewsupplier)}/> 
                 </label>
                 <label>
                     אמייל ספק:
-                <input type="email" name="email" onChange={handleFormNewSupplier}/> 
+                <input type="email" name="email" onChange={e => handleFormHook(e.target, setNewsupplier)}/> 
                 </label>
                 <button onClick={handleSaveNewSupplier}>שמור ספק חדש</button>
             </div>

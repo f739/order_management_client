@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { URL } from "../services/service";
 import $ from 'axios';
 import '../css/categories.css';
+import { handleFormHook } from './HandleFormHook';
 
 export const Categories = () => {
     const [newCategory, setNewCategory] = useState({nameCategory: ''});
@@ -19,15 +20,6 @@ export const Categories = () => {
         }; getCategories();
     },[]);
 
-    const handleFormNewCategory = ({target}) => {
-        const { value, name } = target;
-        setNewCategory( old => {
-            return {
-                ...old,
-                [name]: value
-            }
-        })
-    }
     const handleSaveNewCategory  = async () => {
         try {
             const res = await $.post(`${URL}/categories/newCategory`, newCategory);
@@ -41,7 +33,7 @@ export const Categories = () => {
             <div className="new-category">
                 <label>
                     שם קטגוריה:
-                    <input type="text" name="nameCategory" onChange={handleFormNewCategory}/> 
+                    <input type="text" name="nameCategory" onChange={e => handleFormHook(e.target, setNewCategory)}/> 
                 </label>
                 <button onClick={handleSaveNewCategory}>שמור קטגוריה חדשה</button>
             </div>

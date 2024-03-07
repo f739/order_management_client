@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { URL } from "../services/service";
 import $ from 'axios';
 import '../css/measure.css';
+import { handleFormHook } from './HandleFormHook';
 
 export const Measure = () => {
     const [newMeasure, setNewMeasure] = useState({measureName: ''});
@@ -19,15 +20,6 @@ export const Measure = () => {
         }; getMeasures();
     },[]);
 
-    const handleFormNewMeasure = ({target}) => {
-        const { value, name } = target;
-        setNewMeasure( old => {
-            return {
-                ...old,
-                [name]: value
-            }
-        })
-    }
     const handleSaveNewMeasure  = async () => {
         try {
             const res = await $.post(`${URL}/measure/newMeasure`, newMeasure);
@@ -41,7 +33,7 @@ export const Measure = () => {
             <div className="new-measure">
                 <label>
                     שם יחידת מידה:
-                    <input type="text" name="measureName" onChange={handleFormNewMeasure}/> 
+                    <input type="text" name="measureName" onChange={ e => handleFormHook(e.target, setNewMeasure)}/> 
                 </label>
                 <button onClick={handleSaveNewMeasure}>שמור יחידת מידה חדשה</button>
             </div>

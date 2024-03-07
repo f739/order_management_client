@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { URL } from "../services/service";
 import $ from 'axios';
 import '../css/products.css';
+import { handleFormHook } from './HandleFormHook';
 
 export const Products = () => {
     const [newProduct, setNewProduct] = useState({nameProduct: '', supplier: '', category: '', unitOfMeasure: ''});
@@ -24,15 +25,7 @@ export const Products = () => {
             }
         }; getFieldsForOptions()
     },[])
-    const handleFormNewProduct = ({target}) => {
-        const { value, name } = target;
-        setNewProduct( old => {
-            return {
-                ...old,
-                [name]: value
-            }
-        })
-    }
+
     const handleSaveNewProduct = async () => {
         try {
             console.log(newProduct);
@@ -47,11 +40,11 @@ export const Products = () => {
             <div className="new-product">
                 <label>
                     שם מוצר:
-                    <input type="text" name="nameProduct" onChange={handleFormNewProduct} />
+                    <input type="text" name="nameProduct" onChange={e => handleFormHook(e.target, setNewProduct)} />
                 </label>
                 <label>
                     שם ספק:
-                    { listSuppliers && <select id="supplier-select" name="supplier" onChange={handleFormNewProduct}>
+                    { listSuppliers && <select id="supplier-select" name="supplier" onChange={e => handleFormHook(e.target, setNewProduct)}>
                         <option value="">--בחר אפשרות--</option>
                         { listSuppliers.map( supplier => (
                             <option value={supplier.nameSupplier} key={supplier._id}>{supplier.nameSupplier}</option>
@@ -60,7 +53,7 @@ export const Products = () => {
                 </label>
                 <label>
                     קטגוריה:
-                    { listCategories && <select id="categories-select" name="category" onChange={handleFormNewProduct}>
+                    { listCategories && <select id="categories-select" name="category" onChange={e => handleFormHook(e.target, setNewProduct)}>
                         <option value="">--בחר אפשרות--</option>
                         { listCategories.map( category => (
                             <option value={category.nameCategory} key={category._id}>{category.nameCategory}</option>
@@ -69,7 +62,8 @@ export const Products = () => {
                 </label>
                 <label>
                     יחידות מידה:
-                    { unitOfMeasureList && <select id="unit-of-measure-select" name="unitOfMeasure" onChange={handleFormNewProduct}>
+                    { unitOfMeasureList && <select id="unit-of-measure-select" name="unitOfMeasure" 
+                    onChange={e => handleFormHook(e.target, setNewProduct)}>
                         <option value="">--בחר אפשרות--</option>
                         { unitOfMeasureList.map( measure => (
                             <option value={measure.measureName} key={measure._id}>{measure.measureName}</option>

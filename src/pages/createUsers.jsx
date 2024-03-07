@@ -1,19 +1,12 @@
 import { useEffect, useState } from "react";
 import { URL } from '../services/service';
+import { handleFormHook } from "../components/HandleFormHook";
 import '../css/users.css';
 import $ from 'axios';
 
 export const CreateUsers = () => {
     const [formCreateUser, setFormCreateUser] = useState({userName: '', userCode: '', license: '' });
-    const handleDataForm = ({target}) => {
-        const {name, value} = target;
-        setFormCreateUser( old => {
-            return {
-                ...old,
-                [name]: value
-            }
-        })
-    }
+
     const createUser = async () => {
         try {
             const res = await $.post(`${URL}/users/createNewUser`, formCreateUser);
@@ -24,20 +17,19 @@ export const CreateUsers = () => {
     }
     return(
         <>
-            <ShowUsers />
             <div className="box-create-users">
                 <h1>צור משתמש חדש</h1>
                 <label htmlFor="userName">
                     שם משתמש:
-                    <input type="text" name="userName" id="userName" onChange={handleDataForm} />
+                    <input type="text" name="userName" id="userName" onChange={e => handleFormHook(e.target, setFormCreateUser)} />
                 </label>
                 <label htmlFor="userCode">
                     :קוד משתמש
-                    <input type="text" name="userCode" id="userCode" onChange={handleDataForm} />
+                    <input type="text" name="userCode" id="userCode" onChange={e => handleFormHook(e.target, setFormCreateUser)} />
                 </label>
                 <label htmlFor="license">
                     :רישיון
-                    <select name="license" id=""  onChange={handleDataForm}>
+                    <select name="license" id=""  onChange={e => handleFormHook(e.target, setFormCreateUser)}>
                         <option >--בחר אפשרות--</option>
                         <option value="cooker">טבח</option>
                         <option value="purchasingManager">מנהל רכש</option>
@@ -45,6 +37,7 @@ export const CreateUsers = () => {
                 </label>
                 <button onClick={createUser}>צור משתמש</button>
             </div>
+            <ShowUsers />
         </>
     )
 }
