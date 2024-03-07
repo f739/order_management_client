@@ -36,6 +36,7 @@ export const Orders = () => {
                     temporaryQuantity={item.temporaryQuantity} 
                     unitOfMeasure={item.unitOfMeasure}
                     category={item.category}
+                    note={item.note}
                     setNewQuantity={setNewQuantity} 
                     id={item._id}/>
                 </div>
