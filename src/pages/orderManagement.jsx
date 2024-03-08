@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { URL } from "../services/service";
-import { NewOrderToDeliver } from '../components/NewOrderToDeliver'
+import { toast } from "react-toastify";
+import { NewOrderToDeliver } from '../components/NewOrderToDeliver';
 import $ from 'axios';
 import '../css/orderManagement.css';
 
@@ -15,10 +16,9 @@ export const OrderManagement = () => {
                     ...order,
                     listProducts: order.listProducts.sort((a, b) => a.category.localeCompare(b.category))
                 }));
-    
                 setAllActiveOrders(sortedActiveOrders);
             }catch (err) {
-                console.log(err);
+                toast.error(err.response.data.message);
             }
         }; getAllActiveOrders();
     },[])

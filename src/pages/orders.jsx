@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react"; 
 import { ItemsBox } from "../components/ItemsBox";
+import { toast } from 'react-toastify';
 import { URL } from '../services/service';
-import $, { all } from "axios";
+import $ from "axios";
 import '../css/orders.css'
 
 export const Orders = () => {
@@ -17,7 +18,7 @@ export const Orders = () => {
                 allProducts.sort((a, b) => a.category.localeCompare(b.category));
                 setItmesList(allProducts);
             }catch (err) {
-                console.log(err);
+                toast.error(err.response.data.message);
             }
         }; getAllProducts();
     },[newQuantity]);
@@ -25,10 +26,9 @@ export const Orders = () => {
         const getCategories = async () => {
             try {
                 const res = await $.get(`${URL}/categories/getAllcategories`);
-                console.log(res.data.allcategories);
                 setAllCategories(res.data.allcategories);
             }catch (err) {
-                console.log(err);
+                toast.error(err.response.data.message);
             }
         }; getCategories();
     },[])
@@ -39,9 +39,9 @@ export const Orders = () => {
     const SendAnInvitation = async () => {
         try {
             const res = await $.post(`${URL}/orders/sendAnInvitation`,{});
-            console.log(res.data);
+            toast.success(res.data.message);
         }catch (err) {
-            console.log(err.response.data.error);
+            toast.error(err.response.data.message);
         }    
     }
     const filterProducts = e => {

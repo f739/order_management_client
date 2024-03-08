@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { URL } from "../services/service";
 import $ from 'axios';
 import '../css/categories.css';
+import { toast } from 'react-toastify';
 import { handleFormHook } from './HandleFormHook';
-
 export const Categories = () => {
     const [newCategory, setNewCategory] = useState({nameCategory: ''});
     const [allCategories, setAllCategories] = useState([]);
@@ -55,9 +55,9 @@ const ShowCategories = props => {
     const deleteCategory = async () => {
         try {
             const res = await $.delete(`${URL}/categories/${id}/deleteCategory`);
-            console.log(res);
+            toast.success(res.data.message);
         }catch (err) {
-            console.log(err);
+            toast.error(err.response.data.message);
         }
     }
     return (

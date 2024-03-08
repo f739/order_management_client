@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { URL } from "../services/service";
+import { toast } from "react-toastify";
 import $ from 'axios';
 import '../css/products.css';
 import { handleFormHook } from './HandleFormHook';
@@ -21,7 +22,7 @@ export const Products = () => {
                 setUnitOfMeasureList(res.data.allUnitOfMeasure);
                 setAllProducts(res.data.allProducts);
             } catch (err) {
-                console.log(err);
+                toast.error(err.response.data.message);
             }
         }; getFieldsForOptions()
     },[])
@@ -30,9 +31,9 @@ export const Products = () => {
         try {
             console.log(newProduct);
             const res = await $.post(`${URL}/products/newProduct`, newProduct);
-            console.log(res);
+            toast.success(res.data.message);
         }catch (err) {
-            console.log(err);
+            toast.error(err.response.data.message);
         }
     }
     return (
@@ -91,9 +92,9 @@ const ShowProducts = props => {
     const deleteProduct = async () => {
         try {
             const res = await $.delete(`${URL}/products/${id}/deleteProduct`);
-            console.log(res);
+            toast.success(res.data.message);
         }catch (err) {
-            console.log(err);
+            toast.error(err.response.data.message);
         }
     }
     return (

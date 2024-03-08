@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { URL } from "../services/service";
+import { toast } from "react-toastify";
 import { handleFormHook } from "./HandleFormHook";
 import $ from 'axios';
 import '../css/suppliers.css'
@@ -11,10 +12,9 @@ export const Supplier = () => {
         const getSuppliers = async () => {
             try {
                 const res = await $.get(`${URL}/suppliers/getAllSuppliers`);
-                console.log(res);
                 setAllSuppliers(res.data.allSuppliers)
             }catch (err) {
-                console.log(err);
+                toast.error(err.response.data.message);
             }
         }; getSuppliers();
     },[]);
@@ -22,9 +22,9 @@ export const Supplier = () => {
     const handleSaveNewSupplier  = async () => {
         try {
             const res = await $.post(`${URL}/suppliers/newSupplier`, newsupplier);
-            console.log(res);
+            toast.success(res.data.message,{autoClose: 2000, hideProgressBar: true,});
         }catch (err) {
-            console.log(err);
+            toast.error(err.response.data.message);
         }
     }
     return (
@@ -64,9 +64,9 @@ const ShowSuppliers = props => {
     const deleteSupplier = async () => {
         try {
             const res = await $.delete(`${URL}/suppliers/${id}/deleteSupplier`);
-            console.log(res);
+            toast.success(res.data.message);
         }catch (err) {
-            console.log(err);
+            toast.error(err.response.data.message);
         }
     }
     return (

@@ -1,5 +1,7 @@
 import { Outlet, RouterProvider, NavLink } from "react-router-dom";
 import { routers } from "./routers";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './css/main.css';
 
 export function Layout () {
@@ -9,6 +11,7 @@ export function Layout () {
         <NavLink to='/orders'>הזמנות חדשות</NavLink> ||
         <NavLink to='/privateArea'>אזור אישי</NavLink>
       </nav>
+      <ToastContainer />
       <Outlet />
     </>
   )

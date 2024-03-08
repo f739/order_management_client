@@ -1,6 +1,6 @@
-
 import { useState } from 'react';
 import { handleFormHook } from '../components/HandleFormHook';
+import { toast } from "react-toastify";
 import { URL } from '../services/service';
 import $ from 'axios';
 
@@ -10,12 +10,12 @@ export const EmailSettings = () => {
         if (editDetalseEmail.code && editDetalseEmail.email) {
             try {
                 const res = await $.put(`${URL}/settings/email`, editDetalseEmail);
-                console.log(res);
+                toast.success(res.data.message);
             }catch (err) {
-                console.log(err);
+                toast.error(err.response.data.message);
             }
         }else {
-            // error חסר פרטים בטופס
+            toast.error('חסר פרטים הכרחיים בטופס');
         }
     }
     return (

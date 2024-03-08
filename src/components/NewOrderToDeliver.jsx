@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { URL } from "../services/service";
 import { handleFormHook } from "./HandleFormHook";
+import { toast } from "react-toastify";
 import $ from 'axios';
 
 
@@ -14,10 +15,9 @@ export const NewOrderToDeliver = props => {
         const getSuppliers = async () => {
             try {
                 const res = await $.get(`${URL}/suppliers/getAllSuppliers`);
-                console.log(res);
                 setAllSuppliers(res.data.allSuppliers)
             }catch (err) {
-                console.log(err);
+                toast.error(err.response.data.message);
             }
         }; getSuppliers();
     },[]);
@@ -33,9 +33,9 @@ export const NewOrderToDeliver = props => {
     const sendOrder = async () => {
         try {
             const res = await $.post(`${URL}/orderManagement/newOrderToDeliver`, emailForm);
-            console.log(res);
+            toast.success(res.data.message);
         }catch (err) {
-            console.log(err);
+            toast.error(err.response.data.message);
         }
     }
 

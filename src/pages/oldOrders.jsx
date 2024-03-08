@@ -1,5 +1,6 @@
 import { useState ,useEffect } from "react";
 import { URL } from "../services/service";
+import { toast } from "react-toastify";
 import $ from 'axios';
 import '../css/oldOrders.css';
 import Camera from "../components/Camera";
@@ -18,7 +19,7 @@ export const OldOrders = () => {
                 }, {});
                 setGroupedOrders(groupBySupplier);
             } catch (err) {
-                console.log(err);
+                toast.error(err.response.data.message);
             }
         };
         getAllOrders();

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { URL } from "../services/service";
+import { toast } from 'react-toastify';
 import $ from 'axios';
 import '../css/measure.css';
 import { handleFormHook } from './HandleFormHook';
@@ -23,9 +24,9 @@ export const Measure = () => {
     const handleSaveNewMeasure  = async () => {
         try {
             const res = await $.post(`${URL}/measure/newMeasure`, newMeasure);
-            console.log(res);
+            toast.success(res.data.message);
         }catch (err) {
-            console.log(err);
+            toast.error(err.response.data.message);
         }
     }
     return (
@@ -55,9 +56,9 @@ const ShowMeasures = props => {
     const deleteMeasure = async () => {
         try {
             const res = await $.delete(`${URL}/measure/${id}/deletemeasure`);
-            console.log(res);
+            toast.success(res.data.message);
         }catch (err) {
-            console.log(err);
+            toast.error(err.response.data.message);
         }
     }
     return (

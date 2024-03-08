@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { URL } from '../services/service';
+import { toast } from "react-toastify";
 import { handleFormHook } from "../components/HandleFormHook";
 import '../css/users.css';
 import $ from 'axios';
@@ -10,9 +11,9 @@ export const CreateUsers = () => {
     const createUser = async () => {
         try {
             const res = await $.post(`${URL}/users/createNewUser`, formCreateUser);
-            console.log(res.data);
+            toast.success(res.data.message);
         } catch (err) {
-            console.log(err);
+            toast.error(err.response.data.message);
         }
     }
     return(
@@ -47,9 +48,9 @@ const ShowUsers = () => {
     const deleteUser = id => {
         try {
             const res = $.delete(`${URL}/users/${id}/deleteUser`);
-            console.log(res);
+            toast.success(res.data.message);
         }catch (err) {
-            console.log(res.response.data.error);
+            toast.error(err.response.data.message);
         }
     }
     useEffect( () => {
@@ -58,7 +59,7 @@ const ShowUsers = () => {
                 const res = await $.get(`${URL}/users/getUsers`);
                 setAllUsers(res.data.allUsers)
             } catch (err) {
-                console.log(err.response.data.error);
+                toast.error(err.response.data.message);
             }
         }; getUsers();
     },[])

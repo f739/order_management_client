@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { URL } from "../services/service";
+import { toast } from 'react-toastify';
 import $ from 'axios';
 
 export const ItemsBox = props => {
@@ -10,7 +11,7 @@ export const ItemsBox = props => {
             const res = await $.put(`${URL}/orders/${Number(temporaryQuantity) + 1}/${id}/changeQuantity`);
             setNewQuantity(res.data.newQuantity)
         }catch (err) {
-            console.log(err);
+            toast.error(err.response.data.message);
         }
     }
     const removeItem = async () => {
@@ -40,17 +41,18 @@ const ShowNote = props => {
     const sendNewNote = async () => {
         try {
             const res = await $.put(`${URL}/orders/${id}/${createNewNote}/createNewNote`);
-            console.log(res);
+            toast.success(res.data.message);
         }catch (err) {
-            console.log(err);
+            console.log(err.response);
+            toast.error(err.response.data.message);
         }
     }
     const deleteNote = async () => {
         try {
             const res = await $.delete(`${URL}/orders/${id}/deleteNote`);
-            console.log(res);
+            toast.success(res.data.message);
         }catch (err) {
-            console.log(err);
+            toast.error(err.response.data.message);
         }
     }
     if (!note) {
