@@ -12,7 +12,8 @@ export const OldOrders = () => {
         const getAllOrders = async () => {
             try {
                 const res = await $.get(`${URL}/oldOrders/getOldOrders`);
-                const groupBySupplier = res.data.oldOrders.reduce((acc, order) => {
+                const oldOrdersFiltred = res.data.oldOrders.sort((a, b) => a.date.localeCompare(b.date))
+                const groupBySupplier = oldOrdersFiltred.reduce((acc, order) => {
                     acc[order.supplier.nameSupplier] = acc[order.supplier.nameSupplier] || [];
                     acc[order.supplier.nameSupplier].push(order);
                     return acc;
@@ -47,29 +48,39 @@ const OldVendorOrders = ({ orderList, date, time }) => {
 
     return (
         <div className="order-container">
-            <div>
+            <div className="title-order">
                 <h3>{date}</h3>
                 <h3>{time}</h3>
             </div>
             {orderListAfterFilter.map(order => (
                 <ShowOldOrder key={order._id}
-                id={order._id}
+                _id={order._id}
                 setOrderListAfterFilter={setOrderListAfterFilter}
                 nameProduct={order.nameProduct}
                 temporaryQuantity={order.temporaryQuantity}
                 unitOfMeasure={order.unitOfMeasure}
                 category={order.category} />
             ))}
-            <Camera />
+            <button className="received-button" >ההזמנה התקבלה</button>
+            {/* <Camera /> */}
         </div>
     );
 };
 
 
-const ShowOldOrder = ({ id, setOrderListAfterFilter, nameProduct, temporaryQuantity, unitOfMeasure, category }) => {
+const ShowOldOrder = ({ _id, setOrderListAfterFilter, nameProduct, temporaryQuantity, unitOfMeasure, category }) => {
     const wasReceived = async () => {
-        setOrderListAfterFilter(oldList => oldList.filter(order => order._id !== id));
+        setOrderListAfterFilter(oldList => oldList.filter(order => order._id !== _id));
     };
+    const returnToOrderManagement = async () => {
+        try {
+            const res = await $.post(`${URL}/oldOrders/returnProduct`, 
+            {nameProduct, temporaryQuantity, unitOfMeasure, category, _id})
+            toast.success(res.data.message)
+        }catch (err) {
+            toast.error(err.response.data.message);
+        }
+    }
 
     return (
         <div className="order-item">
@@ -79,7 +90,8 @@ const ShowOldOrder = ({ id, setOrderListAfterFilter, nameProduct, temporaryQuant
                 <p className="show-unit-of-measure">{unitOfMeasure}</p>
                 <p className="show-category">{category}</p>
             </div>
-            <button className="received-button" onClick={wasReceived}>V</button>
+            <button className="received-button" onClick={wasReceived}>המוצר התקבל</button>
+            <button className="return-to-order-management-button" onClick={returnToOrderManagement}>החזרה להזמנות</button>
         </div>
     );
 };

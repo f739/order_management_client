@@ -26,15 +26,20 @@ export const OrderManagement = () => {
     const [orderList, setOrderList] = useState([]);
     const addToOrder = newProduct => {
         setOrderList(prev => {
-            const updatedOrderList = prev.filter(product => product._id !== newProduct._id);
+            const isProductExist = prev.some(product => product._id === newProduct._id);
+            if (isProductExist) {
+                return prev.filter(product => product._id !== newProduct._id);
+            }else {
+                const updatedOrderList = prev.filter(product => product._id !== newProduct._id);
+    
+                const totalQuantity = allActiveOrders.flatMap(order => order.listProducts)
+                    .filter(product => product._id === newProduct._id)
+                    .reduce((acc, product) => acc + product.temporaryQuantity, 0);
+    
+                const newProductWithTotalQuantity = {...newProduct, temporaryQuantity: totalQuantity};
+                return [...updatedOrderList, newProductWithTotalQuantity];
+            }
 
-            const totalQuantity = allActiveOrders.flatMap(order => order.listProducts)
-                .filter(product => product._id === newProduct._id)
-                .reduce((acc, product) => acc + product.temporaryQuantity, 0);
-
-            const newProductWithTotalQuantity = {...newProduct, temporaryQuantity: totalQuantity};
-            console.log([...updatedOrderList, newProductWithTotalQuantity]);
-            return [...updatedOrderList, newProductWithTotalQuantity];
         });
     };
     
@@ -89,6 +94,7 @@ const Product = props => {
         <>
             <div className="show-product" onClick={() => addToOrder(product)} style={isSelected ? selectedStyle : {}}>
                 <span>{product.category}</span>
+                <span>{product._id}</span>
                 <span>{product.nameProduct}</span>
                 <span>{product.temporaryQuantity}</span>
                 <span>{product.unitOfMeasure}</span>

@@ -39,12 +39,15 @@ const ShowNote = props => {
     const { note, id } = props;
     const [createNewNote, setCreateNewNote] = useState('');
     const sendNewNote = async () => {
-        try {
-            const res = await $.put(`${URL}/orders/${id}/${createNewNote}/createNewNote`);
-            toast.success(res.data.message);
-        }catch (err) {
-            console.log(err.response);
-            toast.error(err.response.data.message);
+        if (createNewNote !== '') {
+            try {
+                const res = await $.put(`${URL}/orders/${id}/${createNewNote}/createNewNote`);
+                toast.success(res.data.message);
+            }catch (err) {
+                toast.error(err.response.data.message);
+            }
+        }else {
+            toast.error('השדה ריק');
         }
     }
     const deleteNote = async () => {

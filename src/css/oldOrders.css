@@ -1,83 +1,91 @@
+/* עיצוב העמוד */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
+    background-color: #EEEEEE;
     margin: 0;
     padding: 20px;
-    background-color: #f4f4f4;
-    direction: rtl;
-    text-align: right;
+    direction: rtl; /* מיישר את כל התוכן לימין */
 }
 
-button {
-    background-color: #4CAF50; /* Green */
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin: 5px 0;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-.order-container, .supplier-container {
-    background-color: #fff;
+/* עיצוב קונטיינר הספק */
+.supplier-container {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-bottom: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.order-container {
-    border-left: 5px solid #f4c45c;
-}
-
-.supplier-title, .order-title {
+.supplier-title {
     color: #333;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 5px;
     margin-bottom: 15px;
 }
 
-.supplier-container {
-    border-left: 5px solid #007bff;
+/* עיצוב קונטיינר ההזמנה */
+.order-container {
+    background-color: #F8F8F8;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
 }
 
-.order-item {
-    background-color: #f9f9f9;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
+.title-order {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    margin-bottom: 15px;
 }
 
-.order-item:not(:last-child) {
-    border-bottom: 1px solid #ddd;
+.title-order h3 {
+    color: #555;
+    font-size: 16px;
+}
+
+/* עיצוב פריט ההזמנה */
+.order-item {
+    display: flex;
+    justify-content: flex-start; /* משנה כיוון הסידור של האלמנטים לסידור מימין לשמאל */
+    align-items: center;
+    padding: 10px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 10px;
 }
 
 .order-details {
     display: flex;
-    flex-direction: column;
+    flex-direction: row; /* שינוי כיוון הפריטים להיות אחד לצד השני */
+    justify-content: flex-start; /* מיישר את הפריטים לצד ימין */
+    gap: 15px; /* מוסיף רווח בין האלמנטים */
+    flex-grow: 1;
 }
 
-.order-details > * {
-    margin: 2px 0;
+.order-details p {
+    margin: 0; /* מוריד את המרווחים הסטנדרטיים של פסקאות */
+    color: #666;
+    font-size: 14px;
+}
+
+.show-nameProduct {
+    font-weight: bold;
+    color: #333;
 }
 
 .received-button {
-    padding: 5px 10px;
-    background-color: #008CBA;
+    background-color: #4CAF50;
     color: white;
-    border-radius: 5px;
     border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    font-size: 16px;
+    margin-right: auto; /* ממקם את הכפתור בצד הימני של הקונטיינר, בהתאם לכיוון הקריאה */
 }
 
 .received-button:hover {
-    background-color: #005f73;
+    background-color: #45A049;
+}
+
+.received-button:active {
+    transform: scale(0.98);
 }
