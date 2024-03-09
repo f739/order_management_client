@@ -6,8 +6,7 @@ import '../css/products.css';
 import { handleFormHook } from './HandleFormHook';
 
 export const Products = () => {
-    const [newProduct, setNewProduct] = useState({nameProduct: '', supplier: '', category: '', unitOfMeasure: ''});
-    const [listSuppliers, setListSuppliers] = useState([]);
+    const [newProduct, setNewProduct] = useState({nameProduct: '', supplier: '', category: '', unitOfMeasure: '', sku: ''});
     const [listCategories, setListCategories] = useState([]);
     const [unitOfMeasureList, setUnitOfMeasureList] = useState([]);
     const [allProducts, setAllProducts] = useState([]);
@@ -16,8 +15,6 @@ export const Products = () => {
         const getFieldsForOptions = async () => {
             try {
                 const res = await $.get(`${URL}/products/getFieldsForOptions`); 
-                console.log(res);
-                setListSuppliers(res.data.allSuppleirs);
                 setListCategories(res.data.allproductCategories);
                 setUnitOfMeasureList(res.data.allUnitOfMeasure);
                 setAllProducts(res.data.allProducts);
@@ -44,13 +41,8 @@ export const Products = () => {
                     <input type="text" name="nameProduct" onChange={e => handleFormHook(e.target, setNewProduct)} />
                 </label>
                 <label>
-                    שם ספק:
-                    { listSuppliers && <select id="supplier-select" name="supplier" onChange={e => handleFormHook(e.target, setNewProduct)}>
-                        <option value="">--בחר אפשרות--</option>
-                        { listSuppliers.map( supplier => (
-                            <option value={supplier.nameSupplier} key={supplier._id}>{supplier.nameSupplier}</option>
-                        )  )}
-                    </select>}
+                    מק"ט:
+                    <input type="text" name="sku" onChange={e => handleFormHook(e.target, setNewProduct)} />
                 </label>
                 <label>
                     קטגוריה:

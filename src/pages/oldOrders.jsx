@@ -33,7 +33,7 @@ export const OldOrders = () => {
                     <h3 className="supplier-title"> ספק: {supplierName}</h3>
                     {orders.map(order => (
                         <OldVendorOrders key={order._id} date={order.date} time={order.time} 
-                        orderList={order.orderList} supplierName={supplierName} />
+                        orderList={order.orderList} supplierName={supplierName} idOrderList={order._id}/>
                     ))}
                 </div>
             ))}
@@ -42,7 +42,7 @@ export const OldOrders = () => {
 };
 
 
-const OldVendorOrders = ({ orderList, date, time }) => {
+const OldVendorOrders = ({ orderList, date, time, idOrderList }) => {
     const orderListSorted = orderList.sort((a, b) => a.category.localeCompare(b.category));
     const [orderListAfterFilter, setOrderListAfterFilter] = useState(orderListSorted);
 
@@ -55,6 +55,7 @@ const OldVendorOrders = ({ orderList, date, time }) => {
             {orderListAfterFilter.map(order => (
                 <ShowOldOrder key={order._id}
                 _id={order._id}
+                idOrderList={idOrderList}
                 setOrderListAfterFilter={setOrderListAfterFilter}
                 nameProduct={order.nameProduct}
                 temporaryQuantity={order.temporaryQuantity}
@@ -68,14 +69,14 @@ const OldVendorOrders = ({ orderList, date, time }) => {
 };
 
 
-const ShowOldOrder = ({ _id, setOrderListAfterFilter, nameProduct, temporaryQuantity, unitOfMeasure, category }) => {
+const ShowOldOrder = ({ _id,idOrderList, setOrderListAfterFilter, nameProduct, temporaryQuantity, unitOfMeasure, category }) => {
     const wasReceived = async () => {
         setOrderListAfterFilter(oldList => oldList.filter(order => order._id !== _id));
     };
     const returnToOrderManagement = async () => {
         try {
             const res = await $.post(`${URL}/oldOrders/returnProduct`, 
-            {nameProduct, temporaryQuantity, unitOfMeasure, category, _id})
+            {nameProduct, temporaryQuantity, unitOfMeasure, category, _id, idOrderList})
             toast.success(res.data.message)
         }catch (err) {
             toast.error(err.response.data.message);
