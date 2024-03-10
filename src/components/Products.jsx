@@ -6,9 +6,11 @@ import '../css/products.css';
 import { handleFormHook } from './HandleFormHook';
 
 export const Products = () => {
-    const [newProduct, setNewProduct] = useState({nameProduct: '', supplier: '', category: '', unitOfMeasure: '', sku: ''});
+    const [newProduct, setNewProduct] = useState({nameProduct: '', category: '', unitOfMeasure: '', sku: '', price: []});
+    const [newPrice, setNewPrice] = useState({nameSupplier: '', price: ''});
     const [listCategories, setListCategories] = useState([]);
     const [unitOfMeasureList, setUnitOfMeasureList] = useState([]);
+    const [allSuppliers, setAllSuppliers] = useState([]);
     const [allProducts, setAllProducts] = useState([]);
 
     useEffect( () => {
@@ -17,13 +19,30 @@ export const Products = () => {
                 const res = await $.get(`${URL}/products/getFieldsForOptions`); 
                 setListCategories(res.data.allproductCategories);
                 setUnitOfMeasureList(res.data.allUnitOfMeasure);
+                setAllSuppliers(res.data.allSuppliers);
                 setAllProducts(res.data.allProducts);
             } catch (err) {
                 toast.error(err.response.data.message);
             }
         }; getFieldsForOptions()
     },[])
-
+    const handleSaveNewPrice = () => {
+        setNewProduct(prev => {
+            // bag הפונקציה תמיד תעדכן מחיר בספק שנבחר בתחילה ולא תוסיף אובייקט נוסף
+            const supplierIndex = prev.price.findIndex(supplier => supplier.supplierName === newPrice.supplierName);
+            let updatedPrice = [...prev.price];
+            if (supplierIndex !== -1) {
+                updatedPrice[supplierIndex] = {...updatedPrice[supplierIndex], price: newPrice.price};
+            } else {
+                updatedPrice = [...updatedPrice, newPrice];
+            }
+            return {
+                ...prev,
+                price: updatedPrice
+            };
+        });
+    }
+    
     const handleSaveNewProduct = async () => {
         try {
             console.log(newProduct);
@@ -43,6 +62,20 @@ export const Products = () => {
                 <label>
                     מק"ט:
                     <input type="text" name="sku" onChange={e => handleFormHook(e.target, setNewProduct)} />
+                </label>
+                <label>
+                   מחיר:
+                   {newProduct.price && newProduct.price.map( (price, i) => (
+                        <p key={i}>{price.nameSupplier} - {price.price}</p>
+                   ))}
+                   { allSuppliers && <select id="suppliers-select" name="nameSupplier" onChange={e => handleFormHook(e.target, setNewPrice)}>
+                        <option value="">--בחר אפשרות--</option>
+                        { allSuppliers.map( supplier => (
+                            <option value={supplier.nameSupplier} key={supplier._id}>{supplier.nameSupplier}</option>
+                        )  )}
+                    </select>}
+                    <input type="text" name="price" onChange={e => handleFormHook(e.target, setNewPrice)} />
+                    <button onClick={handleSaveNewPrice}>שמור מחיר</button>
                 </label>
                 <label>
                     קטגוריה:
