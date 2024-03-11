@@ -1,57 +1,52 @@
 import { useEffect, useState } from "react";
-import { URL } from "../services/service";
-import { toast } from "react-toastify";
+import { useSelector, useDispatch } from 'react-redux';
+import { getSuppliers, createNewSupplier, removeSupplier } from "../dl/slices/suppliers";
 import { handleFormHook } from "./HandleFormHook";
-import $ from 'axios';
-import '../css/suppliers.css'
-export const Supplier = () => {
-    const [newsupplier, setNewsupplier] = useState({nameSupplier: '', tel: '', email: ''});
-    const [allSuppleirs, setAllSuppliers] = useState([]);
+import '../css/suppliers.css';
 
-    useEffect( () => {
-        const getSuppliers = async () => {
-            try {
-                const res = await $.get(`${URL}/suppliers/getAllSuppliers`);
-                setAllSuppliers(res.data.allSuppliers)
-            }catch (err) {
-                toast.error(err.response.data.message);
-            }
-        }; getSuppliers();
-    },[]);
+export const Supplier = () => {
+    const dispatch = useDispatch();
+    const [newSupplier, setNewSupplier] = useState({nameSupplier: '', tel: '', email: ''});
+    const allSuppleirs = useSelector( state => state.suppliers.allSuppliers);
+    const errorMessage = useSelector( state => state.suppliers.errorMessage);
+    
+    useEffect(() => {
+        if (allSuppleirs.length === 0) {
+            dispatch(getSuppliers());
+        }
+    }, [dispatch]);
 
     const handleSaveNewSupplier  = async () => {
-        try {
-            const res = await $.post(`${URL}/suppliers/newSupplier`, newsupplier);
-            toast.success(res.data.message,{autoClose: 2000, hideProgressBar: true,});
-        }catch (err) {
-            toast.error(err.response.data.message);
-        }
+        dispatch( createNewSupplier(newSupplier));
+        setNewSupplier({nameSupplier: '', tel: '', email: ''})
     }
     return (
         <div className="suppliers">
             <div className="new-supplier">
                 <label>
                     שם ספק:
-                    <input type="text" name="nameSupplier" onChange={e => handleFormHook(e.target, setNewsupplier)}/> 
+                    <input type="text" name="nameSupplier" value={newSupplier.nameSupplier} onChange={e => handleFormHook(e.target, setNewSupplier)}/> 
                 </label>
                 <label>
                     פלאפון ספק:
-                <input type="tel" name="tel" onChange={e => handleFormHook(e.target, setNewsupplier)}/> 
+                <input type="tel" name="tel" value={newSupplier.tel} onChange={e => handleFormHook(e.target, setNewSupplier)}/> 
                 </label>
                 <label>
                     אמייל ספק:
-                <input type="email" name="email" onChange={e => handleFormHook(e.target, setNewsupplier)}/> 
+                <input type="email" name="email" value={newSupplier.email} onChange={e => handleFormHook(e.target, setNewSupplier)}/> 
                 </label>
                 <button onClick={handleSaveNewSupplier}>שמור ספק חדש</button>
             </div>
+            { errorMessage && <h4 className="error-message">{errorMessage}</h4>}
             <div className="show-supplier">
                 <h1 className="title">ספקים קיימים:</h1>
-                {allSuppleirs && allSuppleirs.map( supplier => (
+                {allSuppleirs.length > 0 && allSuppleirs.map( supplier => (
                     <ShowSuppliers key={supplier._id}
                     nameSupplier={supplier.nameSupplier} 
                     email={supplier.email} 
                     tel={supplier.tel} 
-                    id={supplier._id} />
+                    dispatch={dispatch} 
+                    _id={supplier._id} />
                 ))}
             </div>
         </div>
@@ -60,14 +55,9 @@ export const Supplier = () => {
 };
 
 const ShowSuppliers = props => {
-    const { nameSupplier, tel, email, id } = props;
-    const deleteSupplier = async () => {
-        try {
-            const res = await $.delete(`${URL}/suppliers/${id}/deleteSupplier`);
-            toast.success(res.data.message);
-        }catch (err) {
-            toast.error(err.response.data.message);
-        }
+    const { nameSupplier, tel, email, _id, dispatch } = props;
+    const deleteSupplier = () => {
+        dispatch(removeSupplier(_id))
     }
     return (
         <div className="show-suppliers">

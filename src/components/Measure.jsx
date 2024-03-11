@@ -1,49 +1,43 @@
 import { useEffect, useState } from "react";
-import { URL } from "../services/service";
-import { toast } from 'react-toastify';
-import $ from 'axios';
-import '../css/measure.css';
+import { useSelector, useDispatch } from 'react-redux';
+import { getMeasures, createNewMeasure, removeMeasure } from "../dl/slices/measures";
 import { handleFormHook } from './HandleFormHook';
+import '../css/measure.css';
 
 export const Measure = () => {
+    const dispatch = useDispatch();
     const [newMeasure, setNewMeasure] = useState({measureName: ''});
-    const [allMeasures, setAllMeasures] = useState([]);
+    const allMeasures = useSelector( state => state.measures.allMeasures);
+    const errorMessage = useSelector( state => state.measures.errorMessage);
 
-    useEffect( () => {
-        const getMeasures = async () => {
-            try {
-                const res = await $.get(`${URL}/measure/getAllMeasures`);
-                console.log(res);
-                setAllMeasures(res.data.allMeasures)
-            }catch (err) {
-                console.log(err);
-            }
-        }; getMeasures();
-    },[]);
+    useEffect(() => {
+        if (allMeasures.length === 0) {
+            dispatch(getMeasures());
+        }
+    }, [dispatch]);
 
     const handleSaveNewMeasure  = async () => {
-        try {
-            const res = await $.post(`${URL}/measure/newMeasure`, newMeasure);
-            toast.success(res.data.message);
-        }catch (err) {
-            toast.error(err.response.data.message);
-        }
+        dispatch( createNewMeasure(newMeasure));
+        setNewMeasure({measureName: ''})
     }
     return (
         <div className="measure">
             <div className="new-measure">
                 <label>
                     שם יחידת מידה:
-                    <input type="text" name="measureName" onChange={ e => handleFormHook(e.target, setNewMeasure)}/> 
+                    <input type="text" name="measureName" value={newMeasure.measureName} 
+                    onChange={ e => handleFormHook(e.target, setNewMeasure)}/> 
                 </label>
                 <button onClick={handleSaveNewMeasure}>שמור יחידת מידה חדשה</button>
             </div>
+            { errorMessage && <h4 className="error-message">{errorMessage}</h4>}
             <div className="show-measure">
                 <h1 className="title">יחידות מידה קיימות:</h1>
-                {allMeasures && allMeasures.map( measure => (
+                {allMeasures.length > 0 && allMeasures.map( measure => (
                     <ShowMeasures key={measure._id}
                     measureName={measure.measureName}  
-                    id={measure._id} />
+                    dispatch={dispatch}  
+                    _id={measure._id} />
                 ))}
             </div>
         </div>
@@ -52,14 +46,9 @@ export const Measure = () => {
 };
 
 const ShowMeasures = props => {
-    const { measureName, id } = props;
-    const deleteMeasure = async () => {
-        try {
-            const res = await $.delete(`${URL}/measure/${id}/deletemeasure`);
-            toast.success(res.data.message);
-        }catch (err) {
-            toast.error(err.response.data.message);
-        }
+    const { measureName, _id, dispatch } = props;
+    const deleteMeasure = () => {
+        dispatch(removeMeasure(_id))
     }
     return (
         <div className="show-measure">

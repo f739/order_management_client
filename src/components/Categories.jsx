@@ -1,48 +1,42 @@
 import { useEffect, useState } from "react";
-import { URL } from "../services/service";
-import $ from 'axios';
-import '../css/categories.css';
-import { toast } from 'react-toastify';
+import { useSelector, useDispatch } from 'react-redux';
+import { getCategories, createNewCategory, removeCategory } from "../dl/slices/categories";
 import { handleFormHook } from './HandleFormHook';
+import '../css/categories.css';
+
 export const Categories = () => {
+    const dispatch = useDispatch();
     const [newCategory, setNewCategory] = useState({nameCategory: ''});
-    const [allCategories, setAllCategories] = useState([]);
-
-    useEffect( () => {
-        const getCategories = async () => {
-            try {
-                const res = await $.get(`${URL}/categories/getAllCategories`);
-                console.log(res);
-                setAllCategories(res.data.allcategories)
-            }catch (err) {
-                console.log(err);
-            }
-        }; getCategories();
-    },[]);
-
-    const handleSaveNewCategory  = async () => {
-        try {
-            const res = await $.post(`${URL}/categories/newCategory`, newCategory);
-            console.log(res);
-        }catch (err) {
-            console.log(err);
+    const allCategories = useSelector( state => state.categories.allCategories);
+    const errorMessage = useSelector( state => state.categories.errorMessage);
+    
+    useEffect(() => {
+        if (allCategories.length === 0) {
+            dispatch(getCategories());
         }
+    }, [dispatch]);
+
+    const handleSaveNewCategory = () => {
+        dispatch( createNewCategory(newCategory));
+        setNewCategory({nameCategory: ''})
     }
     return (
         <div className="category">
             <div className="new-category">
                 <label>
                     שם קטגוריה:
-                    <input type="text" name="nameCategory" onChange={e => handleFormHook(e.target, setNewCategory)}/> 
+                    <input type="text" name="nameCategory" value={newCategory.nameCategory} onChange={e => handleFormHook(e.target, setNewCategory)}/> 
                 </label>
                 <button onClick={handleSaveNewCategory}>שמור קטגוריה חדשה</button>
             </div>
+            { errorMessage && <h4 className="error-message">{errorMessage}</h4>}
             <div className="show-category">
                 <h1 className="title">קטגוריות קיימות:</h1>
-                {allCategories && allCategories.map( category => (
+                {allCategories.length > 0 && allCategories.map( category => (
                     <ShowCategories key={category._id}
                     nameCategory={category.nameCategory}  
-                    id={category._id} />
+                    dispatch={dispatch}  
+                    _id={category._id} />
                 ))}
             </div>
         </div>
@@ -51,14 +45,9 @@ export const Categories = () => {
 };
 
 const ShowCategories = props => {
-    const { nameCategory, id } = props;
+    const { nameCategory, _id, dispatch } = props;
     const deleteCategory = async () => {
-        try {
-            const res = await $.delete(`${URL}/categories/${id}/deleteCategory`);
-            toast.success(res.data.message);
-        }catch (err) {
-            toast.error(err.response.data.message);
-        }
+        dispatch(removeCategory(_id))
     }
     return (
         <div className="show-categories">
