@@ -3,26 +3,23 @@ import { URL } from "../services/service";
 import { handleFormHook } from "./HandleFormHook";
 import { toast } from "react-toastify";
 import $ from 'axios';
+import { useDispatch, useSelector } from "react-redux";
+import { getSuppliers } from '../dl/slices/suppliers';
+import { newOrderToDeliver } from "../dl/slices/orders";
 
-
-export const NewOrderToDeliver = props => {
-    const { orderList } = props;
-    const [allSuppliers, setAllSuppliers] = useState([]);
+export const NewOrderToDeliver = ({orderList}) => {
+    const dispatch = useDispatch();
+    const allSuppliers = useSelector( state => state.suppliers.allSuppliers);
     const [emailForm, setEmailForm] = useState(
         {supplier: null, titleMessage: '', messageContent: '', orderList }
     )
     useEffect( () => {
-        const getSuppliers = async () => {
-            try {
-                const res = await $.get(`${URL}/suppliers/getAllSuppliers`);
-                setAllSuppliers(res.data.allSuppliers)
-            }catch (err) {
-                toast.error(err.response.data.message);
-            }
-        }; getSuppliers();
-    },[]);
+        if (allSuppliers.length === 0) {
+            dispatch( getSuppliers())
+        }
+    },[])
 
-    const handleSupplierChange = (e) => {
+    const handleSupplierChange = e => {
         const supplier = allSuppliers.find(supplier => supplier._id === e.target.value);
         setEmailForm(oldForm => ({
             ...oldForm,
@@ -31,12 +28,7 @@ export const NewOrderToDeliver = props => {
     }
 
     const sendOrder = async () => {
-        try {
-            const res = await $.post(`${URL}/orderManagement/newOrderToDeliver`, emailForm);
-            toast.success(res.data.message);
-        }catch (err) {
-            toast.error(err.response.data.message);
-        }
+        dispatch( newOrderToDeliver(emailForm))
     }
 
     return(

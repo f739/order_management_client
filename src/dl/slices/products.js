@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { sendAnInvitation } from './orders';
 import { URL } from "../../services/service";
 import $ from 'axios';
 
@@ -39,6 +40,59 @@ export const removeProduct = createAsyncThunk('products/removeProduct',
   }
 );
 
+export const createNewNote = createAsyncThunk('products/createNewNote', 
+  async ({_id, newNote}, {getState, rejectWithValue}) => {  
+      try {
+        const res = await $.put(`${URL}/orders/${_id}/${newNote}/createNewNote`);
+        if (res.data.newNote) {
+          const updatedProducts = getState().products.allProducts.map( product => {
+            if (product._id === _id) {
+              return {...product, note: newNote};
+            }
+            return product;
+          });
+          return updatedProducts;
+      }
+      }catch (err) {
+        return rejectWithValue(err.response.data.message)
+      }
+  }
+);
+
+export const removeNote = createAsyncThunk('products/removeNote', 
+  async (_id, {getState, rejectWithValue}) => {  
+      try {
+        await $.delete(`${URL}/orders/${_id}/deleteNote`);
+          const updatedProducts = getState().products.allProducts.map( product => {
+            if (product._id === _id) {
+              return {...product, note: ''};
+            }
+            return product;
+          });
+          return updatedProducts;
+      }catch (err) {
+        return rejectWithValue(err.response.data.message)
+      }
+  }
+);
+
+export const addOrSubtract = createAsyncThunk('products/addOrSubtract', 
+  async ({_id, newTemporaryQuantity}, {getState, rejectWithValue}) => {  
+      try {
+        await $.put(`${URL}/orders/${newTemporaryQuantity}/${_id}/changeQuantity`);
+        const updatedProducts = getState().products.allProducts.map( product => {
+          if (product._id === _id) {
+            return {...product, temporaryQuantity: newTemporaryQuantity};
+          }
+          return product;
+        });
+        return updatedProducts;
+      }catch (err) {
+        return rejectWithValue(err.response.data.message)
+      }
+  }
+);
+
 
 const initialState = {
     allProducts: [],
@@ -73,6 +127,23 @@ export const slice = createSlice({
           builder.addCase(removeProduct.rejected, (state, action) => {
             state.errorMessage = action.payload;
           })
+          builder.addCase(createNewNote.fulfilled, (state, action) => {
+            state.allProducts = action.payload;
+            state.errorMessage = ''
+          })
+          builder.addCase(removeNote.fulfilled, (state, action) => {
+            state.allProducts = action.payload;
+            state.errorMessage = ''
+          })
+          builder.addCase(addOrSubtract.fulfilled, (state, action) => {
+            state.allProducts = action.payload;
+            state.errorMessage = ''
+          })
+          builder.addCase(sendAnInvitation.fulfilled, (state, action) => {
+            state.allProducts = action.payload.resetQuantityProducts;
+            state.errorMessage = '';
+        })
+
         }
     })
     

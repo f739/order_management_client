@@ -1,64 +1,52 @@
 import { useState, useEffect } from "react"; 
+import { useSelector, useDispatch } from 'react-redux';
+import { getProducts } from "../dl/slices/products";
+import { getCategories } from "../dl/slices/categories";
+import { sendAnInvitation } from "../dl/slices/orders";
 import { ItemsBox } from "../components/ItemsBox";
-import { toast } from 'react-toastify';
-import { URL } from '../services/service';
-import $ from "axios";
 import '../css/orders.css'
 
 export const Orders = () => {
-    const [itemsList, setItmesList] = useState([]);
-    const [itemsListFiltered, setItemsListFiltered] = useState(itemsList);
-    const [newQuantity, setNewQuantity] = useState(null);
-    const [allcategories, setAllCategories] = useState(null);
+    const dispatch = useDispatch();
+    const allProducts = useSelector( state => state.products.allProducts);
+    const allCategories = useSelector( state => state.categories.allCategories);
+    const [itemsListFiltered, setItemsListFiltered] = useState([]);
+
     useEffect( () => {
-        const getAllProducts = async () => {
-            try {
-                const res = await $.get(`${URL}/products/getAllProducts`);
-                const { allProducts } = res.data;
-                allProducts.sort((a, b) => a.category.localeCompare(b.category));
-                setItmesList(allProducts);
-            }catch (err) {
-                toast.error(err.response.data.message);
-            }
-        }; getAllProducts();
-    },[newQuantity]);
-    useEffect( () => {
-        const getCategories = async () => {
-            try {
-                const res = await $.get(`${URL}/categories/getAllcategories`);
-                setAllCategories(res.data.allcategories);
-            }catch (err) {
-                toast.error(err.response.data.message);
-            }
-        }; getCategories();
-    },[])
+        if (allProducts.length === 0) {
+            dispatch( getProducts())
+        }
+    },[allProducts]);
     useEffect(() => {
-        setItemsListFiltered(itemsList);
-    }, [itemsList]);
+        const sortedProducts = [...allProducts].sort((a, b) => a.category.localeCompare(b.category));
+        setItemsListFiltered(sortedProducts);
+    }, [allProducts]);
+
+    useEffect( () => {
+        if (allCategories.length === 0) {
+            dispatch( getCategories())
+        }
+    },[allCategories]);
       
     const SendAnInvitation = async () => {
-        try {
-            const res = await $.post(`${URL}/orders/sendAnInvitation`,{});
-            toast.success(res.data.message);
-        }catch (err) {
-            toast.error(err.response.data.message);
-        }    
+        dispatch( sendAnInvitation())   
     }
+    
     const filterProducts = e => {
         const { value } = e.target;
         if (value === 'allCategories') {
-            setItemsListFiltered( itemsList);
+            setItemsListFiltered( allProducts);
         }else {
-            setItemsListFiltered( () => itemsList.filter( product => product.category === value));
+            setItemsListFiltered( () => allProducts.filter( product => product.category === value));
         }
     }
     return(
         <>
             <h1>דף הזמנת מוצרים</h1>
             <button onClick={SendAnInvitation}>שלח הזמנה</button>
-            { allcategories && <select id="categories-select" name="category" onChange={filterProducts}>
+            { allCategories && <select id="categories-select" name="category" onChange={filterProducts}>
                 <option value="allCategories">כל הקטגוריות</option>
-                { allcategories.map( category => (
+                { allCategories.map( category => (
                     <option value={category.nameCategory} key={category._id}>{category.nameCategory}</option>
                 )  )}
             </select>}
@@ -69,8 +57,7 @@ export const Orders = () => {
                     unitOfMeasure={item.unitOfMeasure}
                     category={item.category}
                     note={item.note}
-                    setNewQuantity={setNewQuantity} 
-                    id={item._id}/>
+                    _id={item._id}/>
                 </div>
             ))}
         </>

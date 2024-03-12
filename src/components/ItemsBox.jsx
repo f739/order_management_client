@@ -1,23 +1,19 @@
 import { useState } from "react";
-import { URL } from "../services/service";
-import { toast } from 'react-toastify';
-import $ from 'axios';
+import { useDispatch } from 'react-redux';
+import { createNewNote, removeNote, addOrSubtract } from "../dl/slices/products";
 
 export const ItemsBox = props => {
-    const { nameProduct, temporaryQuantity, id, setNewQuantity, category, unitOfMeasure, note } = props;
+    const dispatch = useDispatch()
+    const { nameProduct, temporaryQuantity, _id, category, unitOfMeasure, note } = props;
 
     const addItem = async () => {
-        try {
-            const res = await $.put(`${URL}/orders/${Number(temporaryQuantity) + 1}/${id}/changeQuantity`);
-            setNewQuantity(res.data.newQuantity)
-        }catch (err) {
-            toast.error(err.response.data.message);
-        }
+        const newTemporaryQuantity = Number(temporaryQuantity) +1 ;
+        dispatch( addOrSubtract({_id, newTemporaryQuantity}))
     }
     const removeItem = async () => {
         if (temporaryQuantity > 0) {
-            const res = await $.put(`${URL}/orders/${Number(temporaryQuantity) - 1}/${id}/changeQuantity`);
-            setNewQuantity(res.data.newQuantity)
+            const newTemporaryQuantity = Number(temporaryQuantity) -1 ;
+            dispatch( addOrSubtract({_id, newTemporaryQuantity}))
         }
     }
     return (
@@ -25,7 +21,7 @@ export const ItemsBox = props => {
             <h1>{nameProduct}</h1>
             <span>{category}</span>
             <span>{unitOfMeasure}</span>
-            <ShowNote note={note} id={id} className="note" />
+            <ShowNote note={note} _id={_id} dispatch={dispatch} className="note" />
             <div className="quantity-controls">
                 <button onClick={addItem}>+</button>
                 <span>{temporaryQuantity}</span>
@@ -36,33 +32,22 @@ export const ItemsBox = props => {
 }
 
 const ShowNote = props => {
-    const { note, id } = props;
-    const [createNewNote, setCreateNewNote] = useState('');
-    const sendNewNote = async () => {
-        if (createNewNote !== '') {
-            try {
-                const res = await $.put(`${URL}/orders/${id}/${createNewNote}/createNewNote`);
-                toast.success(res.data.message);
-            }catch (err) {
-                toast.error(err.response.data.message);
-            }
-        }else {
-            toast.error('השדה ריק');
+    const { note, _id, dispatch } = props;
+    const [newNote, setNewNote] = useState('');
+    const sendNewNote = () => {
+        if (newNote !== '') {
+            dispatch( createNewNote({_id, newNote}))
         }
     }
-    const deleteNote = async () => {
-        try {
-            const res = await $.delete(`${URL}/orders/${id}/deleteNote`);
-            toast.success(res.data.message);
-        }catch (err) {
-            toast.error(err.response.data.message);
-        }
+    const deleteNote = () => {
+        dispatch( removeNote(_id));
+        setNewNote('')
     }
     if (!note) {
         return (
             <label>
                 הוסף הערה:
-                <input onChange={e => setCreateNewNote(e.target.value)} value={createNewNote}/>
+                <input onChange={e => setNewNote(e.target.value)} value={newNote}/>
                 <button onClick={sendNewNote}>שלח</button>
             </label>
         )
