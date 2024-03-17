@@ -5,6 +5,7 @@ import suppliers from "./slices/suppliers";
 import measures from "./slices/measures";
 import products from "./slices/products";
 import orders from "./slices/orders";
+import users from "./slices/users";
 
 const consoleMid = store => next => action => {
   console.log(`action: ${JSON.stringify(action)}`);
@@ -21,6 +22,7 @@ export const store = configureStore({
     suppliers,
     measures,
     products,
-    orders
+    orders,
+    users
   },
 });

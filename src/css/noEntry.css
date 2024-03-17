@@ -1,0 +1,27 @@
+/* NoEntry.css */
+.container-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.input-label-entry {
+    margin: 20px;
+    font-size: 18px;
+}
+
+.input-code-entry {
+    font-size: 16px;
+    padding: 10px;
+    margin: 10px 0;
+    width: 200px;
+}
+
+.image-no-entry {
+    max-width: 300px; 
+    max-height: 300px;
+    margin-top: 20px;
+}

@@ -11,6 +11,7 @@ import { Supplier } from './components/Supplier.jsx';
 import { Measure } from './components/Measure.jsx';
 import { Categories } from './components/Categories.jsx';
 import { EmailSettings } from './pages/EmailSettings.jsx';
+import { IssuingReports } from './pages/IssuingReports.jsx';
 
 export const routers = createBrowserRouter([{
     element: <Layout />,
@@ -24,12 +25,22 @@ export const routers = createBrowserRouter([{
             element: <Orders />
         },
         {
+            path: "/orderManagement",
+            element: <OrderManagement /> 
+        },
+        {
+            path: "/oldOrders", 
+            element: <OldOrders /> 
+        },
+        {
+            path: "/issuingReports", 
+            element: <IssuingReports /> 
+        },
+        {
             path: "/privateArea",
             element: <PrivateArea />,
             children: [
-                {path: "orderManagement", element: <OrderManagement /> },
                 {path: "createUsers", element: <CreateUsers /> },
-                {path: "oldOrders", element: <OldOrders /> },
                 {path: "products", element: <Products /> },
                 {path: "supplier", element: <Supplier /> },
                 {path: "measure", element: <Measure /> },

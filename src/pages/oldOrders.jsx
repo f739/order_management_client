@@ -1,4 +1,6 @@
 import { useState ,useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux';
+import { getOldOrders, returnProduct } from '../dl/slices/orders';
 import { URL } from "../services/service";
 import { toast } from "react-toastify";
 import $ from 'axios';
@@ -6,25 +8,26 @@ import '../css/oldOrders.css';
 import Camera from "../components/Camera";
 
 export const OldOrders = () => {
+    const dispatch = useDispatch();
     const [groupedOrders, setGroupedOrders] = useState({});
+    const allOrders = useSelector( state => state.orders.allOldOrders);
+
+    useEffect( () => {
+        dispatch( getOldOrders())
+    },[]);
 
     useEffect(() => {
-        const getAllOrders = async () => {
-            try {
-                const res = await $.get(`${URL}/oldOrders/getOldOrders`);
-                const oldOrdersFiltred = res.data.oldOrders.sort((a, b) => a.date.localeCompare(b.date))
-                const groupBySupplier = oldOrdersFiltred.reduce((acc, order) => {
-                    acc[order.supplier.nameSupplier] = acc[order.supplier.nameSupplier] || [];
-                    acc[order.supplier.nameSupplier].push(order);
-                    return acc;
-                }, {});
-                setGroupedOrders(groupBySupplier);
-            } catch (err) {
-                toast.error(err.response.data.message);
-            }
-        };
-        getAllOrders();
-    }, []);
+        if (allOrders.length) {
+            const oldOrdersFiltered = [...allOrders].sort((a, b) => a.date.localeCompare(b.date));
+            const groupBySupplier = oldOrdersFiltered.reduce((acc, order) => {
+                const nameSupplier = order.supplier.nameSupplier; 
+                acc[nameSupplier] = acc[nameSupplier] || [];
+                acc[nameSupplier].push(order);
+                return acc;
+            }, {});
+            setGroupedOrders(groupBySupplier);
+        }
+    }, [allOrders]);
 
     return (
         <>
@@ -70,17 +73,14 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList }) => {
 
 
 const ShowOldOrder = ({ _id,idOrderList, setOrderListAfterFilter, nameProduct, temporaryQuantity, unitOfMeasure, category }) => {
+    const dispatch = useDispatch();
     const wasReceived = async () => {
         setOrderListAfterFilter(oldList => oldList.filter(order => order._id !== _id));
     };
     const returnToOrderManagement = async () => {
-        try {
-            const res = await $.post(`${URL}/oldOrders/returnProduct`, 
-            {nameProduct, temporaryQuantity, unitOfMeasure, category, _id, idOrderList})
-            toast.success(res.data.message)
-        }catch (err) {
-            toast.error(err.response.data.message);
-        }
+        dispatch( returnProduct({nameProduct, temporaryQuantity,
+             unitOfMeasure, category, _id, idOrderList
+        }))
     }
 
     return (

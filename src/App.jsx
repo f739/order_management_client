@@ -1,19 +1,44 @@
 import { Outlet, RouterProvider, NavLink } from "react-router-dom";
 import { routers } from "./routers";
+import { testToken } from "./dl/slices/users"
 import { ToastContainer } from 'react-toastify';
+import { NoEntry } from "./pages/noEntry";
 import 'react-toastify/dist/ReactToastify.css';
 import './css/main.css';
+import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
 
 export function Layout () {
+  const dispatch = useDispatch();
+  const [license, setLicense] = useState('');
+
+  useEffect( () => {
+    const testTokenFunc = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const res =  await dispatch( testToken(token))
+        setLicense(res.payload);
+      }
+  }; testTokenFunc()
+},[]) 
   return (
     <>
-      <nav>
-        <NavLink to='/orders'>הזמנות חדשות</NavLink> ||
-        <NavLink to='/privateArea'>אזור אישי</NavLink>
-      </nav>
-      <ToastContainer />
-      <Outlet />
+      {license && 
+      <>
+        <nav>
+          <NavLink to='/orders'>הזמנות חדשות</NavLink> ||
+          <NavLink to='./orderManagement'>הזמנות בתהליך</NavLink> ||
+          <NavLink to='./oldOrders'>קליטת הזמנות</NavLink> ||
+          <NavLink to='./issuingReports'>הנפקת דוחות</NavLink> ||
+          <NavLink to='/privateArea'>אזור אישי</NavLink> ||
+        </nav>
+        <ToastContainer />
+        <Outlet />
+      </>
+      }
+      {!license && <NoEntry />}
     </>
+
   )
 }
 
