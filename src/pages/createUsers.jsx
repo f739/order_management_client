@@ -1,21 +1,16 @@
 import { useEffect, useState } from "react";
-import { URL } from '../services/service';
-import { toast } from "react-toastify";
+import { useSelector, useDispatch } from 'react-redux';
+import { createNewUser, getUsers, removeUser } from '../dl/slices/users';
 import { handleFormHook } from "../components/HandleFormHook";
 import '../css/users.css';
-import $ from 'axios';
 
 export const CreateUsers = () => {
+    const  dispatch = useDispatch();
     const [formCreateUser, setFormCreateUser] = useState(
         {userName: '', password: '',email: '', license: '' });
 
     const createUser = async () => {
-        try {
-            const res = await $.post(`${URL}/users/createNewUser`, formCreateUser);
-            toast.success(res.data.message);
-        } catch (err) {
-            toast.error(err.response.data.message);
-        }
+        dispatch( createNewUser(formCreateUser))
     }
     return(
         <>
@@ -44,35 +39,27 @@ export const CreateUsers = () => {
                 </label>
                 <button onClick={createUser}>צור משתמש</button>
             </div>
-            <ShowUsers />
+            <ShowUsers dispatch={dispatch} />
         </>
     )
 }
 
-const ShowUsers = () => {
-    const [allUsers, setAllUsers] = useState([]);
-    const deleteUser = id => {
-        try {
-            const res = $.delete(`${URL}/users/${id}/deleteUser`);
-            toast.success(res.data.message);
-        }catch (err) {
-            toast.error(err.response.data.message);
-        }
-    }
+const ShowUsers = ({dispatch}) => {
+    const allUsers = useSelector( state => state.users.allUsers);
+
     useEffect( () => {
-        const getUsers = async () => {
-            try {
-                const res = await $.get(`${URL}/users/getUsers`);
-                setAllUsers(res.data.allUsers)
-            } catch (err) {
-                toast.error(err.response.data.message);
-            }
-        }; getUsers();
-    },[])
+        if (allUsers.length === 0) {
+            dispatch( getUsers())
+        }
+    },[]);
+
+    const deleteUser = _id => {
+        dispatch( removeUser(_id))
+    }
     return (
         <div className="box-existing-users">
             <h1>משתמשים קיימים</h1>
-            {allUsers && allUsers.map( user => (
+            {allUsers.length > 0 && allUsers.map( user => (
                 <div key={user._id} className="existing-users">
                     <span>{user.userName}</span>
                     <span>{user.email}</span>

@@ -2,6 +2,46 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { URL } from "../../services/service";
 import $ from 'axios';
 
+
+export const getUsers = createAsyncThunk('users/getUsers', 
+  async (_, {rejectWithValue}) => {  
+      try {
+        const res = await $.get(`${URL}/users/getUsers`);
+        const { allUsers } = res.data;
+        return allUsers
+      }catch (err) {
+        return rejectWithValue(err.response.data.message)
+      }
+  }
+);
+
+export const createNewUser = createAsyncThunk('users/createNewUser', 
+  async (formCreateUser, {rejectWithValue}) => {  
+      try {
+        const res = await $.post(`${URL}/users/createNewUser`, formCreateUser);
+        return res.data.newUser;
+      }catch (err) {
+        return rejectWithValue(err.response.data.message)
+      }
+  }
+);
+
+export const removeUser = createAsyncThunk('users/removeUser', 
+  async (_id, {getState, rejectWithValue}) => {  
+      try {
+        const res = await $.delete(`${URL}/users/${_id}/deleteUser`);
+        if (res) {
+            const updatedusers = getState().users.allUsers
+            .filter( el => el._id !== _id);
+            return updatedusers;
+        }
+      }catch (err) {
+        return rejectWithValue(err.response.data.message)
+      }
+  }
+);
+
+
 export const connectUser = createAsyncThunk('users/connectUser', 
   async ({email, password}, {rejectWithValue}) => {  
       try {
@@ -26,6 +66,7 @@ export const testToken = createAsyncThunk('users/testToken',
 );
 
 const initialState = {
+    allUsers: [],
     user: {email: '', license: '' },
     errorMessage: ''
 }
@@ -37,6 +78,15 @@ export const slice = createSlice({
         
         },
         extraReducers: (builder) => {
+            builder.addCase(getUsers.fulfilled, (state, action) => {
+                state.allUsers = action.payload;
+            })
+            builder.addCase(createNewUser.fulfilled, (state, action) => {
+                state.allUsers.push(action.payload);
+            })
+            builder.addCase(removeUser.fulfilled, (state, action) => {
+                state.allUsers = action.payload;
+            })
             builder.addCase(connectUser.fulfilled, (state, action) => {
                 state.user = action.payload;
             })
