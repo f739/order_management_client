@@ -6,7 +6,7 @@ import Camera from "../components/Camera";
 
 export const OldOrders = () => {
     const dispatch = useDispatch();
-    const [groupedOrders, setGroupedOrders] = useState({});
+    const [groupedOrders, setGroupedOrders] = useState([]);
     const allOrders = useSelector( state => state.orders.allOldOrders);
 
     useEffect( () => {
@@ -23,16 +23,18 @@ export const OldOrders = () => {
                 return acc;
             }, {});
             setGroupedOrders(groupBySupplier);
+        }else {
+            setGroupedOrders([]);
         }
     }, [allOrders]);
-
+    
     return (
         <>
             {Object.entries(groupedOrders).length > 0 && Object.entries(groupedOrders).map(([supplierName, orders]) => (
                 <div key={supplierName} className="supplier-container">      
                     <h3 className="supplier-title"> ספק: {supplierName}</h3>
                     {orders.map(order => (
-                        <OldVendorOrders key={order._id} date={order.date} time={order.time} 
+                        <OldVendorOrders key={`${order._id}-${order.orderList.length}`} date={order.date} time={order.time} 
                         orderList={order.orderList} supplierName={supplierName} idOrderList={order._id}/>
                     ))}
                 </div>
@@ -70,7 +72,7 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList }) => {
 };
 
 
-const ShowOldOrder = ({ _id,idOrderList, setOrderListAfterFilter, nameProduct,
+const ShowOldOrder = ({ _id, idOrderList, setOrderListAfterFilter, nameProduct,
      temporaryQuantity, unitOfMeasure, category, price }) => {
     const dispatch = useDispatch();
     const wasReceived = async () => {
@@ -82,7 +84,7 @@ const ShowOldOrder = ({ _id,idOrderList, setOrderListAfterFilter, nameProduct,
         }))
     }
     const deleteProduct = () => {
-        dispatch( removeProductInOldOrder({_id: product._id, idInvitation}));
+        dispatch( removeProductInOldOrder({_id, idOrderList}));
     }
     return (
         <div className="order-item">

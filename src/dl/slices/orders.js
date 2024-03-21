@@ -77,10 +77,10 @@ export const removeProduct = createAsyncThunk("orders/removeProduct",
 );
 
 export const removeProductInOldOrder = createAsyncThunk("orders/removeProductInOldOrder",
-  async ({ _id, idInvitation }, { getState, rejectWithValue }) => {
+  async ({ _id, idOrderList }, { rejectWithValue }) => {
     try {
-      await $.put( `${URL}/oldOrders/${_id}/${idInvitation}/removeProductInOldOrder` );
-      return { _id, idInvitation };
+      const res = await $.put( `${URL}/oldOrders/${_id}/${idOrderList}/removeProductInOldOrder` );
+      return res.data.doc;
     } catch (err) {
       return rejectWithValue(err.response.data.message);
     }
@@ -132,6 +132,15 @@ export const slice = createSlice({
       state.allOldOrders.push(action.payload.newOldOrder);
       state.allActiveOrders = action.payload.activeOrders;
     });
+    builder.addCase(removeProductInOldOrder.fulfilled, (state, action) => {
+      const updatedDoc = state.allOldOrders.map(oldOrder => {
+        return action.payload._id === oldOrder._id ? action.payload : oldOrder;
+      });
+
+      const filteredOrders = updatedDoc.filter(oldOrder => oldOrder.orderList.length > 0);
+      state.allOldOrders = filteredOrders;
+      
+    })
     builder.addCase(removeProduct.fulfilled, (state, action) => {
       const { _id, idInvitation } = action.payload;
       const orderIndex = state.allActiveOrders.findIndex(
