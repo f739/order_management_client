@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import { URL } from "../services/service";
 import { handleFormHook } from "./HandleFormHook";
-import { toast } from "react-toastify";
-import $ from 'axios';
 import { useDispatch, useSelector } from "react-redux";
 import { getSuppliers } from '../dl/slices/suppliers';
 import { newOrderToDeliver } from "../dl/slices/orders";

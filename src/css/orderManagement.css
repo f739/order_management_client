@@ -1,151 +1,69 @@
-/* עיצוב בסיסי לכל הדף */
-body, html {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-}
 
-.blur-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    backdrop-filter: blur(8px);
-    z-index: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0,0,0,0.5); /* רקע חצי שקוף */
-}
 
-/* עיצוב הקופסה של תיבת שליחת האימייל */
-.box-send-email {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    width: 400px; 
-    display: flex;
-    flex-direction: column;
-    gap: 10px; 
-}
-
-.supplier-select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-top: 5px;
-}
-
-.title-message, .message-content {
-    width: 100%;
-    margin-top: 10px; 
-    border-top: 1px solid #eee; 
-    padding-top: 10px;
-}
-
-.title-message input, .message-content textarea {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 15px; 
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-/* עיצוב הקופסה עם הספקים */
-.box-suppliers {
-    background-color: #fff;
+.invitation-container {
+    direction: rtl;
+    margin-bottom: 20px;
     border: 1px solid #ddd;
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    z-index: 2;
-    width: 50%; /* או כל רוחב שתרצה */
-    max-width: 600px; /* אופציונלי: מגביל את הרוחב המקסימלי */
-}
-
-/* עיצוב כל ספק ברשימה */
-.choose-supplier {
-    padding: 10px;
-    border-bottom: 1px solid #ddd; /* קו תחתון להפרדה בין ספקים */
-}
-
-.choose-supplier span {
-    cursor: pointer;
-    color: #007bff;
-}
-
-.choose-supplier span:hover {
-    text-decoration: underline;
-}
-
-
-/* עיצוב הקומפוננטה הראשית */
-.order-management {
-    padding: 20px;
-}
-
-.order-management h1 {
-    color: #333;
-}
-
-/* עיצוב כפתורים */
-.order-management button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.order-management button:hover {
-    background-color: #0056b3;
-}
-
-/* עיצוב אלמנטי ההזמנה */
-.invitation-container {
-    background-color: #f9f9f9;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    border-left: 5px solid #007bff;
-}
-
-.invitation-container .title {
+    background-color: #fff;
+  }
+  
+  .title {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 15px;
-}
-
-/* עיצוב מוצרים בהזמנה */
-.show-product {
+    align-items: center;
     padding: 10px;
-    background-color: #fff;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
+    border-radius: 10px;
+  }
+  
+  .title span {
+    margin-right: 10px; 
+  }
+  
+  .selected-style {
+    border: 2px solid green;
+  }
+  
+  .product-details {
+    padding: 20px;
+    display: grid;
+    border: 1px solid #ddd; 
+    border-radius: 10px; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    grid-template-areas:
+    "start center end";
+    grid-template-columns: 1fr 1fr 200px;
+  }
+  .start {
+    grid-area: start;
+    align-items: end;
+  }
+  .center {
+    grid-area: center;
+    align-items: end;
+  }
+  .end {
+    grid-area: end;
+    align-items: end;
+  }
+  
+  .start > *, .center > * {
+    margin-left: 10px;
+  }
+  .buttons {
+    display: inline;
+  }
+  .buttons button {
+    margin-right: 10px;
+  }
+  .start input, .start input:focus  {
+    width: 40px;
+    border: none;
+    direction: none;
+    background: none;
+  }
+ 
+  
 
-.show-product span {
-    display: block; /* או inline-block תלוי באופן ההצגה המועדף עליך */
-    margin-bottom: 5px;
-}

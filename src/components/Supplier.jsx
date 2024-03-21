@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { getSuppliers, createNewSupplier, removeSupplier } from "../dl/slices/suppliers";
 import { handleFormHook } from "./HandleFormHook";
+import trash_icon from '../assetes/trash_icon.png';
 import '../css/suppliers.css';
 
 export const Supplier = () => {
@@ -22,7 +23,7 @@ export const Supplier = () => {
     }
     return (
         <div className="suppliers">
-            <div className="new-supplier">
+            <div className="new-item">
                 <label>
                     שם ספק:
                     <input type="text" name="nameSupplier" value={newSupplier.nameSupplier} onChange={e => handleFormHook(e.target, setNewSupplier)}/> 
@@ -38,7 +39,7 @@ export const Supplier = () => {
                 <button onClick={handleSaveNewSupplier}>שמור ספק חדש</button>
             </div>
             { errorMessage && <h4 className="error-message">{errorMessage}</h4>}
-            <div className="show-supplier">
+            <div className="show-items">
                 <h1 className="title">ספקים קיימים:</h1>
                 {allSuppleirs.length > 0 && allSuppleirs.map( supplier => (
                     <ShowSuppliers key={supplier._id}
@@ -60,11 +61,13 @@ const ShowSuppliers = props => {
         dispatch(removeSupplier(_id))
     }
     return (
-        <div className="show-suppliers">
+        <div className="show-item">
             <span>{nameSupplier}</span>
             <span>{tel}</span>
             <span>{email}</span>
-            <button onClick={deleteSupplier}>מחק ספק</button>
+            <button onClick={deleteSupplier} className="delete-item">
+                <img src={trash_icon} alt="delete" />
+            </button>
         </div>
     )
 }

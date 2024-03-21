@@ -1,5 +1,4 @@
-/* עיצוב טופס יחידת מידה חדשה */
-.new-measure {
+/* .new-measure {
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -20,7 +19,7 @@
     border: 1px solid #ddd;
 }
 
-/* עיצוב הצגת יחידות המידה */
+
 .show-measure {
     background-color: #f9f9f9;
     padding: 10px;
@@ -57,4 +56,4 @@
 
 .show-measure div button:hover {
     background-color: #cc0000;
-}
+} */

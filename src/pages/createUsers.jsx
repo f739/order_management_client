@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { createNewUser, getUsers, removeUser } from '../dl/slices/users';
 import { handleFormHook } from "../components/HandleFormHook";
+import trash_icon from '../assetes/trash_icon.png'
 import '../css/users.css';
 
 export const CreateUsers = () => {
@@ -14,7 +15,7 @@ export const CreateUsers = () => {
     }
     return(
         <>
-            <div className="box-create-users">
+            <div className="new-item">
                 <h1>צור משתמש חדש</h1>
                 <label htmlFor="userName">
                     שם משתמש:
@@ -57,14 +58,16 @@ const ShowUsers = ({dispatch}) => {
         dispatch( removeUser(_id))
     }
     return (
-        <div className="box-existing-users">
+        <div className="show-items">
             <h1>משתמשים קיימים</h1>
             {allUsers.length > 0 && allUsers.map( user => (
-                <div key={user._id} className="existing-users">
+                <div key={user._id} className="show-item">
                     <span>{user.userName}</span>
                     <span>{user.email}</span>
                     <span>{user.license}</span>
-                    <button onClick={() => deleteUser(user._id)}>מחק משתמש</button>
+                    <button onClick={() => deleteUser(user._id)} className="delete-item">
+                        <img src={trash_icon} alt="delete" />
+                    </button>
                 </div>
             ))}
         </div>

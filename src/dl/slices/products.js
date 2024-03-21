@@ -93,6 +93,23 @@ export const addOrSubtract = createAsyncThunk('products/addOrSubtract',
   }
 );
 
+export const addPrice = createAsyncThunk('products/addPrice', 
+  async ({nameSupplier, price, _idProduct}, {getState, rejectWithValue}) => {  
+      try {
+        const res = await $.put(`${URL}/products/${nameSupplier}/${price}/${_idProduct}/addPrice`);
+        const updatedProducts = getState().products.allProducts.map( product => {
+          if (product._id === _idProduct) {
+            return res.data.updateProduct;
+          }
+          return product;
+        });
+        return updatedProducts
+      }catch (err) {
+        return rejectWithValue(err.response.data.message)
+      }
+  }
+);
+
 
 const initialState = {
     allProducts: [],
@@ -106,6 +123,9 @@ export const slice = createSlice({
         
         },
         extraReducers: (builder) => {
+          builder.addCase(addPrice.fulfilled, (state, action) => {
+              state.allProducts = action.payload;
+          })
           builder.addCase(getProducts.fulfilled, (state, action) => {
               state.allProducts = action.payload;
               state.errorMessage = '';

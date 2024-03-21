@@ -68,9 +68,18 @@ export const newOrderToDeliver = createAsyncThunk(
 export const removeProduct = createAsyncThunk("orders/removeProduct",
   async ({ _id, idInvitation }, { getState, rejectWithValue }) => {
     try {
-      await $.put(
-        `${URL}/orderManagement/${_id}/${idInvitation}/removeProduct`
-      );
+      await $.put( `${URL}/orderManagement/${_id}/${idInvitation}/removeProduct` );
+      return { _id, idInvitation };
+    } catch (err) {
+      return rejectWithValue(err.response.data.message);
+    }
+  }
+);
+
+export const removeProductInOldOrder = createAsyncThunk("orders/removeProductInOldOrder",
+  async ({ _id, idInvitation }, { getState, rejectWithValue }) => {
+    try {
+      await $.put( `${URL}/oldOrders/${_id}/${idInvitation}/removeProductInOldOrder` );
       return { _id, idInvitation };
     } catch (err) {
       return rejectWithValue(err.response.data.message);

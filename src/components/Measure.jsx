@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { getMeasures, createNewMeasure, removeMeasure } from "../dl/slices/measures";
 import { handleFormHook } from './HandleFormHook';
+import trash_icon from '../assetes/trash_icon.png';
 import '../css/measure.css';
 
 export const Measure = () => {
@@ -22,7 +23,7 @@ export const Measure = () => {
     }
     return (
         <div className="measure">
-            <div className="new-measure">
+            <div className="new-item">
                 <label>
                     שם יחידת מידה:
                     <input type="text" name="measureName" value={newMeasure.measureName} 
@@ -31,7 +32,7 @@ export const Measure = () => {
                 <button onClick={handleSaveNewMeasure}>שמור יחידת מידה חדשה</button>
             </div>
             { errorMessage && <h4 className="error-message">{errorMessage}</h4>}
-            <div className="show-measure">
+            <div className="show-items">
                 <h1 className="title">יחידות מידה קיימות:</h1>
                 {allMeasures.length > 0 && allMeasures.map( measure => (
                     <ShowMeasures key={measure._id}
@@ -51,9 +52,11 @@ const ShowMeasures = props => {
         dispatch(removeMeasure(_id))
     }
     return (
-        <div className="show-measure">
+        <div className="show-item">
             <span>{measureName}</span>
-            <button onClick={deleteMeasure}>מחק יחידת מידה</button>
+            <button onClick={deleteMeasure} className="delete-item">
+                <img src={trash_icon} alt="delete" />
+            </button>
         </div>
     )
 }

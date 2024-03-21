@@ -1,9 +1,6 @@
 import { useState ,useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
-import { getOldOrders, returnProduct } from '../dl/slices/orders';
-import { URL } from "../services/service";
-import { toast } from "react-toastify";
-import $ from 'axios';
+import { getOldOrders, returnProduct, removeProductInOldOrder } from '../dl/slices/orders';
 import '../css/oldOrders.css';
 import Camera from "../components/Camera";
 
@@ -31,7 +28,7 @@ export const OldOrders = () => {
 
     return (
         <>
-            {groupedOrders && Object.entries(groupedOrders).map(([supplierName, orders]) => (
+            {Object.entries(groupedOrders).length > 0 && Object.entries(groupedOrders).map(([supplierName, orders]) => (
                 <div key={supplierName} className="supplier-container">      
                     <h3 className="supplier-title"> ספק: {supplierName}</h3>
                     {orders.map(order => (
@@ -46,7 +43,7 @@ export const OldOrders = () => {
 
 
 const OldVendorOrders = ({ orderList, date, time, idOrderList }) => {
-    const orderListSorted = orderList.sort((a, b) => a.category.localeCompare(b.category));
+    const orderListSorted = [...orderList].sort((a, b) => a.category.localeCompare(b.category));
     const [orderListAfterFilter, setOrderListAfterFilter] = useState(orderListSorted);
 
     return (
@@ -63,6 +60,7 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList }) => {
                 nameProduct={order.nameProduct}
                 temporaryQuantity={order.temporaryQuantity}
                 unitOfMeasure={order.unitOfMeasure}
+                price={order.price}
                 category={order.category} />
             ))}
             <button className="received-button" >ההזמנה התקבלה</button>
@@ -72,7 +70,8 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList }) => {
 };
 
 
-const ShowOldOrder = ({ _id,idOrderList, setOrderListAfterFilter, nameProduct, temporaryQuantity, unitOfMeasure, category }) => {
+const ShowOldOrder = ({ _id,idOrderList, setOrderListAfterFilter, nameProduct,
+     temporaryQuantity, unitOfMeasure, category, price }) => {
     const dispatch = useDispatch();
     const wasReceived = async () => {
         setOrderListAfterFilter(oldList => oldList.filter(order => order._id !== _id));
@@ -82,7 +81,9 @@ const ShowOldOrder = ({ _id,idOrderList, setOrderListAfterFilter, nameProduct, t
              unitOfMeasure, category, _id, idOrderList
         }))
     }
-
+    const deleteProduct = () => {
+        dispatch( removeProductInOldOrder({_id: product._id, idInvitation}));
+    }
     return (
         <div className="order-item">
             <div className="order-details">
@@ -90,9 +91,11 @@ const ShowOldOrder = ({ _id,idOrderList, setOrderListAfterFilter, nameProduct, t
                 <p className="show-quantity">{temporaryQuantity}</p>
                 <p className="show-unit-of-measure">{unitOfMeasure}</p>
                 <p className="show-category">{category}</p>
+                <p className="show-price">{price}</p>
             </div>
             <button className="received-button" onClick={wasReceived}>המוצר התקבל</button>
             <button className="return-to-order-management-button" onClick={returnToOrderManagement}>החזרה להזמנות</button>
+            <button onClick={deleteProduct} className="delete-item">מחק</button>
         </div>
     );
 };
