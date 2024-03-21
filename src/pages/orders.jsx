@@ -16,7 +16,7 @@ export const Orders = () => {
         if (allProducts.length === 0) {
             dispatch( getProducts())
         }
-    },[allProducts]);
+    },[]);
     useEffect(() => {
         const sortedProducts = [...allProducts].sort((a, b) => a.category.localeCompare(b.category));
         setItemsListFiltered(sortedProducts);

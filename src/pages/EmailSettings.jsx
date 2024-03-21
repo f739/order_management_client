@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { handleFormHook } from '../components/HandleFormHook';
 import { toast } from "react-toastify";
-import { URL } from '../services/service';
+const URL = import.meta.env.VITE_API_URL
 import $ from 'axios';
 
 export const EmailSettings = () => {

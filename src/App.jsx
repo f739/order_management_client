@@ -19,8 +19,8 @@ export function Layout () {
         const res =  await dispatch( testToken(token))
         setLicense(res.payload);
       }
-  }; testTokenFunc()
-},[]) 
+    }; testTokenFunc()
+  },[]) 
   return (
     <>
       {license && 

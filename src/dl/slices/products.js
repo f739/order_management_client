@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { sendAnInvitation } from './orders';
-import { URL } from "../../services/service";
+const URL = import.meta.env.VITE_API_URL
 import $ from 'axios';
 
 export const getProducts = createAsyncThunk('products/getProducts', 

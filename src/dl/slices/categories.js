@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { URL } from "../../services/service";
+const URL = import.meta.env.VITE_API_URL
 import $ from 'axios';
 
 export const getCategories = createAsyncThunk('categories/getCategories', 

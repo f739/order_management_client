@@ -49,7 +49,7 @@ const ShowUsers = ({dispatch}) => {
     const allUsers = useSelector( state => state.users.allUsers);
 
     useEffect( () => {
-        if (allUsers.length === 0) {
+        if (!allUsers) {
             dispatch( getUsers())
         }
     },[]);
