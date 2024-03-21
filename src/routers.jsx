@@ -12,6 +12,7 @@ import { Measure } from './components/Measure.jsx';
 import { Categories } from './components/Categories.jsx';
 import { EmailSettings } from './pages/EmailSettings.jsx';
 import { IssuingReports } from './pages/IssuingReports.jsx';
+import { Logger } from './pages/logger.jsx';
 
 export const routers = createBrowserRouter([{
     element: <Layout />,
@@ -45,6 +46,7 @@ export const routers = createBrowserRouter([{
                 {path: "supplier", element: <Supplier /> },
                 {path: "measure", element: <Measure /> },
                 {path: "categories", element: <Categories /> },
+                {path: "logger", element: <Logger /> },
                 {path: "emailSettings", element: <EmailSettings /> },
             ]
         },

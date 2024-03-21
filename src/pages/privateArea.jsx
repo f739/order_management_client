@@ -15,7 +15,8 @@ export const PrivateArea = () => {
                     <NavLink to='./categories'>קטגוריות</NavLink> ||
                     <NavLink to='./supplier'>ספקים</NavLink> ||
                     <NavLink to='./measure'>יחידות מידה</NavLink> ||
-                    <NavLink to='./emailSettings'>הגדרות אימייל</NavLink> ||
+                    <NavLink to='./logger'>לוגר</NavLink> ||
+                    <NavLink to='./emailSettings'>הגדרות אימייל</NavLink> 
                 </nav>
                 <Outlet />
             </>

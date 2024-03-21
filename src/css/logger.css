@@ -1,0 +1,36 @@
+.logger-table {
+    direction: rtl;
+    margin: 20px auto;
+    width: 90%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #fff;
+  }
+  
+  .logger-table th, .logger-table td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .logger-table th {
+    background-color: #f2f2f2;
+    color: #333;
+  }
+  
+  .logger-table tr:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .logger-table td {
+    font-size: 14px;
+  }
+  
+  .logger-table .level-error {
+    color: #D32F2F; 
+  }
+  
+  .logger-table .level-info {
+    color: #1976D2; 
+  }
+  
