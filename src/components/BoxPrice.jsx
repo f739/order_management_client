@@ -6,7 +6,7 @@ import { addPrice } from '../dl/slices/products';
 import { handleFormHook } from './HandleFormHook';
 import '../css/boxPrice.css';
 
-export const BoxPrice = ({ productId, setShowPrices, prices }) => {
+export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
     const dispatch = useDispatch();
     const [newPrice, setNewPrice] = useState({price: '', nameSupplier: ''});
     const allSuppliers = useSelector( state => state.suppliers.allSuppliers);
@@ -20,7 +20,9 @@ export const BoxPrice = ({ productId, setShowPrices, prices }) => {
       setNewPrice({price: target.value, nameSupplier})
     }
     const handleSaveNewPrice = () => {
-      dispatch( addPrice({...newPrice, _idProduct: productId}))
+      if (license === 'purchasingManager') {
+        dispatch( addPrice({...newPrice, _idProduct: productId}));
+      }
     }
     return (
       <div className="backdrop">

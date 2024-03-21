@@ -8,6 +8,7 @@ export const OldOrders = () => {
     const dispatch = useDispatch();
     const [groupedOrders, setGroupedOrders] = useState([]);
     const allOrders = useSelector( state => state.orders.allOldOrders);
+    const license = useSelector( state => state.users.user.license);
 
     useEffect( () => {
         dispatch( getOldOrders())
@@ -35,7 +36,7 @@ export const OldOrders = () => {
                     <h3 className="supplier-title"> ספק: {supplierName}</h3>
                     {orders.map(order => (
                         <OldVendorOrders key={`${order._id}-${order.orderList.length}`} date={order.date} time={order.time} 
-                        orderList={order.orderList} ifWasAccepted={order.ifWasAccepted} dispatch={dispatch} supplierName={supplierName} idOrderList={order._id}/>
+                        orderList={order.orderList} license={license} ifWasAccepted={order.ifWasAccepted} dispatch={dispatch} supplierName={supplierName} idOrderList={order._id}/>
                     ))}
                 </div>
             ))}
@@ -44,10 +45,14 @@ export const OldOrders = () => {
 };
 
 
-const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAccepted }) => {
+const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAccepted, license }) => {
     const orderListSorted = [...orderList].sort((a, b) => a.category.localeCompare(b.category));
     const [orderListAfterFilter, setOrderListAfterFilter] = useState(orderListSorted);
-
+    const handleIfWasAccepted = () => {
+        if (license === 'purchasingManager') {
+            dispatch(ifWasAcceptedAction(idOrderList));
+        }
+    }
     return (
         <div key={idOrderList}>
             { !ifWasAccepted &&  
@@ -62,13 +67,14 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAc
                     dispatch={dispatch}
                     idOrderList={idOrderList}
                     setOrderListAfterFilter={setOrderListAfterFilter}
+                    license={license}
                     nameProduct={order.nameProduct}
                     temporaryQuantity={order.temporaryQuantity}
                     unitOfMeasure={order.unitOfMeasure}
                     price={order.price}
                     category={order.category} />
                 ))}
-                <button className="received-button" onClick={ () => dispatch(ifWasAcceptedAction(idOrderList))}>ההזמנה התקבלה</button>
+                <button className="received-button" onClick={handleIfWasAccepted}>ההזמנה התקבלה</button>
                 {/* <Camera /> */}
             </div>
             }
@@ -78,17 +84,21 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAc
 
 
 const ShowOldOrder = ({ _id, idOrderList, setOrderListAfterFilter, nameProduct,
-     temporaryQuantity, unitOfMeasure, category, price, dispatch }) => {
+     temporaryQuantity, unitOfMeasure, category, price, dispatch, license }) => {
     const wasReceived = async () => {
         setOrderListAfterFilter(oldList => oldList.filter(order => order._id !== _id));
     };
     const returnToOrderManagement = async () => {
-        dispatch( returnProduct({nameProduct, temporaryQuantity,
-             unitOfMeasure, category, _id, idOrderList
-        }))
+        if (license === 'purchasingManager') {
+            dispatch( returnProduct({nameProduct, temporaryQuantity,
+                unitOfMeasure, category, _id, idOrderList
+            }))
+        }
     }
     const deleteProduct = () => {
-        dispatch( removeProductInOldOrder({_id, idOrderList}));
+        if (license === 'purchasingManager') {
+            dispatch( removeProductInOldOrder({_id, idOrderList}));
+        }
     }
     return (
         <div className="order-item">

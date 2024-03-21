@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getSuppliers } from '../dl/slices/suppliers';
 import { newOrderToDeliver } from "../dl/slices/orders";
 
-export const NewOrderToDeliver = ({orderList}) => {
+export const NewOrderToDeliver = ({orderList, license}) => {
     const dispatch = useDispatch();
     const allSuppliers = useSelector( state => state.suppliers.allSuppliers);
     const [emailForm, setEmailForm] = useState(
@@ -25,7 +25,9 @@ export const NewOrderToDeliver = ({orderList}) => {
     }
 
     const sendOrder = async () => {
+        if (license === 'purchasingManager') {
         dispatch( newOrderToDeliver(emailForm))
+        }
     }
 
     return(
