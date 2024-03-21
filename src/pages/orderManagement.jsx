@@ -148,6 +148,7 @@ const Product = props => {
                     value={editQuantity} />
                 <span>{product.nameProduct}</span>
                 <span>{product.unitOfMeasure}</span>
+                {product.note && <span className='note'>{product.note}</span>}
             </span>
             <div className="edit-price center">
                 <span>{cheapestSupplier.nameSupplier}</span>

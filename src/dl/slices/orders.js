@@ -99,6 +99,17 @@ export const returnProduct = createAsyncThunk("orders/returnProduct",
   }
 );
 
+export const ifWasAcceptedAction = createAsyncThunk("orders/ifWasAcceptedAction",
+  async (_id, { rejectWithValue }) => {
+    try {
+      await $.put(`${URL}/oldOrders/${_id}/ifWasAcceptedAction`);
+      return _id;
+    } catch (err) {
+      return rejectWithValue(err.response.data.message);
+    }
+  }
+);
+
 
 
 const initialState = {
@@ -138,9 +149,12 @@ export const slice = createSlice({
       });
 
       const filteredOrders = updatedDoc.filter(oldOrder => oldOrder.orderList.length > 0);
-      state.allOldOrders = filteredOrders;
-      
-    })
+      state.allOldOrders = filteredOrders; 
+    });
+    builder.addCase(ifWasAcceptedAction.fulfilled, (state, action) => {
+      state.allOldOrders = state.allOldOrders.filter(
+        oldOrder => oldOrder._id !== action.payload);
+    });
     builder.addCase(removeProduct.fulfilled, (state, action) => {
       const { _id, idInvitation } = action.payload;
       const orderIndex = state.allActiveOrders.findIndex(

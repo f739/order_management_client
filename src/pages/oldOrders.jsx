@@ -1,6 +1,6 @@
 import { useState ,useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
-import { getOldOrders, returnProduct, removeProductInOldOrder } from '../dl/slices/orders';
+import { getOldOrders, returnProduct, removeProductInOldOrder, ifWasAcceptedAction } from '../dl/slices/orders';
 import '../css/oldOrders.css';
 import Camera from "../components/Camera";
 
@@ -35,7 +35,7 @@ export const OldOrders = () => {
                     <h3 className="supplier-title"> ספק: {supplierName}</h3>
                     {orders.map(order => (
                         <OldVendorOrders key={`${order._id}-${order.orderList.length}`} date={order.date} time={order.time} 
-                        orderList={order.orderList} supplierName={supplierName} idOrderList={order._id}/>
+                        orderList={order.orderList} ifWasAccepted={order.ifWasAccepted} dispatch={dispatch} supplierName={supplierName} idOrderList={order._id}/>
                     ))}
                 </div>
             ))}
@@ -44,37 +44,41 @@ export const OldOrders = () => {
 };
 
 
-const OldVendorOrders = ({ orderList, date, time, idOrderList }) => {
+const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAccepted }) => {
     const orderListSorted = [...orderList].sort((a, b) => a.category.localeCompare(b.category));
     const [orderListAfterFilter, setOrderListAfterFilter] = useState(orderListSorted);
 
     return (
-        <div className="order-container">
-            <div className="title-order">
-                <h3>{date}</h3>
-                <h3>{time}</h3>
+        <div key={idOrderList}>
+            { !ifWasAccepted &&  
+            <div className="order-container">
+                <div className="title-order">
+                    <h3>{date}</h3>
+                    <h3>{time}</h3>
+                </div>
+                {orderListAfterFilter.map(order => (
+                    <ShowOldOrder key={order._id}
+                    _id={order._id}
+                    dispatch={dispatch}
+                    idOrderList={idOrderList}
+                    setOrderListAfterFilter={setOrderListAfterFilter}
+                    nameProduct={order.nameProduct}
+                    temporaryQuantity={order.temporaryQuantity}
+                    unitOfMeasure={order.unitOfMeasure}
+                    price={order.price}
+                    category={order.category} />
+                ))}
+                <button className="received-button" onClick={ () => dispatch(ifWasAcceptedAction(idOrderList))}>ההזמנה התקבלה</button>
+                {/* <Camera /> */}
             </div>
-            {orderListAfterFilter.map(order => (
-                <ShowOldOrder key={order._id}
-                _id={order._id}
-                idOrderList={idOrderList}
-                setOrderListAfterFilter={setOrderListAfterFilter}
-                nameProduct={order.nameProduct}
-                temporaryQuantity={order.temporaryQuantity}
-                unitOfMeasure={order.unitOfMeasure}
-                price={order.price}
-                category={order.category} />
-            ))}
-            <button className="received-button" >ההזמנה התקבלה</button>
-            {/* <Camera /> */}
+            }
         </div>
     );
 };
 
 
 const ShowOldOrder = ({ _id, idOrderList, setOrderListAfterFilter, nameProduct,
-     temporaryQuantity, unitOfMeasure, category, price }) => {
-    const dispatch = useDispatch();
+     temporaryQuantity, unitOfMeasure, category, price, dispatch }) => {
     const wasReceived = async () => {
         setOrderListAfterFilter(oldList => oldList.filter(order => order._id !== _id));
     };

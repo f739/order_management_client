@@ -64,6 +64,11 @@
     direction: none;
     background: none;
   }
- 
+ .note {
+  background-color: rgb(202, 10, 10);
+  color: rgb(255, 255, 255);
+  border-radius: 1px;
+  padding: 2px;
+ }
   
 
