@@ -5,7 +5,7 @@ import $ from 'axios';
 export const getUsers = createAsyncThunk('users/getUsers', 
   async (_, {rejectWithValue}) => {  
       try {
-        const res = await $.get(`${URL}/users/getUsers`);
+        const res = await $.put(`${URL}/users/getUsers`);
         const { allUsers } = res.data;
         return allUsers
       }catch (err) {
@@ -57,7 +57,8 @@ export const testToken = createAsyncThunk('users/testToken',
   async (token, {rejectWithValue}) => {  
       try {
         const res = await $.get(`${URL}/login/${token}/testToken`);
-        return res.data.license;
+        const {license} = res.data;
+        return {license}
       }catch (err) {
         return rejectWithValue(err.response.data.message)
       }
@@ -67,6 +68,7 @@ export const testToken = createAsyncThunk('users/testToken',
 const initialState = {
     allUsers: [],
     user: {email: '', license: '' },
+    isLoading: false,
     errorMessage: ''
 }
 
@@ -77,8 +79,12 @@ export const slice = createSlice({
         
         },
         extraReducers: (builder) => {
+            builder.addCase(getUsers.pending, (state, action) => {
+                state.isLoading = true;
+            })
             builder.addCase(getUsers.fulfilled, (state, action) => {
                 state.allUsers = action.payload;
+                state.isLoading = false
             })
             builder.addCase(createNewUser.fulfilled, (state, action) => {
                 state.allUsers.push(action.payload);
@@ -90,7 +96,10 @@ export const slice = createSlice({
                 state.user = action.payload;
             })
             builder.addCase(testToken.fulfilled, (state, action) => {
-                state.user.license = action.payload;
+                state.user = action.payload;
+            })
+            builder.addCase(testToken.pending, (state, action) => {
+                state.isLoading = true;
             })
             builder.addCase(connectUser.rejected, (state, action) => {
                 state.errorMessage = action.payload;

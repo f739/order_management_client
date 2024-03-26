@@ -8,15 +8,15 @@ import '../css/orders.css'
 
 export const Orders = () => {
     const dispatch = useDispatch();
-    const allProducts = useSelector( state => state.products.allProducts);
+    const {allProducts, isLoading} = useSelector( state => state.products);
     const allCategories = useSelector( state => state.categories.allCategories);
     const [itemsListFiltered, setItemsListFiltered] = useState([]);
 
-    useEffect( () => {
-        if (allProducts.length === 0) {
-            dispatch( getProducts())
+    useEffect(() => {
+        if (!allProducts || allProducts.length === 0) {
+            dispatch(getProducts());
         }
-    },[]);
+    }, []);
     useEffect(() => {
         const sortedProducts = [...allProducts].sort((a, b) => a.category.localeCompare(b.category));
         setItemsListFiltered(sortedProducts);
@@ -42,6 +42,7 @@ export const Orders = () => {
     }
     return(
         <>
+        {isLoading ? <h1>loding...</h1> : <>
             <h1>דף הזמנת מוצרים</h1>
             <button onClick={SendAnInvitation}>שלח הזמנה</button>
             { allCategories && <select id="categories-select" name="category" onChange={filterProducts}>
@@ -60,6 +61,7 @@ export const Orders = () => {
                     _id={item._id}/>
                 </div>
             ))}
-        </>
+        </>}
+    </>
     )
 }

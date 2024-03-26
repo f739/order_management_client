@@ -15,7 +15,7 @@ export const OldOrders = () => {
     },[]);
 
     useEffect(() => {
-        if (allOrders.length) {
+        if (allOrders.length || !allOrders) {
             const oldOrdersFiltered = [...allOrders].sort((a, b) => a.date.localeCompare(b.date));
             const groupBySupplier = oldOrdersFiltered.reduce((acc, order) => {
                 const nameSupplier = order.supplier.nameSupplier; 

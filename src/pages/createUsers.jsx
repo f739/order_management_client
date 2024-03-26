@@ -46,21 +46,23 @@ export const CreateUsers = () => {
 }
 
 const ShowUsers = ({dispatch}) => {
-    const allUsers = useSelector( state => state.users.allUsers);
+    const {allUsers, isLoading} = useSelector( state => state.users);
 
     useEffect( () => {
-        if (!allUsers) {
-            dispatch( getUsers())
+        if (!allUsers.length) {
+            dispatch( getUsers());
         }
-    },[]);
+    },[dispatch]);
 
     const deleteUser = _id => {
         dispatch( removeUser(_id))
     }
+    if (isLoading) return <h1>🌀 Loading...</h1>;
     return (
         <div className="show-items">
             <h1>משתמשים קיימים</h1>
-            {allUsers.length > 0 && allUsers.map( user => (
+            {allUsers && allUsers.length > 0 ? (
+            allUsers.map(user => (
                 <div key={user._id} className="show-item">
                     <span>{user.userName}</span>
                     <span>{user.email}</span>
@@ -69,7 +71,10 @@ const ShowUsers = ({dispatch}) => {
                         <img src={trash_icon} alt="delete" />
                     </button>
                 </div>
-            ))}
+            ))
+        ) : (
+            <div>אין משתמשים להצגה</div>
+        )}
         </div>
     )
 }

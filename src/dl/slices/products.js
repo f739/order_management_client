@@ -113,7 +113,8 @@ export const addPrice = createAsyncThunk('products/addPrice',
 
 const initialState = {
     allProducts: [],
-    errorMessage: null
+    errorMessage: null,
+    isLoading: null 
 }
 
 export const slice = createSlice({
@@ -126,8 +127,12 @@ export const slice = createSlice({
           builder.addCase(addPrice.fulfilled, (state, action) => {
               state.allProducts = action.payload;
           })
+          builder.addCase(getProducts.pending, (state, action) => {
+            state.isLoading = true;
+          })
           builder.addCase(getProducts.fulfilled, (state, action) => {
               state.allProducts = action.payload;
+              state.isLoading = false
               state.errorMessage = '';
           })
           builder.addCase(getProducts.rejected, (state, action) => {

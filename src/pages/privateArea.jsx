@@ -4,23 +4,28 @@ import { NoEntry } from "./noEntry";
 
 export const PrivateArea = () => {
     const license = useSelector( state => state.users.user.license);
+    const isLoading = useSelector( state => state.users.user.isLoading);
 
     return(
         <>
-            {license === 'purchasingManager' ?
-            <> 
-                <nav>
-                    <NavLink to='./createUsers'>משתמשים</NavLink> ||
-                    <NavLink to='./products'>מוצרים</NavLink> ||
-                    <NavLink to='./categories'>קטגוריות</NavLink> ||
-                    <NavLink to='./supplier'>ספקים</NavLink> ||
-                    <NavLink to='./measure'>יחידות מידה</NavLink> ||
-                    <NavLink to='./logger'>לוגר</NavLink> ||
-                    <NavLink to='./emailSettings'>הגדרות אימייל</NavLink> 
-                </nav>
-                <Outlet />
+        { isLoading ? <h1>louding.......</h1> : 
+            <>
+                {license === 'purchasingManager' ?
+                <> 
+                    <nav>
+                        <NavLink to='./createUsers'>משתמשים</NavLink> ||
+                        <NavLink to='./products'>מוצרים</NavLink> ||
+                        <NavLink to='./categories'>קטגוריות</NavLink> ||
+                        <NavLink to='./supplier'>ספקים</NavLink> ||
+                        <NavLink to='./measure'>יחידות מידה</NavLink> ||
+                        <NavLink to='./logger'>לוגר</NavLink> ||
+                        <NavLink to='./emailSettings'>הגדרות אימייל</NavLink> 
+                    </nav>
+                    <Outlet />
+                </>
+                : <NoEntry />}
             </>
-            : <NoEntry />}
+            }
         </>
     )
 }

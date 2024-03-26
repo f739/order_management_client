@@ -14,7 +14,6 @@ export const NoEntry = () => {
     const connect = async () => {
         const res = await dispatch( connectUser(form) );
         if (res.payload) {
-            navigate('./orders')
             // refresh the page
         }
     };
