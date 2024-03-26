@@ -5,7 +5,7 @@ import $ from 'axios';
 export const getSuppliers = createAsyncThunk('suppliers/getSuppliers', 
   async (_, {rejectWithValue}) => {  
       try {
-        const res = await $.get(`${URL}/suppliers/getAllsuppliers`);
+        const res = await $.put(`${URL}/suppliers/getAllsuppliers`);
         return res.data.allSuppliers
       }catch (err) {
         return rejectWithValue(err.response.data.message)
@@ -42,7 +42,7 @@ export const removeSupplier = createAsyncThunk('suppliers/removeSupplier',
 
 const initialState = {
     allSuppliers: [],
-    errorMessage: null
+    isLoading: false,
 }
 
 export const slice = createSlice({
@@ -52,27 +52,21 @@ export const slice = createSlice({
         
         },
         extraReducers: (builder) => {
+          builder.addCase(getSuppliers.pending, (state, action) => {
+            state.isLoading = true;
+            state.allSuppliers = action.payload;
+          })
           builder.addCase(getSuppliers.fulfilled, (state, action) => {
               state.allSuppliers = action.payload;
-              state.errorMessage = '';
-          })
-          builder.addCase(getSuppliers.rejected, (state, action) => {
-              state.errorMessage = action.payload;
+              state.isLoading = false;
           })
           builder.addCase(createNewSupplier.fulfilled, (state, action) => {
             state.allSuppliers.push(action.payload);
-            state.errorMessage = ''
-          })
-          builder.addCase(createNewSupplier.rejected, (state, action) => {
-            state.errorMessage = action.payload;
           })
           builder.addCase(removeSupplier.fulfilled, (state, action) => {
             state.allSuppliers = action.payload;
-            state.errorMessage = ''
           })
-          builder.addCase(removeSupplier.rejected, (state, action) => {
-            state.errorMessage = action.payload;
-          })
+
         }
     })
     

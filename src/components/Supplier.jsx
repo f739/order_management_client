@@ -8,14 +8,6 @@ import '../css/suppliers.css';
 export const Supplier = () => {
     const dispatch = useDispatch();
     const [newSupplier, setNewSupplier] = useState({nameSupplier: '', tel: '', email: ''});
-    const allSuppleirs = useSelector( state => state.suppliers.allSuppliers);
-    const errorMessage = useSelector( state => state.suppliers.errorMessage);
-    
-    useEffect(() => {
-        if (allSuppleirs.length === 0) {
-            dispatch(getSuppliers());
-        }
-    }, [dispatch]);
 
     const handleSaveNewSupplier  = async () => {
         dispatch( createNewSupplier(newSupplier));
@@ -38,36 +30,40 @@ export const Supplier = () => {
                 </label>
                 <button onClick={handleSaveNewSupplier}>שמור ספק חדש</button>
             </div>
-            { errorMessage && <h4 className="error-message">{errorMessage}</h4>}
-            <div className="show-items">
-                <h1 className="title">ספקים קיימים:</h1>
-                {allSuppleirs.length > 0 && allSuppleirs.map( supplier => (
-                    <ShowSuppliers key={supplier._id}
-                    nameSupplier={supplier.nameSupplier} 
-                    email={supplier.email} 
-                    tel={supplier.tel} 
-                    dispatch={dispatch} 
-                    _id={supplier._id} />
-                ))}
-            </div>
+            <ShowSuppliers dispatch={dispatch} />
         </div>
         
     )
 };
 
 const ShowSuppliers = props => {
-    const { nameSupplier, tel, email, _id, dispatch } = props;
-    const deleteSupplier = () => {
+    const { dispatch } = props;
+    const {allSuppliers, isLoading} = useSelector( state => state.suppliers);
+
+    useEffect(() => {
+        if (!allSuppliers.length) {
+            dispatch(getSuppliers());
+        }
+    }, [dispatch]);
+    const deleteSupplier = (_id) => {
         dispatch(removeSupplier(_id))
     }
+    if (isLoading) return <h1>🌀 Loading...</h1>;
+
     return (
-        <div className="show-item">
-            <span>{nameSupplier}</span>
-            <span>{tel}</span>
-            <span>{email}</span>
-            <button onClick={deleteSupplier} className="delete-item">
-                <img src={trash_icon} alt="delete" />
-            </button>
+        <div className="show-items">
+            <h1 className="title">ספקים קיימים:</h1>
+            {allSuppliers && allSuppliers.length > 0 ? (
+            allSuppliers.map( supplier => (
+                <div key={supplier._id} className="show-item">
+                    <span>{supplier.nameSupplier}</span>
+                    <span>{supplier.tel}</span>
+                    <span>{supplier.email}</span>
+                    <button onClick={() => deleteSupplier(supplier._id)} className="delete-item">
+                        <img src={trash_icon} alt="delete" />
+                    </button>
+                </div>
+            )) ) : (<div>אין ספקים להצגה</div>)}
         </div>
     )
 }

@@ -5,7 +5,7 @@ import $ from 'axios';
 export const getMeasures = createAsyncThunk('measures/getMeasures', 
   async (_, {rejectWithValue}) => {  
       try {
-        const res = await $.get(`${URL}/measures/getAllMeasures`);
+        const res = await $.put(`${URL}/measures/getAllMeasures`);
         return res.data.allMeasures
       }catch (err) {
         return rejectWithValue(err.response.data.message)
@@ -42,7 +42,7 @@ export const removeMeasure = createAsyncThunk('measures/removeMeasure',
 
 const initialState = {
     allMeasures: [],
-    errorMessage: null
+    isLoading: false,
 }
 
 export const slice = createSlice({
@@ -52,26 +52,19 @@ export const slice = createSlice({
         
         },
         extraReducers: (builder) => {
+          builder.addCase(getMeasures.pending, (state, action) => {
+            state.isLoading = true;
+            state.allMeasures = action.payload;
+          })
           builder.addCase(getMeasures.fulfilled, (state, action) => {
               state.allMeasures = action.payload;
-              state.errorMessage = '';
-          })
-          builder.addCase(getMeasures.rejected, (state, action) => {
-              state.errorMessage = action.payload;
+              state.isLoading = false;
           })
           builder.addCase(createNewMeasure.fulfilled, (state, action) => {
             state.allMeasures.push(action.payload);
-            state.errorMessage = ''
-          })
-          builder.addCase(createNewMeasure.rejected, (state, action) => {
-            state.errorMessage = action.payload;
           })
           builder.addCase(removeMeasure.fulfilled, (state, action) => {
             state.allMeasures = action.payload;
-            state.errorMessage = ''
-          })
-          builder.addCase(removeMeasure.rejected, (state, action) => {
-            state.errorMessage = action.payload;
           })
         }
     })

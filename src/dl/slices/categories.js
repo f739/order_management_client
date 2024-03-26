@@ -5,7 +5,7 @@ import $ from 'axios';
 export const getCategories = createAsyncThunk('categories/getCategories', 
   async (_, {rejectWithValue}) => {  
       try {
-        const res = await $.get(`${URL}/categories/getAllCategories`);
+        const res = await $.put(`${URL}/categories/getAllCategories`);
         return res.data.allcategories
       }catch (err) {
         return rejectWithValue(err.response.data.message)
@@ -42,7 +42,7 @@ export const removeCategory = createAsyncThunk('categories/removeCategory',
 
 const initialState = {
     allCategories: [],
-    errorMessage: null
+    isLoading: false,
 }
 
 export const slice = createSlice({
@@ -52,26 +52,19 @@ export const slice = createSlice({
         
         },
         extraReducers: (builder) => {
+          builder.addCase(getCategories.pending, (state, action) => {
+            state.isLoading = true;
+            state.allCategories = action.payload;
+          })
           builder.addCase(getCategories.fulfilled, (state, action) => {
               state.allCategories = action.payload;
-              state.errorMessage = '';
-          })
-          builder.addCase(getCategories.rejected, (state, action) => {
-              state.errorMessage = action.payload;
+              state.isLoading = false;
           })
           builder.addCase(createNewCategory.fulfilled, (state, action) => {
             state.allCategories.push(action.payload);
-            state.errorMessage = ''
-          })
-          builder.addCase(createNewCategory.rejected, (state, action) => {
-            state.errorMessage = action.payload;
           })
           builder.addCase(removeCategory.fulfilled, (state, action) => {
             state.allCategories = action.payload;
-            state.errorMessage = ''
-          })
-          builder.addCase(removeCategory.rejected, (state, action) => {
-            state.errorMessage = action.payload;
           })
         }
     })

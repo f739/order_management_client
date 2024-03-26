@@ -69,7 +69,6 @@ const initialState = {
     allUsers: [],
     user: {email: '', license: '' },
     isLoading: false,
-    errorMessage: ''
 }
 
 export const slice = createSlice({
@@ -97,12 +96,6 @@ export const slice = createSlice({
             })
             builder.addCase(testToken.fulfilled, (state, action) => {
                 state.user = action.payload;
-            })
-            builder.addCase(testToken.pending, (state, action) => {
-                state.isLoading = true;
-            })
-            builder.addCase(connectUser.rejected, (state, action) => {
-                state.errorMessage = action.payload;
             })
         }
     })

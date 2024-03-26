@@ -8,14 +8,7 @@ import '../css/categories.css';
 export const Categories = () => {
     const dispatch = useDispatch();
     const [newCategory, setNewCategory] = useState({nameCategory: ''});
-    const allCategories = useSelector( state => state.categories.allCategories);
     const errorMessage = useSelector( state => state.categories.errorMessage);
-    
-    useEffect(() => {
-        if (allCategories.length === 0) {
-            dispatch(getCategories());
-        }
-    }, [dispatch]);
 
     const handleSaveNewCategory = () => {
         dispatch( createNewCategory(newCategory));
@@ -31,31 +24,39 @@ export const Categories = () => {
                 <button onClick={handleSaveNewCategory}>שמור קטגוריה חדשה</button>
             </div>
             { errorMessage && <h4 className="error-message">{errorMessage}</h4>}
-            <div className="show-items">
-                <h1 className="title">קטגוריות קיימות:</h1>
-                {allCategories.length > 0 && allCategories.map( category => (
-                    <ShowCategories key={category._id}
-                    nameCategory={category.nameCategory}  
-                    dispatch={dispatch}  
-                    _id={category._id} />
-                ))}
-            </div>
+            <ShowCategories dispatch={dispatch} />
         </div>
         
     )
 };
 
 const ShowCategories = props => {
-    const { nameCategory, _id, dispatch } = props;
-    const deleteCategory = () => {
+    const { dispatch } = props;
+    const {allCategories, isLoading} = useSelector( state => state.categories);
+
+    useEffect(() => {
+        if (allCategories.length === 0) {
+            dispatch(getCategories());
+        }
+    }, [dispatch]);
+
+    const deleteCategory = (_id) => {
         dispatch(removeCategory(_id))
     }
+
+    if (isLoading) return <h1>🌀 Loading...</h1>;
     return (
-        <div className="show-item">
-            <span>{nameCategory}</span>
-            <button onClick={deleteCategory} className="delete-item">
-                <img src={trash_icon} alt="delete" />
-            </button>
+            <div className="show-items">
+                <h1 className="title">קטגוריות קיימות:</h1>
+                {allCategories && allCategories.length > 0 ? allCategories.map( category => (
+                <div key={category._id} className="show-item">
+                    <span>{category.nameCategory}</span>
+                    <button onClick={() => deleteCategory(category._id)} className="delete-item">
+                        <img src={trash_icon} alt="delete" />
+                    </button>  
+                </div>
+                )) : (<div>אין משתמשים להצגה</div>)}
+
         </div>
     )
 }
