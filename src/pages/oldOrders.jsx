@@ -30,7 +30,7 @@ export const OldOrders = () => {
     }, [allOrders]);
     
     return (
-        <>
+        <div className="container-orders">
             {Object.entries(groupedOrders).length > 0 && Object.entries(groupedOrders).map(([supplierName, orders]) => (
                 <div key={supplierName} className="supplier-container">      
                     <h3 className="supplier-title"> ספק: {supplierName}</h3>
@@ -40,7 +40,7 @@ export const OldOrders = () => {
                     ))}
                 </div>
             ))}
-        </>
+        </div>
     );
 };
 
@@ -58,9 +58,9 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAc
             { !ifWasAccepted &&  
             <div className="order-container">
                 <div className="title-order">
-                    <h3>מספר הזמנה: {idOrderList}</h3>
-                    <h3>{date}</h3>
-                    <h3>{time}</h3>
+                    <span>מספר הזמנה: {idOrderList}</span>
+                    <span>{time}</span>
+                    <span>{date}</span>
                 </div>
                 {orderListAfterFilter.map(order => (
                     <ShowOldOrder key={order._id}

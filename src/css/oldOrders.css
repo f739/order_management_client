@@ -1,3 +1,6 @@
+.container-orders {
+    margin-top: 40px;
+}
 .supplier-container {
     direction: rtl;
     margin-bottom: 15px;
@@ -27,16 +30,13 @@
     grid-template-columns: repeat(3, 1fr);
     padding: 5px;
     margin-bottom: 5px;
-    h3 {
-        display: inline;
-    }
-    h3:first-of-type {
+    span:first-of-type {
         justify-self: start;
     }
-    h3:nth-of-type(2) {
+    span:nth-of-type(2) {
         justify-self: center;
     }
-    h3:last-of-type {
+    span:last-of-type {
         justify-self: end;
     }
 }
@@ -65,7 +65,6 @@
 .end {
     grid-area: end;
     justify-self: end;
-
     button {
         margin-right: 10px;
     }

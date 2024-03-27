@@ -18,11 +18,13 @@ export const ItemsBox = props => {
     }
     return (
         <div className="box-product-from-the-order">
-            <h4>{nameProduct}</h4>
-            <span>{category}</span>
-            <span>{unitOfMeasure}</span>
-            <ShowNote note={note} _id={_id} dispatch={dispatch} className="note" />
-            <div className="quantity-controls">
+            <div className="start-order">
+                <h4>{nameProduct}</h4>
+                <span>{unitOfMeasure}</span>
+                <span>{category}</span>
+            </div>
+            <ShowNote note={note} _id={_id} dispatch={dispatch} />
+            <div className="quantity-controls end-order">
                 <button onClick={addItem}>+</button>
                 <span>{temporaryQuantity}</span>
                 <button onClick={removeItem}>-</button>
@@ -45,23 +47,23 @@ const ShowNote = props => {
     }
     if (!note) {
         return (
-            <>
+            <div className="note center-order">
                 <label>
                     הוסף הערה:
                 </label>
                 <input onChange={e => setNewNote(e.target.value)} className="input-note" value={newNote}/>
                 <button onClick={sendNewNote} className="send-note">שלח</button>
-            </>
+            </ div>
         )
     }else {
         return (
-            <>
+            <div className="note center-order">
                 <label>
                     הערה להזמנה:
                 </label>
                 <span className="show-note">{note}</span>
                 <button onClick={deleteNote} className="delete-note">מחק הערה</button>
-            </>
+            </div>
         )
     }
    

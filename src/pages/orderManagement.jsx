@@ -38,8 +38,7 @@ export const OrderManagement = () => {
     
     return(
         <div>
-            <h1>הזמנות לטיפול</h1>
-            <button onClick={() => setShowChooseSupplier(old => !old)}>שלח הזמנה לספק</button>
+            <button onClick={() => setShowChooseSupplier(old => !old)} className='send-order'>שלח הזמנה לספק</button>
             {showChosseSupplier && <NewOrderToDeliver  orderList={orderList} />}
             { activeOrdersFiltred.length > 0 && activeOrdersFiltred.map( invitation => (
                 <Invitation  

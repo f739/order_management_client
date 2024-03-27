@@ -43,8 +43,7 @@ export const Orders = () => {
 
     if (isLoading) return <h1>🌀 Loading...</h1>;
     return(
-        <>
-            <h1>דף הזמנת מוצרים</h1>
+        <div className="container-orders">
             <button onClick={SendAnInvitation} className="send-an-invitation">שלח הזמנה</button>
             { allCategories && <select id="categories-select" name="category" onChange={filterProducts}>
                 <option value="allCategories">כל הקטגוריות</option>
@@ -62,6 +61,6 @@ export const Orders = () => {
                     _id={item._id}/>
                 </div>
             ))}
-        </>
+        </div>
     )
 }
