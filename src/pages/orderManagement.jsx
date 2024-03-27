@@ -159,10 +159,11 @@ const Product = props => {
                 {product.note && <span className='note'>{product.note}</span>}
             </span>
             <div className="edit-price center">
+              <label>מחיר מומלץ:</label>
                 <span>{cheapestSupplier.nameSupplier}</span>
                 <input defaultValue={cheapestSupplier.price} 
                   onChange={e => priceToDeliver(e.target.value, product._id)}/>
-                <button onClick={() => setShowPrices(old => !old)} className='edit-item' >ערוך</button>
+                <button onClick={() => setShowPrices(old => !old)} className='edit-item' >ערוך מחירים</button>
             </div>
             <div className='buttons end'>
                 <button onClick={() => addToOrder(product, editQuantity)}>הוסף לשליחה</button>

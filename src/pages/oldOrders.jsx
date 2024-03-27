@@ -58,6 +58,7 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAc
             { !ifWasAccepted &&  
             <div className="order-container">
                 <div className="title-order">
+                    <h3>מספר הזמנה: {idOrderList}</h3>
                     <h3>{date}</h3>
                     <h3>{time}</h3>
                 </div>
@@ -74,7 +75,7 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAc
                     price={order.price}
                     category={order.category} />
                 ))}
-                <button className="received-button" onClick={handleIfWasAccepted}>ההזמנה התקבלה</button>
+                <button className="received-order-button" onClick={handleIfWasAccepted}>ההזמנה התקבלה</button>
                 {/* <Camera /> */}
             </div>
             }
@@ -102,16 +103,17 @@ const ShowOldOrder = ({ _id, idOrderList, setOrderListAfterFilter, nameProduct,
     }
     return (
         <div className="order-item">
-            <div className="order-details">
-                <p className="show-nameProduct">{nameProduct}</p>
-                <p className="show-quantity">{temporaryQuantity}</p>
+            <div className="order-details start">
+                <p className="show-nameProduct"><strong>{nameProduct}</strong></p>
+                <p className="show-quantity">כמות: {temporaryQuantity}</p>
                 <p className="show-unit-of-measure">{unitOfMeasure}</p>
-                <p className="show-category">{category}</p>
-                <p className="show-price">{price}</p>
+                <p className="show-price">מחיר: {price}</p>
             </div>
-            <button className="received-button" onClick={wasReceived}>המוצר התקבל</button>
-            <button className="return-to-order-management-button" onClick={returnToOrderManagement}>החזרה להזמנות</button>
-            <button onClick={deleteProduct} className="delete-item">מחק</button>
+            <div className="end">
+                <button className="received-button" onClick={wasReceived}>המוצר התקבל</button>
+                <button className="return-to-order-management-button" onClick={returnToOrderManagement}>החזרה להזמנות</button>
+                <button onClick={deleteProduct} className="delete-item">מחק</button>
+            </div>
         </div>
     );
 };

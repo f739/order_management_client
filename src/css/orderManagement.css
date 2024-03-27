@@ -1,76 +1,88 @@
-
-
 .invitation-container {
-    direction: rtl;
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    background-color: #fff;
-  }
-  
-  .title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-radius: 10px;
-  }
-  
-  .title span {
-    margin-right: 10px; 
-  }
-  
-  .selected-style {
-    border: 2px solid green;
-  }
-  
-  .product-details {
-    padding: 20px;
-    display: grid;
-    border: 1px solid #ddd; 
-    border-radius: 10px; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    grid-template-areas:
-    "start center end";
-    grid-template-columns: 1fr 1fr 200px;
-  }
-  .start {
-    grid-area: start;
-    align-items: end;
-  }
-  .center {
-    grid-area: center;
-    align-items: end;
-  }
-  .end {
-    grid-area: end;
-    align-items: end;
-  }
-  
-  .start > *, .center > * {
-    margin-left: 10px;
-  }
-  .buttons {
-    display: inline;
-  }
-  .buttons button {
-    margin-right: 10px;
-  }
-  .start input, .start input:focus  {
-    width: 40px;
-    border: none;
-    direction: none;
-    background: none;
-  }
-  .product-details {
-    .note {
-      background-color: rgb(202, 10, 10);
-      color: rgb(255, 255, 255);
-      border-radius: 1px;
-      padding: 2px;
-    }
- }
-  
+  direction: rtl;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
 
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  border-radius: 10px;
+}
+
+.title span {
+  margin-right: 10px;
+}
+
+.selected-style {
+  background-color: #e8f5e9;
+  border-radius: 10px;
+}
+
+
+
+.product-details {
+  padding: 10px;
+  display: grid;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-bottom: 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  grid-template-areas:
+    "start center end";
+  grid-template-columns: repeat(3, 1fr);
+  justify-content: space-between;
+}
+
+.start {
+  grid-area: start;
+  align-items: end;
+}
+
+.center {
+  grid-area: center;
+  align-items: end;
+}
+
+.end {
+  grid-area: end;
+  align-items: end;
+}
+
+.start>*,
+.center>* {
+  margin-left: 10px;
+}
+
+.buttons {
+  display: inline;
+}
+
+.buttons button {
+  margin-right: 10px;
+}
+
+.start input,
+.start input:focus,
+.center input,
+.center input:focus {
+  width: 40px;
+  border: none;
+  direction: none;
+  background: none;
+}
+
+.product-details {
+  .note {
+    background-color: rgb(202, 10, 10);
+    color: rgb(255, 255, 255);
+    border-radius: 1px;
+    padding: 2px;
+  }
+}
