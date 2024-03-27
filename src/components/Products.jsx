@@ -12,19 +12,16 @@ export const Products = () => {
     const dispatch = useDispatch();
     const [newProduct, setNewProduct] = useState({nameProduct: '', category: '', unitOfMeasure: '', sku: '', price: []});
     const [newPrice, setNewPrice] = useState({nameSupplier: '', price: ''});
-    const allProducts = useSelector( state => state.products.allProducts);
-    const listCategories = useSelector( state => state.categories.allCategories);
-    const allSuppliers = useSelector( state => state.suppliers.allSuppliers);
-    const unitOfMeasureList = useSelector( state => state.measures.allMeasures);
-    const errorMessage = useSelector( state => state.products.errorMessage);
+    const {allCategories} = useSelector( state => state.categories);
+    const {allSuppliers} = useSelector( state => state.suppliers);
+    const {allMeasures} = useSelector( state => state.measures);
+
     useEffect( () => {
-        if (allProducts.length === 0) {
-            dispatch( getProducts())
-        }if (listCategories.length === 0) {
+        if (allCategories.length === 0) {
             dispatch( getCategories())
         }if (allSuppliers.length === 0) {
             dispatch( getSuppliers())
-        }if (unitOfMeasureList.length === 0) {
+        }if (allMeasures.length === 0) {
             dispatch( getMeasures())
         }
     },[dispatch])
@@ -53,6 +50,8 @@ export const Products = () => {
         dispatch( createNewProduct(newProduct));
         setNewProduct({nameProduct: '', category: '', unitOfMeasure: '', sku: '', price: []});
     }
+    if (!allCategories || !allMeasures || !allSuppliers) return <h1>לא נמצאו</h1>;
+    
     return (
         <div>
             <div className="new-item">
@@ -85,7 +84,7 @@ export const Products = () => {
                     קטגוריה:
                     { <select id="categories-select" name="category"  onChange={e => handleFormHook(e.target, setNewProduct)}>
                         <option value="">--בחר אפשרות--</option>
-                        { listCategories.map( category => (
+                        { allCategories.length > 0 && allCategories.map( category => (
                             <option value={category.nameCategory} key={category._id}>{category.nameCategory}</option>
                         )  )}
                     </select>}
@@ -95,42 +94,46 @@ export const Products = () => {
                     { <select id="unit-of-measure-select" name="unitOfMeasure"
                     onChange={e => handleFormHook(e.target, setNewProduct)}>
                         <option value="">--בחר אפשרות--</option>
-                        { unitOfMeasureList.map( measure => (
+                        {allMeasures.length > 0 && allMeasures.map( measure => (
                             <option value={measure.measureName} key={measure._id}>{measure.measureName}</option>
                         )  )}
                     </select>}
                 </label>
                     <button onClick={handleSaveNewProduct}>שמור מוצר חדש</button>
             </ div>
-            { errorMessage && <h4 className="error-message">{errorMessage}</h4>}
-            <div className="show-items">
-                <h1 className="title">מוצרים קיימים:</h1>
-                {allProducts.length > 0 && allProducts.map( product => (
-                    <ShowProducts key={product._id}
-                    nameProduct={product.nameProduct} 
-                    unitOfMeasure={product.unitOfMeasure} 
-                    category={product.category} 
-                    dispatch={dispatch} 
-                    _id={product._id} />
-                ))}
-            </div>
+            <ShowProducts dispatch={dispatch} />
         </div>
     )
 }
 
 const ShowProducts = props => {
-    const { nameProduct, unitOfMeasure, category, _id, dispatch } = props;
-    const deleteProduct = async () => {
+    const { dispatch } = props;
+    const {allProducts, isLoading} = useSelector( state => state.products);
+
+    useEffect( () => {
+        if (allProducts.length === 0) {
+            dispatch( getProducts())
+        }
+    })
+
+    const deleteProduct = (_id) => {
        dispatch( removeProduct(_id))
     }
+    if (isLoading) return <h1>🌀 Loading...</h1>;
+
     return (
-        <div className="show-item">
-            <span>{nameProduct}</span>
-            <span>{unitOfMeasure}</span>
-            <span>{category}</span>
-            <button onClick={deleteProduct} className="delete-item">
-                <img src={trash_icon} alt="delete" />
-            </button>
+        <div className="show-items">
+        <h1 className="title">מוצרים קיימים:</h1>
+        {allProducts && allProducts.length > 0 ? allProducts.map( product => (
+                <div className="show-item" key={product._id}>
+                    <span>{product.nameProduct}</span>
+                    <span>{product.unitOfMeasure}</span>
+                    <span>{product.category}</span>
+                    <button onClick={() => deleteProduct(product._id)} className="delete-item">
+                        <img src={trash_icon} alt="delete" />
+                    </button>
+                </div>
+            )) :  (<div>אין מוצרים להצגה</div>)}
         </div>
     )
 }

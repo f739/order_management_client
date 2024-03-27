@@ -6,12 +6,13 @@ import '../css/logger.css';
 
 export const Logger = () => {
     const dispatch = useDispatch();
-    const allLogger = useSelector( state => state.logger.allLogger);
+    const {allLogger, isLoading} = useSelector( state => state.logger);
     useEffect( () => {
         if (allLogger.length === 0) {
             dispatch( getAllErrorsLog())
         }
     },[])
+    if (isLoading) return <h1>🌀 Loading...</h1>;
     return (
         <>
         <button onClick={ () => dispatch( clearLogger())}>ניקוי הלוג</button>
@@ -26,7 +27,8 @@ export const Logger = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {allLogger.map((log, index) => (
+                    {allLogger && allLogger.length > 0 ? (
+                    allLogger.map((log, index) => (
                     <tr key={index}>
                         <td className={`level-${log.level.toLowerCase()}`}>{log.level}</td>
                         <td>{log.message}</td>
@@ -34,7 +36,9 @@ export const Logger = () => {
                         <td>{log.additionalInfo}</td>
                         <td>{moment(log.timestamp).format('YYYY-MM-DD HH:mm')}</td>
                     </tr>
-                    ))}
+                    ))) : (
+                        <div>אין שגיאות להצגה</div>
+                    )}
                 </tbody>
             </table>
         </>

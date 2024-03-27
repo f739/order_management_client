@@ -56,7 +56,7 @@ export const connectUser = createAsyncThunk('users/connectUser',
 export const testToken = createAsyncThunk('users/testToken', 
   async (token, {rejectWithValue}) => {  
       try {
-        const res = await $.get(`${URL}/login/${token}/testToken`);
+        const res = await $.put(`${URL}/login/${token}/testToken`);
         const {license} = res.data;
         return {license}
       }catch (err) {

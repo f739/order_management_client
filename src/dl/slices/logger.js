@@ -5,8 +5,8 @@ import $ from 'axios';
 export const getAllErrorsLog = createAsyncThunk('logger/getAllErrorsLog', 
   async (_, {rejectWithValue}) => {  
       try {
-        const res = await $.get(`${URL}/loggerRoute/getAllErrorsLog`);
-        return res.data.allLogger
+        const res = await $.put(`${URL}/loggerRoute/getAllErrorsLog`);
+        return res.data.allLogger;
       }catch (err) {
         return rejectWithValue(err.response.data.message)
       }
@@ -27,6 +27,7 @@ export const clearLogger = createAsyncThunk('logger/clearLogger',
 
 const initialState = {
     allLogger: [],
+    isLoading: false,
 }
 
 export const slice = createSlice({
@@ -36,8 +37,13 @@ export const slice = createSlice({
         
         },
         extraReducers: (builder) => {
+          builder.addCase(getAllErrorsLog.pending, (state, action) => {
+            state.isLoading = true;
+            state.allLogger = action.payload;
+          })
           builder.addCase(getAllErrorsLog.fulfilled, (state, action) => {
               state.allLogger = action.payload;
+              state.isLoading = false;
           })
           builder.addCase(clearLogger.fulfilled, (state, action) => {
             state.allLogger = action.payload;

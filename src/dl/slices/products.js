@@ -6,7 +6,7 @@ import $ from 'axios';
 export const getProducts = createAsyncThunk('products/getProducts', 
   async (_, {rejectWithValue}) => {  
       try {
-        const res = await $.get(`${URL}/products/getAllProducts`);
+        const res = await $.put(`${URL}/products/getAllProducts`);
         return res.data.allProducts
       }catch (err) {
         return rejectWithValue(err.response.data.message)
@@ -113,8 +113,7 @@ export const addPrice = createAsyncThunk('products/addPrice',
 
 const initialState = {
     allProducts: [],
-    errorMessage: null,
-    isLoading: null 
+    isLoading: false 
 }
 
 export const slice = createSlice({
@@ -133,40 +132,24 @@ export const slice = createSlice({
           builder.addCase(getProducts.fulfilled, (state, action) => {
               state.allProducts = action.payload;
               state.isLoading = false
-              state.errorMessage = '';
-          })
-          builder.addCase(getProducts.rejected, (state, action) => {
-              state.errorMessage = action.payload;
           })
           builder.addCase(createNewProduct.fulfilled, (state, action) => {
             state.allProducts.push(action.payload);
-            state.errorMessage = ''
-          })
-          builder.addCase(createNewProduct.rejected, (state, action) => {
-            state.errorMessage = action.payload;
           })
           builder.addCase(removeProduct.fulfilled, (state, action) => {
             state.allProducts = action.payload;
-            state.errorMessage = ''
-          })
-          builder.addCase(removeProduct.rejected, (state, action) => {
-            state.errorMessage = action.payload;
           })
           builder.addCase(createNewNote.fulfilled, (state, action) => {
             state.allProducts = action.payload;
-            state.errorMessage = ''
           })
           builder.addCase(removeNote.fulfilled, (state, action) => {
             state.allProducts = action.payload;
-            state.errorMessage = ''
           })
           builder.addCase(addOrSubtract.fulfilled, (state, action) => {
             state.allProducts = action.payload;
-            state.errorMessage = ''
           })
           builder.addCase(sendAnInvitation.fulfilled, (state, action) => {
             state.allProducts = action.payload.resetQuantityProducts;
-            state.errorMessage = '';
         })
 
         }
