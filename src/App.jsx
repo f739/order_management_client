@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './css/main.css';
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
+import bic_logo from './assetes/bic_logo.png';
 
 export function Layout () {
   const dispatch = useDispatch();
@@ -23,6 +24,9 @@ export function Layout () {
   },[]) 
   return (
     <>
+    <div className="logo-container">
+      <img src={bic_logo} alt="Logo" className="logo" />
+    </div>
       {license && 
       <>
         <nav>

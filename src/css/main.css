@@ -46,12 +46,6 @@ button:hover, .delete-item:hover {
   background-color: #0056b3;
 }
 
-
-.error-message {
-  color: red;
-  margin: 10px 0;
-}
-
 .show-item {
   display: flex;
   align-items: center;
@@ -102,6 +96,17 @@ nav a:hover::after, nav a.active::after {
   width: 100%;
   left: 0;
 }
+.logo-container {
+  position: fixed;
+  top: 10px;
+  left: 10px; 
+  z-index: 1000; 
+  padding: 10px 20px;
+}
+
+.logo {
+  height: 50px; 
+}
 .delete-item {
   background-color: rgb(228, 48, 48);
 }
@@ -110,7 +115,7 @@ nav a:hover::after, nav a.active::after {
 }
 
 .edit-item img, .delete-item img {
-  width: 20px; /* הגדרת רוחב נורמלי לאייקון */
-  height: auto; /* שמירה על יחסי המידות הנכונים */
-  vertical-align: middle; /* מירכוז האייקון ביחס לטקסט או אלמנטים אחרים בכפתור */
+  width: 20px; 
+  height: auto; 
+  vertical-align: middle; 
 }

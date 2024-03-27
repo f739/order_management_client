@@ -27,7 +27,7 @@ export const getActiveOrders = createAsyncThunk(
   "orders/getActiveOrders",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await $.get(`${URL}/orderManagement/getAllActiveOrders`);
+      const res = await $.put(`${URL}/orderManagement/getAllActiveOrders`);
       return res.data.allActiveOrders;
     } catch (err) {
       return rejectWithValue(err.response.data.message);
@@ -39,8 +39,7 @@ export const getOldOrders = createAsyncThunk(
   "orders/getOldOrders",
   async (_, { rejectWithValue }) => {
     try {
-      console.log("before");
-      const res = await $.get(`${URL}/oldOrders/getOldOrders`);
+      const res = await $.put(`${URL}/oldOrders/getOldOrders`);
       return res.data.oldOrders;
     } catch (err) {
       return rejectWithValue(err.response.data.message);
@@ -48,8 +47,7 @@ export const getOldOrders = createAsyncThunk(
   }
 );
 
-export const newOrderToDeliver = createAsyncThunk(
-  "orders/newOrderToDeliver",
+export const newOrderToDeliver = createAsyncThunk( "orders/newOrderToDeliver",
   async (emailForm, { rejectWithValue }) => {
     try {
       const res = await $.post(
@@ -57,8 +55,8 @@ export const newOrderToDeliver = createAsyncThunk(
         emailForm
       );
       const { newOldOrder, activeOrders } = res.data;
-      console.log(activeOrders);
-      return { newOldOrder, activeOrders };
+      const activesDeletedEmpty = activeOrders.filter( arr => arr.listProducts.length > 0);
+      return { newOldOrder, activesDeletedEmpty };
     } catch (err) {
       return rejectWithValue(err.response.data.message);
     }
@@ -88,8 +86,7 @@ export const removeProductInOldOrder = createAsyncThunk("orders/removeProductInO
 );
 
 export const returnProduct = createAsyncThunk("orders/returnProduct",
-  async (data,
-    { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
       const res = await $.post(`${URL}/oldOrders/returnProduct`, {...data});
       return res.data.newActiveOrder;
@@ -115,7 +112,6 @@ export const ifWasAcceptedAction = createAsyncThunk("orders/ifWasAcceptedAction"
 const initialState = {
   allActiveOrders: [],
   allOldOrders: [],
-  errorMessage: null,
 };
 
 export const slice = createSlice({
@@ -127,11 +123,7 @@ export const slice = createSlice({
       state.allActiveOrders.push(action.payload);
     });
     builder.addCase(sendAnInvitation.fulfilled, (state, action) => {
-      console.log(action.payload.newActiveOrder);
       state.allActiveOrders.push(action.payload.newActiveOrder);
-    });
-    builder.addCase(sendAnInvitation.rejected, (state, action) => {
-      state.errorMessage = action.payload;
     });
     builder.addCase(getActiveOrders.fulfilled, (state, action) => {
       state.allActiveOrders = action.payload;
@@ -141,7 +133,7 @@ export const slice = createSlice({
     });
     builder.addCase(newOrderToDeliver.fulfilled, (state, action) => {
       state.allOldOrders.push(action.payload.newOldOrder);
-      state.allActiveOrders = action.payload.activeOrders;
+      state.allActiveOrders = action.payload.activesDeletedEmpty;
     });
     builder.addCase(removeProductInOldOrder.fulfilled, (state, action) => {
       const updatedDoc = state.allOldOrders.map(oldOrder => {

@@ -9,7 +9,7 @@ import '../css/orders.css'
 export const Orders = () => {
     const dispatch = useDispatch();
     const {allProducts, isLoading} = useSelector( state => state.products);
-    const allCategories = useSelector( state => state.categories.allCategories);
+    const {allCategories} = useSelector( state => state.categories);
     const [itemsListFiltered, setItemsListFiltered] = useState([]);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ export const Orders = () => {
     }, [allProducts]);
 
     useEffect( () => {
-        if (allCategories.length === 0) {
+        if (!allCategories || allCategories.length === 0) {
             dispatch( getCategories())
         }
     },[allCategories]);
@@ -40,11 +40,12 @@ export const Orders = () => {
             setItemsListFiltered( () => allProducts.filter( product => product.category === value));
         }
     }
+
+    if (isLoading) return <h1>🌀 Loading...</h1>;
     return(
         <>
-        {isLoading ? <h1>loding...</h1> : <>
             <h1>דף הזמנת מוצרים</h1>
-            <button onClick={SendAnInvitation}>שלח הזמנה</button>
+            <button onClick={SendAnInvitation} className="send-an-invitation">שלח הזמנה</button>
             { allCategories && <select id="categories-select" name="category" onChange={filterProducts}>
                 <option value="allCategories">כל הקטגוריות</option>
                 { allCategories.map( category => (
@@ -61,7 +62,6 @@ export const Orders = () => {
                     _id={item._id}/>
                 </div>
             ))}
-        </>}
-    </>
+        </>
     )
 }

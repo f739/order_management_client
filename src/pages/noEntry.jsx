@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { connectUser } from '../dl/slices/users';
 import { handleFormHook } from '../components/HandleFormHook';
 import noEntry from '../assetes/noEntry.png';
@@ -8,13 +7,12 @@ import '../css/noEntry.css';
 
 export const NoEntry = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
     const [form, setForm] = useState({password: '', email: ''});
 
     const connect = async () => {
         const res = await dispatch( connectUser(form) );
         if (res.payload) {
-            // refresh the page
+            window.location.reload()
         }
     };
 

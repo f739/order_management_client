@@ -9,7 +9,7 @@ import '../css/boxPrice.css';
 export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
     const dispatch = useDispatch();
     const [newPrice, setNewPrice] = useState({price: '', nameSupplier: ''});
-    const allSuppliers = useSelector( state => state.suppliers.allSuppliers);
+    const {allSuppliers} = useSelector( state => state.suppliers);
     useEffect( () => {
         if (allSuppliers.length === 0) {
             dispatch( getSuppliers() )
@@ -29,7 +29,7 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
         <div className="box">
             <button onClick={ () => setShowPrices(false)}>X</button>
           <div className="price-row">
-                {prices.map( (price, i) => (
+                {allSuppliers && allSuppliers.length > 0 ? prices.map( (price, i) => (
                     <div key={i}>
                         <div className="supplier-name" >{price.nameSupplier}</div>
                         <input className="supplier-price"
@@ -37,7 +37,7 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
                         defaultValue={price.price} 
                         onChange={e => handleFormChangePrice(e.target, price.nameSupplier)}/>
                     </div>
-                ))}
+                )) : <p>אין ספקים להצגה</p>}
           </div>
             <ShowNewPrices  prices={prices} 
             allSuppliers={allSuppliers} 
@@ -60,13 +60,14 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
         { showAddPrice && <div className='AddPrice'>
             <select name="nameSupplier" onChange={e => handleFormHook(e.target, setNewPrice)}>
                 <option value="">--בחר אפשרות--</option>
-                {allSuppliers.length > 0 && allSuppliers.map(supplier => ( 
+                {allSuppliers.length > 0 && allSuppliers ? allSuppliers.map(supplier => ( 
                   <React.Fragment key={supplier._id}>
-                    {!prices.some(priceInfo => priceInfo.nameSupplier === supplier.nameSupplier) &&
+                    {prices && prices.length > 0 ? !prices.some(priceInfo => priceInfo.nameSupplier === supplier.nameSupplier) &&
                         <option value={supplier.nameSupplier} key={supplier._id}>{supplier.nameSupplier}</option>
+                    : <p>אין מחירים</p>    
                     }
                   </React.Fragment>
-                ))}
+                )): <p>אין ספקים להצגה</p> }
             </select>
             <input type="text" name="price" value={newPrice.price} onChange={e => handleFormHook(e.target, setNewPrice)} />
         </div>}

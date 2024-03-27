@@ -1,4 +1,4 @@
-.box-product-from-the-order {
+/* .box-product-from-the-order {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -8,21 +8,21 @@
     padding: 20px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    direction: rtl; /* שינוי כיוון הטקסט והפריטים */
+    direction: rtl; 
 }
 
 .box-product-from-the-order h1 {
-    margin-left: auto; /* דוחף את שם המוצר לצד השמאלי */
+    margin-left: auto; 
 }
 
 .box-product-from-the-order span {
-    margin: 0 10px; /* מוסיף מרווחים בין קטגוריה ליחידת מידה */
+    margin: 0 10px; 
 }
 
 .quantity-controls {
     display: flex;
     align-items: center;
-    margin-left: auto; /* דוחף את הקונטרולים לצד הימני */
+    margin-left: auto; 
 }
 
 .quantity-controls button {
@@ -32,7 +32,7 @@
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin: 0 5px; /* מוסיף מרווח בין הכפתורים */
+    margin: 0 5px; 
 }
 
 .quantity-controls button:hover {
@@ -40,11 +40,11 @@
 }
 
 .quantity-controls span {
-    margin: 0 5px; /* מוסיף מרווח בין הכפתורים לספרה */
+    margin: 0 5px; 
 }
 
 
-/* עיצוב דף הזמנת מוצרים */
+
 .orders-page h1 {
     text-align: center;
     color: #333;
@@ -71,4 +71,130 @@
     margin-bottom: 10px;
     border-radius: 5px;
     border-left: 5px solid #007bff;
+} */
+
+body {
+    direction: rtl;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 20px;
 }
+
+h1,
+h4 {
+    color: #333;
+    font-size: 18px;
+    margin: 0;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    margin-top: 10px;
+}
+
+.box-item,
+.box-product-from-the-order {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+}
+.box-item {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.box-product-from-the-order h4,
+.box-product-from-the-order span {
+    margin: 0 5px;
+    flex: 1;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+}
+
+.quantity-controls button {
+    width: 25px;
+    height: 25px;
+}
+
+.quantity-controls span {
+    margin: 0 10px;
+}
+
+.input-note {
+    padding: 3px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+.show-note {
+    background-color: rgb(202, 10, 10);
+    color: rgb(255, 255, 255);
+    border-radius: 1px;
+    padding: 2px;
+}
+.send-note, .delete-note {
+    margin-left: 5px;
+}
+
+.delete-note {
+    background-color: rgb(228, 48, 48);
+    padding: 5px 10px;
+}
+
+.delete-note:hover {
+    background-color: rgb(196, 38, 38);
+}
+
+.delete-item,
+.add-item {
+    padding: 5px 8px;
+}
+
+.delete-item:hover,
+.add-item:hover {
+    opacity: 0.8;
+}
+
+.send-an-invitation {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+  
+.send-an-invitation:hover {
+    background-color: #218838;
+}
+  

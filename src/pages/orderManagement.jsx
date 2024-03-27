@@ -13,9 +13,9 @@ import '../css/orderManagement.css';
 
 export const OrderManagement = () => {
     const dispatch = useDispatch();
-    const allActiveOrders = useSelector( state => state.orders.allActiveOrders);
-    const allProducts = useSelector( state => state.products.allProducts);
-    const license = useSelector( state => state.users.user.license);
+    const {allActiveOrders} = useSelector( state => state.orders);
+    const {allProducts} = useSelector( state => state.products);
+    
     const [activeOrdersFiltred, setActiveOrdersFiltred] = useState([]);
     const [orderList, setOrderList] = useState([]);
     const [showChosseSupplier, setShowChooseSupplier] = useState(false)
@@ -27,24 +27,25 @@ export const OrderManagement = () => {
     },[])
 
     useEffect( () => {
+      if (allActiveOrders && allActiveOrders.length !== 0) {
         const sortedActiveOrders = allActiveOrders.map(order => ({
             ...order,
             listProducts: [...order.listProducts].sort((a, b) => a.category.localeCompare(b.category))
         }));
         setActiveOrdersFiltred(sortedActiveOrders);
+      }
     },[allActiveOrders]);
-
+    
     return(
         <div>
             <h1>הזמנות לטיפול</h1>
             <button onClick={() => setShowChooseSupplier(old => !old)}>שלח הזמנה לספק</button>
-            {showChosseSupplier && <NewOrderToDeliver  orderList={orderList} license={license} />}
+            {showChosseSupplier && <NewOrderToDeliver  orderList={orderList} />}
             { activeOrdersFiltred.length > 0 && activeOrdersFiltred.map( invitation => (
                 <Invitation  
                 invitation={invitation.listProducts}
                 date={invitation.date}
                 time={invitation.time}
-                license={license}
                 dispatch={dispatch}
                 orderList={orderList}
                 allProducts={allProducts}
@@ -59,7 +60,7 @@ export const OrderManagement = () => {
 
 const Invitation = props => {
     const { invitation, date, time, orderList, dispatch, idInvitation,
-       allProducts, allActiveOrders, setOrderList, license } = props;
+       allProducts, allActiveOrders, setOrderList } = props;
     return (
         <div className="invitation-container">
             <div className="title">
@@ -69,7 +70,6 @@ const Invitation = props => {
             {invitation.map(product => ( 
                 <Product 
                 product={product}
-                license={license}
                 dispatch={dispatch}
                 orderList={orderList}
                 idInvitation={idInvitation}
@@ -83,12 +83,13 @@ const Invitation = props => {
 }
 
 const Product = props => {
-    const { product, orderList, dispatch, idInvitation, allProducts, setOrderList, allActiveOrders, license } = props;
+    const { product, orderList, dispatch, idInvitation, allProducts, setOrderList, allActiveOrders } = props;
     const isSelected = orderList.some(orderProduct => orderProduct._id === product._id);
     const [editQuantity, setEditQuantity] = useState( product.temporaryQuantity);
     const [cheapestSupplier, setCheapestSupplier] = useState({nameSupplier: '', price: ''});
     const [prices, setPrices] = useState([]);
     const [showPrices, setShowPrices] = useState(false);
+    const {license} = useSelector( state => state.users.user);
 
     const deleteProduct = () => {
       if (license === 'purchasingManager') {
