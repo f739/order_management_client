@@ -27,7 +27,7 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
     return (
       <div className="backdrop">
         <div className="box">
-            <button onClick={ () => setShowPrices(false)}>X</button>
+            <button onClick={ () => setShowPrices(false)} className='close-button' >X</button>
           <div className="price-row">
                 {allSuppliers && allSuppliers.length > 0 ? prices.map( (price, i) => (
                     <div key={i}>
@@ -56,9 +56,9 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
 
     return (
       <>
-        <button onClick={ () => setShowAddPrice( old => !old)}>הגדרת מחיר חדש</button>
+        <button onClick={ () => setShowAddPrice( old => !old)} className='button-primary'>הגדרת מחיר חדש</button>
         { showAddPrice && <div className='AddPrice'>
-            <select name="nameSupplier" onChange={e => handleFormHook(e.target, setNewPrice)}>
+            <select name="nameSupplier" className='select-input' onChange={e => handleFormHook(e.target, setNewPrice)}>
                 <option value="">--בחר אפשרות--</option>
                 {allSuppliers.length > 0 && allSuppliers ? allSuppliers.map(supplier => ( 
                   <React.Fragment key={supplier._id}>
@@ -69,9 +69,9 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
                   </React.Fragment>
                 )): <p>אין ספקים להצגה</p> }
             </select>
-            <input type="text" name="price" value={newPrice.price} onChange={e => handleFormHook(e.target, setNewPrice)} />
+            <input type="text" name="price" className="input-text" value={newPrice.price} onChange={e => handleFormHook(e.target, setNewPrice)} />
         </div>}
-            <button onClick={handleSaveNewPrice}>שמור מחיר</button>
+            <button onClick={handleSaveNewPrice} className='button-primary'>שמור מחיר</button>
       </>
     )
   }

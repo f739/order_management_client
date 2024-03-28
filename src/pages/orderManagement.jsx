@@ -15,7 +15,7 @@ export const OrderManagement = () => {
     const dispatch = useDispatch();
     const {allActiveOrders} = useSelector( state => state.orders);
     const {allProducts} = useSelector( state => state.products);
-    
+    const [showSendEmail, setShowSendEmail] = useState(false);
     const [activeOrdersFiltred, setActiveOrdersFiltred] = useState([]);
     const [orderList, setOrderList] = useState([]);
     const [showChosseSupplier, setShowChooseSupplier] = useState(false)
@@ -38,8 +38,8 @@ export const OrderManagement = () => {
     
     return(
         <div>
-            <button onClick={() => setShowChooseSupplier(old => !old)} className='send-order'>שלח הזמנה לספק</button>
-            {showChosseSupplier && <NewOrderToDeliver  orderList={orderList} />}
+            { !showSendEmail && <button onClick={() => setShowSendEmail(old => !old)} className='send-order'>שלח הזמנה לספק</button>}
+            {showSendEmail && <NewOrderToDeliver  orderList={orderList} setShowSendEmail={setShowSendEmail} />}
             { activeOrdersFiltred.length > 0 && activeOrdersFiltred.map( invitation => (
                 <Invitation  
                 invitation={invitation.listProducts}

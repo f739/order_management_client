@@ -3,8 +3,9 @@ import { handleFormHook } from "./HandleFormHook";
 import { useDispatch, useSelector } from "react-redux";
 import { getSuppliers } from '../dl/slices/suppliers';
 import { newOrderToDeliver } from "../dl/slices/orders";
+import '../css/newOrderToDeliver.css';
 
-export const NewOrderToDeliver = ({orderList}) => {
+export const NewOrderToDeliver = ({orderList, setShowSendEmail}) => {
     const dispatch = useDispatch();
     const {license} = useSelector( state => state.users.user);
     const {allSuppliers} = useSelector( state => state.suppliers);
@@ -32,11 +33,15 @@ export const NewOrderToDeliver = ({orderList}) => {
     }
 
     return(
-        <div id="blurBackground" className="blur-background">
-            <div className="box-send-email">
-            <label>
-                אל:
-                    { allSuppliers && allSuppliers.length > 0 ? <select className="supplier-select" name="supplier" 
+        <div className="backdrop-email">
+                <div className="titles">
+                    <label>הזמנה חדשה</label>
+                    <button onClick={ () => setShowSendEmail(false)} className='close-button' >X</button>
+                </div>
+                <div className="box-email">
+                <div className="label-row">
+                    <label>אל</label>
+                    { allSuppliers && allSuppliers.length > 0 ? <select className="supplier-select-email" name="supplier" 
                     onChange={handleSupplierChange}>
                         <option value="">--בחר אפשרות--</option>
                         { allSuppliers.map( supplier => (
@@ -45,18 +50,17 @@ export const NewOrderToDeliver = ({orderList}) => {
                             </option>
                         ))  }
                     </select> : <p>אין ספקים להצגה</p> }
-                </label>
-                <label className="title-message">
-                    כותרת:
-                    <input type="text" name="titleMessage" 
+                </div>
+                <div className="label-row">
+                <label className="title-message">כותרת</label>
+                    <input className="input-title-message" type="text" name="titleMessage" 
                     onChange={e => handleFormHook(e.target, setEmailForm)} />
-                </label>
-                <label className="message-content">
-                    תוכן:
-                    <textarea type="text" name="messageContent"
-                     onChange={e => handleFormHook(e.target, setEmailForm)} />
-                </label>
-                <button onClick={sendOrder}>שלח הזמנה</button>
+                </div>
+                <div className="label-row">
+                    <textarea type="text" name="messageContent" className="textarea-message-content"
+                        onChange={e => handleFormHook(e.target, setEmailForm)} />
+                </div>
+                <button onClick={sendOrder} className="button-send-email">שלח הזמנה</button>
             </div>
         </div>
     )
