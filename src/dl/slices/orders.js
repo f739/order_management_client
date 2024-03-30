@@ -2,13 +2,11 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 const URL = import.meta.env.VITE_API_URL
 import $ from "axios";
 
-export const sendAnInvitation = createAsyncThunk(
-  "orders/sendAnInvitation",
+export const sendAnInvitation = createAsyncThunk("orders/sendAnInvitation",
   async (_, { getState, rejectWithValue }) => {
     try {
       const res = await $.post(`${URL}/orders/sendAnInvitation`, {});
-      const resetQuantityProducts = getState().products.allProducts.map(
-        (product) => {
+      const resetQuantityProducts = getState().products.allProducts.map( product => {
           if (product.temporaryQuantity > 0) {
             return { ...product, temporaryQuantity: 0 };
           }
@@ -23,8 +21,7 @@ export const sendAnInvitation = createAsyncThunk(
   }
 );
 
-export const getActiveOrders = createAsyncThunk(
-  "orders/getActiveOrders",
+export const getActiveOrders = createAsyncThunk( "orders/getActiveOrders",
   async (_, { rejectWithValue }) => {
     try {
       const res = await $.put(`${URL}/orderManagement/getAllActiveOrders`);
@@ -35,8 +32,7 @@ export const getActiveOrders = createAsyncThunk(
   }
 );
 
-export const getOldOrders = createAsyncThunk(
-  "orders/getOldOrders",
+export const getOldOrders = createAsyncThunk("orders/getOldOrders",
   async (_, { rejectWithValue }) => {
     try {
       const res = await $.put(`${URL}/oldOrders/getOldOrders`);
@@ -50,10 +46,7 @@ export const getOldOrders = createAsyncThunk(
 export const newOrderToDeliver = createAsyncThunk( "orders/newOrderToDeliver",
   async (emailForm, { rejectWithValue }) => {
     try {
-      const res = await $.post(
-        `${URL}/orderManagement/newOrderToDeliver`,
-        emailForm
-      );
+      const res = await $.post( `${URL}/orderManagement/newOrderToDeliver`, emailForm );
       const { newOldOrder, activeOrders } = res.data;
       const activesDeletedEmpty = activeOrders.filter( arr => arr.listProducts.length > 0);
       return { newOldOrder, activesDeletedEmpty };
@@ -96,18 +89,16 @@ export const returnProduct = createAsyncThunk("orders/returnProduct",
   }
 );
 
-export const ifWasAcceptedAction = createAsyncThunk("orders/ifWasAcceptedAction",
-  async (_id, { rejectWithValue }) => {
+export const productReceivedAction = createAsyncThunk("orders/productReceivedAction",
+  async (productData, { rejectWithValue }) => {
     try {
-      await $.put(`${URL}/oldOrders/${_id}/ifWasAcceptedAction`);
-      return _id;
+      const res = await $.put(`${URL}/oldOrders/productReceived`, productData);
+      return res.data.allOldOrders;
     } catch (err) {
       return rejectWithValue(err.response.data.message);
     }
   }
 );
-
-
 
 const initialState = {
   allActiveOrders: [],
@@ -143,9 +134,9 @@ export const slice = createSlice({
       const filteredOrders = updatedDoc.filter(oldOrder => oldOrder.orderList.length > 0);
       state.allOldOrders = filteredOrders; 
     });
-    builder.addCase(ifWasAcceptedAction.fulfilled, (state, action) => {
-      state.allOldOrders = state.allOldOrders.filter(
-        oldOrder => oldOrder._id !== action.payload);
+    builder.addCase(productReceivedAction.fulfilled, (state, action) => {
+      state.allOldOrders = action.payload;
+      // update OrdersReceivedSchema...
     });
     builder.addCase(removeProduct.fulfilled, (state, action) => {
       const { _id, idInvitation } = action.payload;

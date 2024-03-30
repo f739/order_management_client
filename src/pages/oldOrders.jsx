@@ -1,6 +1,6 @@
 import { useState ,useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
-import { getOldOrders, returnProduct, removeProductInOldOrder, ifWasAcceptedAction } from '../dl/slices/orders';
+import { getOldOrders, returnProduct, removeProductInOldOrder, productReceivedAction } from '../dl/slices/orders';
 import '../css/oldOrders.css';
 import Camera from "../components/Camera";
 
@@ -8,7 +8,7 @@ export const OldOrders = () => {
     const dispatch = useDispatch();
     const [groupedOrders, setGroupedOrders] = useState([]);
     const allOrders = useSelector( state => state.orders.allOldOrders);
-    const license = useSelector( state => state.users.user.license);
+    const {license} = useSelector( state => state.users.user);
 
     useEffect( () => {
         dispatch( getOldOrders())
@@ -36,7 +36,8 @@ export const OldOrders = () => {
                     <h3 className="supplier-title"> ספק: {supplierName}</h3>
                     {orders.map(order => (
                         <OldVendorOrders key={`${order._id}-${order.orderList.length}`} date={order.date} time={order.time} 
-                        orderList={order.orderList} license={license} ifWasAccepted={order.ifWasAccepted} dispatch={dispatch} supplierName={supplierName} idOrderList={order._id}/>
+                        orderList={order.orderList} license={license} supplierName={supplierName} ifWasAccepted={order.ifWasAccepted} dispatch={dispatch} 
+                        supplier={supplierName} idOrderList={order._id}/>
                     ))}
                 </div>
             ))}
@@ -45,14 +46,9 @@ export const OldOrders = () => {
 };
 
 
-const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAccepted, license }) => {
+const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAccepted, license, supplier }) => {
     const orderListSorted = [...orderList].sort((a, b) => a.category.localeCompare(b.category));
-    const [orderListAfterFilter, setOrderListAfterFilter] = useState(orderListSorted);
-    const handleIfWasAccepted = () => {
-        if (license === 'purchasingManager') {
-            dispatch(ifWasAcceptedAction(idOrderList));
-        }
-    }
+    
     return (
         <div key={idOrderList}>
             { !ifWasAccepted &&  
@@ -62,12 +58,15 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAc
                     <span>{time}</span>
                     <span>{date}</span>
                 </div>
-                {orderListAfterFilter.map(order => (
+                {orderListSorted.map(order => (
                     <ShowOldOrder key={order._id}
                     _id={order._id}
+                    time={time}
+                    date={date}
+                    supplierName={supplier}
+                    order={order}
                     dispatch={dispatch}
                     idOrderList={idOrderList}
-                    setOrderListAfterFilter={setOrderListAfterFilter}
                     license={license}
                     nameProduct={order.nameProduct}
                     temporaryQuantity={order.temporaryQuantity}
@@ -75,7 +74,6 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAc
                     price={order.price}
                     category={order.category} />
                 ))}
-                <button className="received-order-button" onClick={handleIfWasAccepted}>ההזמנה התקבלה</button>
                 {/* <Camera /> */}
             </div>
             }
@@ -84,11 +82,17 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAc
 };
 
 
-const ShowOldOrder = ({ _id, idOrderList, setOrderListAfterFilter, nameProduct,
+const ShowOldOrder = ({ _id, idOrderList, nameProduct, order, time, date, supplierName,
      temporaryQuantity, unitOfMeasure, category, price, dispatch, license }) => {
-    const wasReceived = async () => {
-        setOrderListAfterFilter(oldList => oldList.filter(order => order._id !== _id));
-    };
+    
+    const [valueTemporaryQuantity, setValueTemporaryQuantity] = useState(temporaryQuantity)
+
+    const productReceived = () => {
+        if (license === 'purchasingManager') {
+            dispatch(productReceivedAction({ numberOrder: idOrderList, time, date, supplierName,
+                product: {...order, temporaryQuantity: valueTemporaryQuantity}}));
+        }
+    }
     const returnToOrderManagement = async () => {
         if (license === 'purchasingManager') {
             dispatch( returnProduct({nameProduct, temporaryQuantity,
@@ -105,12 +109,13 @@ const ShowOldOrder = ({ _id, idOrderList, setOrderListAfterFilter, nameProduct,
         <div className="order-item">
             <div className="order-details start">
                 <p className="show-nameProduct"><strong>{nameProduct}</strong></p>
-                <p className="show-quantity">כמות: {temporaryQuantity}</p>
+                <input className="show-quantity" value={valueTemporaryQuantity}
+                onChange={ e => setValueTemporaryQuantity(e.target.value)}/>
                 <p className="show-unit-of-measure">{unitOfMeasure}</p>
                 <p className="show-price">מחיר: {price}</p>
             </div>
             <div className="end">
-                <button className="received-button" onClick={wasReceived}>המוצר התקבל</button>
+                <button className="received-button" onClick={productReceived}>המוצר התקבל</button>
                 <button className="return-to-order-management-button" onClick={returnToOrderManagement}>החזרה להזמנות</button>
                 <button onClick={deleteProduct} className="delete-item">מחק</button>
             </div>
