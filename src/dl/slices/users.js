@@ -57,8 +57,8 @@ export const testToken = createAsyncThunk('users/testToken',
   async (token, {rejectWithValue}) => {  
       try {
         const res = await $.put(`${URL}/login/${token}/testToken`);
-        const {license} = res.data;
-        return {license}
+        const {license, factory, userName, email} = res.data.decoded;
+        return { license, factory, userName, email}
       }catch (err) {
         return rejectWithValue(err.response.data.message)
       }
@@ -67,7 +67,7 @@ export const testToken = createAsyncThunk('users/testToken',
 
 const initialState = {
     allUsers: [],
-    user: {email: '', license: '' },
+    user: {email: '', license: '', userName: '',factory: '' },
     isLoading: false,
 }
 

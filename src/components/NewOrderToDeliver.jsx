@@ -5,7 +5,7 @@ import { getSuppliers } from '../dl/slices/suppliers';
 import { newOrderToDeliver } from "../dl/slices/orders";
 import '../css/newOrderToDeliver.css';
 
-export const NewOrderToDeliver = ({orderList, setShowSendEmail}) => {
+export const NewOrderToDeliver = ({orderList, setShowSendEmail, whichFactoryToSend}) => {
     const dispatch = useDispatch();
     const {license} = useSelector( state => state.users.user);
     const {allSuppliers} = useSelector( state => state.suppliers);
@@ -28,7 +28,7 @@ export const NewOrderToDeliver = ({orderList, setShowSendEmail}) => {
 
     const sendOrder = async () => {
         if (license === 'purchasingManager') {
-        dispatch( newOrderToDeliver(emailForm))
+        dispatch( newOrderToDeliver({emailForm, whichFactoryToSend}))
         }
     }
 

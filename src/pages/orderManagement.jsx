@@ -15,7 +15,9 @@ export const OrderManagement = () => {
   const dispatch = useDispatch();
   const { allActiveOrders } = useSelector(state => state.orders);
   const { allProducts } = useSelector(state => state.products);
+  const { user } = useSelector(state => state.users);
   const [showSendEmail, setShowSendEmail] = useState(false);
+  const [whichFactoryToSend, setWhichFactoryToSend] = useState(null);
   const [activeOrdersFiltred, setActiveOrdersFiltred] = useState([]);
   const [orderList, setOrderList] = useState([]);
   useEffect(() => {
@@ -27,28 +29,43 @@ export const OrderManagement = () => {
 
   useEffect(() => {
     if (allActiveOrders) {
-      const sortedActiveOrders = allActiveOrders.map(order => ({
-        ...order,
-        listProducts: [...order.listProducts].sort((a, b) => a.category.localeCompare(b.category))
-      }));
-      setActiveOrdersFiltred(sortedActiveOrders);
+      if (user.license === 'purchasingManager') {
+        const sortedActiveOrders = allActiveOrders.map(order => ({
+          ...order,
+          listProducts: [...order.listProducts].sort((a, b) => a.category.localeCompare(b.category))
+        }));
+        setActiveOrdersFiltred(sortedActiveOrders);
+      }else {
+        const sortedActiveOrders = allActiveOrders.map(order => ({
+          ...order,
+          listProducts: [...order.listProducts]
+          .filter( product => product.factory === user.factory)
+          .sort((a, b) => a.category.localeCompare(b.category))
+        }));
+        const filteredOrdersWithProducts = sortedActiveOrders
+        .filter(order => order.listProducts.length > 0);
+        setActiveOrdersFiltred(filteredOrdersWithProducts);
+      }
     }
   }, [allActiveOrders]);
 
   return (
     <div>
       {!showSendEmail && <button onClick={() => setShowSendEmail(old => !old)} className='send-order'>שלח הזמנה לספק</button>}
-      {showSendEmail && <NewOrderToDeliver orderList={orderList} setShowSendEmail={setShowSendEmail} />}
+      {showSendEmail && <NewOrderToDeliver orderList={orderList} whichFactoryToSend={whichFactoryToSend}  setShowSendEmail={setShowSendEmail} />}
       {activeOrdersFiltred.length > 0 ? activeOrdersFiltred.map(invitation => (
         <Invitation
           invitation={invitation.listProducts}
           date={invitation.date}
           time={invitation.time}
+          userName={invitation.userName}
+          factory={invitation.factory}
           dispatch={dispatch}
           orderList={orderList}
           allProducts={allProducts}
           allActiveOrders={allActiveOrders}
           idInvitation={invitation._id}
+          setWhichFactoryToSend={setWhichFactoryToSend}
           setOrderList={setOrderList}
           key={invitation._id} />
       )) : <p>אין הזמנות לטיפול</p>}
@@ -57,23 +74,27 @@ export const OrderManagement = () => {
 }
 
 const Invitation = props => {
-  const { invitation, date, time, orderList, dispatch, idInvitation,
-    allProducts, allActiveOrders, setOrderList } = props;
+  const { invitation, date, time, orderList, dispatch, idInvitation, userName, factory,
+    allProducts, allActiveOrders, setOrderList, setWhichFactoryToSend } = props;
   return (
     <div className="invitation-container">
       <div className="title">
+        <span>{userName}</span>
+        <span className={`factory-${factory}`}>{factory && factory.charAt(0).toUpperCase()}</span>
         <span>תאריך: {date}</span>
         <span>שעה: {time}</span>
       </div>
       {invitation.map(product => (
         <Product
           product={product}
-          dispatch={dispatch}
+          factory={factory}
           orderList={orderList}
           idInvitation={idInvitation}
           allProducts={allProducts}
           allActiveOrders={allActiveOrders}
+          dispatch={dispatch}
           setOrderList={setOrderList}
+          setWhichFactoryToSend={setWhichFactoryToSend}
           key={product._id} />
       ))}
     </div>
@@ -81,7 +102,7 @@ const Invitation = props => {
 }
 
 const Product = props => {
-  const { product, orderList, dispatch, idInvitation, allProducts, setOrderList, allActiveOrders } = props;
+  const { product, orderList, factory, dispatch, idInvitation, allProducts, setOrderList, allActiveOrders, setWhichFactoryToSend } = props;
   const isSelected = orderList.some(orderProduct => orderProduct._id === product._id);
   const [editQuantity, setEditQuantity] = useState(product.temporaryQuantity);
   const [cheapestSupplier, setCheapestSupplier] = useState({ nameSupplier: '', price: '' });
@@ -114,6 +135,7 @@ const Product = props => {
   }, [allProducts, product]);
 
   const addToOrder = (newProduct, editQuantity) => {
+    setWhichFactoryToSend(factory)
     setOrderList(prev => {
       const isProductExist = prev.some(product => product._id === newProduct._id);
       if (isProductExist) {

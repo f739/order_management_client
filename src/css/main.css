@@ -119,3 +119,18 @@ nav a:hover::after, nav a.active::after {
   height: auto; 
   vertical-align: middle; 
 }
+span.factory-restaurant {
+  color: rgb(135, 83, 45);
+  font-weight: bold; 
+}
+
+span.factory-catering {
+  color: rgb(104, 25, 95);
+  font-weight: bold;
+}
+
+span.factory-bakery {
+  color: rgb(39, 24, 114);
+  font-weight: bold;
+}
+

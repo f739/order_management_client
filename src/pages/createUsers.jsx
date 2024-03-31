@@ -8,7 +8,7 @@ import '../css/users.css';
 export const CreateUsers = () => {
     const  dispatch = useDispatch();
     const [formCreateUser, setFormCreateUser] = useState(
-        {userName: '', password: '',email: '', license: '' });
+        {userName: '', password: '',email: '', license: '', factory: '' });
 
     const createUser = async () => {
         dispatch( createNewUser(formCreateUser))
@@ -31,11 +31,20 @@ export const CreateUsers = () => {
                 </label>
                 <label htmlFor="license">
                     :רישיון
-                    <select name="license" id=""  onChange={e => handleFormHook(e.target, setFormCreateUser)}>
+                    <select name="license" onChange={e => handleFormHook(e.target, setFormCreateUser)}>
                         <option >--בחר אפשרות--</option>
                         <option value="cooker">טבח</option>
                         <option value="purchasingManager">מנהל רכש</option>
                         <option value="Bookkeeping">הנהלת חשבונות</option>
+                    </select>
+                </label>
+                <label htmlFor="Factory">
+                    :מפעל
+                    <select name="factory" onChange={e => handleFormHook(e.target, setFormCreateUser)}>
+                    <option value="">--בחר אפשרות--</option>
+                        <option value="catering">קייטרינג</option>
+                        <option value="restaurant">מסעדה</option>
+                        <option value="bakery">מאפיה</option>
                     </select>
                 </label>
                 <button onClick={createUser}>צור משתמש</button>
@@ -67,6 +76,7 @@ const ShowUsers = ({dispatch}) => {
                     <span>{user.userName}</span>
                     <span>{user.email}</span>
                     <span>{user.license}</span>
+                    <span>{user.factory}</span>
                     <button onClick={() => deleteUser(user._id)} className="delete-item">
                         <img src={trash_icon} alt="delete" />
                     </button>

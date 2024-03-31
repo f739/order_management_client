@@ -10,7 +10,7 @@ import '../css/products.css';
 
 export const Products = () => {
     const dispatch = useDispatch();
-    const [newProduct, setNewProduct] = useState({nameProduct: '', category: '', unitOfMeasure: '', sku: '', price: []});
+    const [newProduct, setNewProduct] = useState({nameProduct: '', factory: '', category: '', unitOfMeasure: '', sku: '', price: []});
     const [newPrice, setNewPrice] = useState({nameSupplier: '', price: ''});
     const {allCategories} = useSelector( state => state.categories);
     const {allSuppliers} = useSelector( state => state.suppliers);
@@ -81,6 +81,15 @@ export const Products = () => {
                 </label>
    
                 <label>
+                    מפעל:
+                    <select name="factory"  onChange={e => handleFormHook(e.target, setNewProduct)}>
+                        <option value="">--בחר אפשרות--</option>
+                        <option value="catering">קייטרינג</option>
+                        <option value="restaurant">מסעדה</option>
+                        <option value="bakery">מאפיה</option>
+                    </select>
+                </label>
+                <label>
                     קטגוריה:
                     { <select id="categories-select" name="category"  onChange={e => handleFormHook(e.target, setNewProduct)}>
                         <option value="">--בחר אפשרות--</option>
@@ -114,7 +123,7 @@ const ShowProducts = props => {
         if (allProducts.length === 0) {
             dispatch( getProducts())
         }
-    })
+    },[])
 
     const deleteProduct = (_id) => {
        dispatch( removeProduct(_id))
@@ -127,6 +136,7 @@ const ShowProducts = props => {
         {allProducts && allProducts.length > 0 ? allProducts.map( product => (
                 <div className="show-item" key={product._id}>
                     <span>{product.nameProduct}</span>
+                    <span className={`factory-${product.factory}`}>{product.factory && product.factory.charAt(0).toUpperCase()}</span>
                     <span>{product.unitOfMeasure}</span>
                     <span>{product.category}</span>
                     <button onClick={() => deleteProduct(product._id)} className="delete-item">

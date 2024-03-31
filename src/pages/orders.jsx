@@ -9,7 +9,9 @@ import '../css/orders.css'
 export const Orders = () => {
     const dispatch = useDispatch();
     const {allProducts, isLoading} = useSelector( state => state.products);
+    const { user } = useSelector( state => state.users);
     const {allCategories} = useSelector( state => state.categories);
+    const [whichFactoryToSend, setWhichFactoryToSend] = useState(null);
     const [itemsListFiltered, setItemsListFiltered] = useState([]);
 
     useEffect(() => {
@@ -18,8 +20,15 @@ export const Orders = () => {
         }
     }, []);
     useEffect(() => {
-        const sortedProducts = [...allProducts].sort((a, b) => a.category.localeCompare(b.category));
-        setItemsListFiltered(sortedProducts);
+        if (user.license === 'purchasingManager') {
+            const sortedProducts = [...allProducts].sort((a, b) => a.category.localeCompare(b.category));
+            setItemsListFiltered(sortedProducts);
+        }else {
+            const sortedProducts = [...allProducts]
+            .filter( product => product.factory === user.factory)
+            .sort((a, b) => a.category.localeCompare(b.category))
+            setItemsListFiltered(sortedProducts);
+        }
     }, [allProducts]);
 
     useEffect( () => {
@@ -29,7 +38,7 @@ export const Orders = () => {
     },[allCategories]);
       
     const SendAnInvitation = async () => {
-        dispatch( sendAnInvitation())   
+        dispatch( sendAnInvitation({user, whichFactoryToSend}))   
     }
     
     const filterProducts = e => {
@@ -54,10 +63,12 @@ export const Orders = () => {
             { itemsListFiltered && itemsListFiltered.map( item => (
                 <div className="box-item"  key={item._id}>
                     <ItemsBox nameProduct={item.nameProduct} 
+                    factory={item.factory}
                     temporaryQuantity={item.temporaryQuantity} 
                     unitOfMeasure={item.unitOfMeasure}
                     category={item.category}
                     note={item.note}
+                    setWhichFactoryToSend={setWhichFactoryToSend}
                     _id={item._id}/>
                 </div>
             ))}

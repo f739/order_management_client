@@ -4,9 +4,11 @@ import { createNewNote, removeNote, addOrSubtract } from "../dl/slices/products"
 
 export const ItemsBox = props => {
     const dispatch = useDispatch()
-    const { nameProduct, temporaryQuantity, _id, category, unitOfMeasure, note } = props;
+    const { nameProduct, factory, temporaryQuantity, _id,
+        category, unitOfMeasure, note, setWhichFactoryToSend } = props;
 
     const addItem = async () => {
+        setWhichFactoryToSend(factory)
         const newTemporaryQuantity = Number(temporaryQuantity) +1 ;
         dispatch( addOrSubtract({_id, newTemporaryQuantity}))
     }
@@ -22,6 +24,7 @@ export const ItemsBox = props => {
                 <h4>{nameProduct}</h4>
                 <span>{unitOfMeasure}</span>
                 <span>{category}</span>
+                <span className={`factory-${factory}`}>{factory && factory.charAt(0).toUpperCase()}</span>
             </div>
             <ShowNote note={note} _id={_id} dispatch={dispatch} />
             <div className="quantity-controls end-order">

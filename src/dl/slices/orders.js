@@ -3,9 +3,9 @@ const URL = import.meta.env.VITE_API_URL
 import $ from "axios";
 
 export const sendAnInvitation = createAsyncThunk("orders/sendAnInvitation",
-  async (_, { getState, rejectWithValue }) => {
+  async ({user, whichFactoryToSend}, { getState, rejectWithValue }) => {
     try {
-      const res = await $.post(`${URL}/orders/sendAnInvitation`, {});
+      const res = await $.post(`${URL}/orders/sendAnInvitation`, {user, whichFactoryToSend});
       const resetQuantityProducts = getState().products.allProducts.map( product => {
           if (product.temporaryQuantity > 0) {
             return { ...product, temporaryQuantity: 0 };
@@ -44,9 +44,10 @@ export const getOldOrders = createAsyncThunk("orders/getOldOrders",
 );
 
 export const newOrderToDeliver = createAsyncThunk( "orders/newOrderToDeliver",
-  async (emailForm, { rejectWithValue }) => {
+  async ({emailForm, whichFactoryToSend}, { rejectWithValue }) => {
     try {
-      const res = await $.post( `${URL}/orderManagement/newOrderToDeliver`, emailForm );
+      console.log(whichFactoryToSend);
+      const res = await $.post( `${URL}/orderManagement/newOrderToDeliver`, {emailForm, whichFactoryToSend} );
       const { newOldOrder, activeOrders } = res.data;
       const activesDeletedEmpty = activeOrders.filter( arr => arr.listProducts.length > 0);
       return { newOldOrder, activesDeletedEmpty };

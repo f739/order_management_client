@@ -8,7 +8,7 @@ export const OldOrders = () => {
     const dispatch = useDispatch();
     const [groupedOrders, setGroupedOrders] = useState([]);
     const allOrders = useSelector( state => state.orders.allOldOrders);
-    const {license} = useSelector( state => state.users.user);
+    const {user} = useSelector( state => state.users);
 
     useEffect( () => {
         dispatch( getOldOrders())
@@ -16,7 +16,11 @@ export const OldOrders = () => {
 
     useEffect(() => {
         if (allOrders.length || !allOrders) {
-            const oldOrdersFiltered = [...allOrders].sort((a, b) => a.date.localeCompare(b.date));
+            let oldOrdersFiltered = [...allOrders];
+            if (user.license !== 'purchasingManager') {
+                oldOrdersFiltered = oldOrdersFiltered.filter( product => product.factory === user.factory)
+            }
+            oldOrdersFiltered = oldOrdersFiltered.sort((a, b) => a.date.localeCompare(b.date));
             const groupBySupplier = oldOrdersFiltered.reduce((acc, order) => {
                 const nameSupplier = order.supplier.nameSupplier; 
                 acc[nameSupplier] = acc[nameSupplier] || [];
@@ -36,8 +40,8 @@ export const OldOrders = () => {
                     <h3 className="supplier-title"> ספק: {supplierName}</h3>
                     {orders.map(order => (
                         <OldVendorOrders key={`${order._id}-${order.orderList.length}`} date={order.date} time={order.time} 
-                        orderList={order.orderList} license={license} supplierName={supplierName} ifWasAccepted={order.ifWasAccepted} dispatch={dispatch} 
-                        supplier={supplierName} idOrderList={order._id}/>
+                        orderList={order.orderList} license={user.license} supplierName={supplierName} ifWasAccepted={order.ifWasAccepted} dispatch={dispatch} 
+                        supplier={supplierName} factory={order.factory} idOrderList={order._id}/>
                     ))}
                 </div>
             ))}
@@ -46,7 +50,7 @@ export const OldOrders = () => {
 };
 
 
-const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAccepted, license, supplier }) => {
+const OldVendorOrders = ({ orderList, factory, date, time, idOrderList, dispatch, ifWasAccepted, license, supplier }) => {
     const orderListSorted = [...orderList].sort((a, b) => a.category.localeCompare(b.category));
     
     return (
@@ -57,12 +61,14 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAc
                     <span>מספר הזמנה: {idOrderList}</span>
                     <span>{time}</span>
                     <span>{date}</span>
+                    <span className={`factory-${factory}`}>{factory && factory.charAt(0).toUpperCase()}</span>
                 </div>
                 {orderListSorted.map(order => (
                     <ShowOldOrder key={order._id}
                     _id={order._id}
                     time={time}
                     date={date}
+                    factory={factory}
                     supplierName={supplier}
                     order={order}
                     dispatch={dispatch}
@@ -82,20 +88,20 @@ const OldVendorOrders = ({ orderList, date, time, idOrderList, dispatch, ifWasAc
 };
 
 
-const ShowOldOrder = ({ _id, idOrderList, nameProduct, order, time, date, supplierName,
+const ShowOldOrder = ({ _id, idOrderList, nameProduct, factory, order, time, date, supplierName,
      temporaryQuantity, unitOfMeasure, category, price, dispatch, license }) => {
     
     const [valueTemporaryQuantity, setValueTemporaryQuantity] = useState(temporaryQuantity)
 
     const productReceived = () => {
         if (license === 'purchasingManager') {
-            dispatch(productReceivedAction({ numberOrder: idOrderList, time, date, supplierName,
+            dispatch(productReceivedAction({ numberOrder: idOrderList, time, date, factory, supplierName,
                 product: {...order, temporaryQuantity: valueTemporaryQuantity}}));
         }
     }
     const returnToOrderManagement = async () => {
         if (license === 'purchasingManager') {
-            dispatch( returnProduct({nameProduct, temporaryQuantity,
+            dispatch( returnProduct({nameProduct, factory, temporaryQuantity,
                 unitOfMeasure, category, _id, idOrderList
             }))
         }
