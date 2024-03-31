@@ -20,7 +20,7 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
       setNewPrice({price: target.value, nameSupplier})
     }
     const handleSaveNewPrice = () => {
-      if (license === 'purchasingManager') {
+      if (license === 'purchasingManager' && newPrice.price !== '' && newPrice.nameSupplier !== '') {
         dispatch( addPrice({...newPrice, _idProduct: productId}));
       }
     }
@@ -62,9 +62,8 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
                 <option value="">--בחר אפשרות--</option>
                 {allSuppliers.length > 0 && allSuppliers ? allSuppliers.map(supplier => ( 
                   <React.Fragment key={supplier._id}>
-                    {prices && prices.length > 0 ? !prices.some(priceInfo => priceInfo.nameSupplier === supplier.nameSupplier) &&
-                        <option value={supplier.nameSupplier} key={supplier._id}>{supplier.nameSupplier}</option>
-                    : <p>אין מחירים</p>    
+                    {prices && !prices.some(priceInfo => priceInfo.nameSupplier === supplier.nameSupplier) &&
+                        <option value={supplier.nameSupplier} key={supplier._id}>{supplier.nameSupplier}</option>  
                     }
                   </React.Fragment>
                 )): <p>אין ספקים להצגה</p> }

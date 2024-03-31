@@ -47,8 +47,12 @@ export const Products = () => {
     }
     
     const handleSaveNewProduct = () => {
-        dispatch( createNewProduct(newProduct));
-        setNewProduct({nameProduct: '', category: '', unitOfMeasure: '', sku: '', price: []});
+        if (newProduct.nameProduct === '' || newProduct.category === '' ||
+        newProduct.unitOfMeasure === '' || newProduct.sku === '' || newProduct.factory === '' ) {
+        }else {
+            dispatch( createNewProduct(newProduct));
+            setNewProduct({nameProduct: '', factory: '', category: '', unitOfMeasure: '', sku: '', price: []});
+        }
     }
     if (!allCategories || !allMeasures || !allSuppliers) return <h1>לא נמצאו</h1>;
     
@@ -69,7 +73,7 @@ export const Products = () => {
                         {newProduct.price && newProduct.price.map((price, i) => (
                             <span key={i} className="price-span">{price.nameSupplier} - {price.price}</span>
                         ))}
-                        <select id="suppliers-select" name="nameSupplier" onChange={e => handleFormHook(e.target, setNewPrice)}>
+                        <select id="suppliers-select" name="nameSupplier" value={newPrice.nameSupplier} onChange={e => handleFormHook(e.target, setNewPrice)}>
                             <option value="">--בחר אפשרות--</option>
                             {allSuppliers.length > 0 && allSuppliers.map(supplier => (    
                                 <option value={supplier.nameSupplier} key={supplier._id}>{supplier.nameSupplier}</option>
@@ -82,7 +86,7 @@ export const Products = () => {
    
                 <label>
                     מפעל:
-                    <select name="factory"  onChange={e => handleFormHook(e.target, setNewProduct)}>
+                    <select name="factory" value={newProduct.factory} onChange={e => handleFormHook(e.target, setNewProduct)}>
                         <option value="">--בחר אפשרות--</option>
                         <option value="catering">קייטרינג</option>
                         <option value="restaurant">מסעדה</option>
@@ -91,7 +95,7 @@ export const Products = () => {
                 </label>
                 <label>
                     קטגוריה:
-                    { <select id="categories-select" name="category"  onChange={e => handleFormHook(e.target, setNewProduct)}>
+                    { <select id="categories-select" name="category" value={newProduct.category} onChange={e => handleFormHook(e.target, setNewProduct)}>
                         <option value="">--בחר אפשרות--</option>
                         { allCategories.length > 0 && allCategories.map( category => (
                             <option value={category.nameCategory} key={category._id}>{category.nameCategory}</option>
@@ -100,7 +104,7 @@ export const Products = () => {
                 </label>
                 <label>
                     יחידות מידה:
-                    { <select id="unit-of-measure-select" name="unitOfMeasure"
+                    { <select id="unit-of-measure-select" name="unitOfMeasure" value={newProduct.unitOfMeasure}
                     onChange={e => handleFormHook(e.target, setNewProduct)}>
                         <option value="">--בחר אפשרות--</option>
                         {allMeasures.length > 0 && allMeasures.map( measure => (

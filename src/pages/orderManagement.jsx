@@ -19,6 +19,7 @@ export const OrderManagement = () => {
   const [showSendEmail, setShowSendEmail] = useState(false);
   const [whichFactoryToSend, setWhichFactoryToSend] = useState(null);
   const [activeOrdersFiltred, setActiveOrdersFiltred] = useState([]);
+  const [factoriesFilter, setFactoriesFilter] = useState([])
   const [orderList, setOrderList] = useState([]);
   useEffect(() => {
     dispatch(getActiveOrders())
@@ -35,6 +36,7 @@ export const OrderManagement = () => {
           listProducts: [...order.listProducts].sort((a, b) => a.category.localeCompare(b.category))
         }));
         setActiveOrdersFiltred(sortedActiveOrders);
+        setFactoriesFilter(sortedActiveOrders);
       }else {
         const sortedActiveOrders = allActiveOrders.map(order => ({
           ...order,
@@ -45,15 +47,31 @@ export const OrderManagement = () => {
         const filteredOrdersWithProducts = sortedActiveOrders
         .filter(order => order.listProducts.length > 0);
         setActiveOrdersFiltred(filteredOrdersWithProducts);
+        setFactoriesFilter(filteredOrdersWithProducts);
       }
     }
   }, [allActiveOrders]);
-
+  const filterProducts = e => {
+    const { value } = e.target;
+    setFactoriesFilter( prev => {
+      if (value === 'allFactories') {
+        return activeOrdersFiltred;
+      } else {
+        return activeOrdersFiltred.filter((product) => product.factory === value);
+      }
+    });
+  }
   return (
     <div>
+       <select onChange={filterProducts}>
+            <option value="allFactories">כל המפעלים</option>
+            <option value="catering">קייטרינג</option>
+            <option value="restaurant">מסעדה</option>
+            <option value="bakery">מאפיה</option>
+      </select>
       {!showSendEmail && <button onClick={() => setShowSendEmail(old => !old)} className='send-order'>שלח הזמנה לספק</button>}
       {showSendEmail && <NewOrderToDeliver orderList={orderList} whichFactoryToSend={whichFactoryToSend}  setShowSendEmail={setShowSendEmail} />}
-      {activeOrdersFiltred.length > 0 ? activeOrdersFiltred.map(invitation => (
+      {factoriesFilter.length > 0 ? factoriesFilter.map(invitation => (
         <Invitation
           invitation={invitation.listProducts}
           date={invitation.date}

@@ -90,7 +90,7 @@ const OldVendorOrders = ({ orderList, factory, date, time, idOrderList, dispatch
 
 const ShowOldOrder = ({ _id, idOrderList, nameProduct, factory, order, time, date, supplierName,
      temporaryQuantity, unitOfMeasure, category, price, dispatch, license }) => {
-    
+    const {user} = useSelector( state => state.users);
     const [valueTemporaryQuantity, setValueTemporaryQuantity] = useState(temporaryQuantity)
 
     const productReceived = () => {
@@ -102,7 +102,7 @@ const ShowOldOrder = ({ _id, idOrderList, nameProduct, factory, order, time, dat
     const returnToOrderManagement = async () => {
         if (license === 'purchasingManager') {
             dispatch( returnProduct({nameProduct, factory, temporaryQuantity,
-                unitOfMeasure, category, _id, idOrderList
+                unitOfMeasure, category, _id, idOrderList, userName: user.userName,
             }))
         }
     }
