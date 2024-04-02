@@ -6,15 +6,8 @@ export const sendAnInvitation = createAsyncThunk("orders/sendAnInvitation",
   async ({user, whichFactoryToSend}, { getState, rejectWithValue }) => {
     try {
       const res = await $.post(`${URL}/orders/sendAnInvitation`, {user, whichFactoryToSend});
-      const resetQuantityProducts = getState().products.allProducts.map( product => {
-          if (product.temporaryQuantity > 0) {
-            return { ...product, temporaryQuantity: 0 };
-          }
-          return product;
-        }
-      );
-      const { newActiveOrder } = res.data;
-      return { resetQuantityProducts, newActiveOrder };
+      const { newActiveOrder, allProducts } = res.data;
+      return { allProducts, newActiveOrder };
     } catch (err) {
       return rejectWithValue(err.response.data.message);
     }

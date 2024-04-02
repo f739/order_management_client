@@ -1,6 +1,9 @@
 import { useState ,useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { getOldOrders, returnProduct, removeProductInOldOrder, productReceivedAction } from '../dl/slices/orders';
+import  vIcon from '../assetes/vIcon.svg';
+import trash_icon from '../assetes/trash_icon.svg'
+import return_icon from '../assetes/return_icon.svg'
 import '../css/oldOrders.css';
 import Camera from "../components/Camera";
 
@@ -34,9 +37,9 @@ export const OldOrders = () => {
     }, [allOrders]);
     
     return (
-        <div className="container-orders">
+        <div className="container-old-orders">
             {Object.entries(groupedOrders).length > 0 && Object.entries(groupedOrders).map(([supplierName, orders]) => (
-                <div key={supplierName} className="supplier-container">      
+                <div key={supplierName}>      
                     <h3 className="supplier-title"> ספק: {supplierName}</h3>
                     {orders.map(order => (
                         <OldVendorOrders key={`${order._id}-${order.orderList.length}`} date={order.date} time={order.time} 
@@ -58,10 +61,10 @@ const OldVendorOrders = ({ orderList, factory, date, time, idOrderList, dispatch
             { !ifWasAccepted &&  
             <div className="order-container">
                 <div className="title-order">
-                    <span>מספר הזמנה: {idOrderList}</span>
+                    <span className={`factory-${factory}`}>{factory && factory.charAt(0).toUpperCase()}</span>
+                    <span>{idOrderList.substring(0,8)}</span>
                     <span>{time}</span>
                     <span>{date}</span>
-                    <span className={`factory-${factory}`}>{factory && factory.charAt(0).toUpperCase()}</span>
                 </div>
                 {orderListSorted.map(order => (
                     <ShowOldOrder key={order._id}
@@ -80,7 +83,7 @@ const OldVendorOrders = ({ orderList, factory, date, time, idOrderList, dispatch
                     price={order.price}
                     category={order.category} />
                 ))}
-                {/* <Camera /> */}
+                { <Camera /> }
             </div>
             }
         </div>
@@ -113,17 +116,21 @@ const ShowOldOrder = ({ _id, idOrderList, nameProduct, factory, order, time, dat
     }
     return (
         <div className="order-item">
-            <div className="order-details start">
-                <p className="show-nameProduct"><strong>{nameProduct}</strong></p>
-                <input className="show-quantity" value={valueTemporaryQuantity}
+            <div className="order-details up">
+                <input value={valueTemporaryQuantity}
                 onChange={ e => setValueTemporaryQuantity(e.target.value)}/>
-                <p className="show-unit-of-measure">{unitOfMeasure}</p>
-                <p className="show-price">מחיר: {price}</p>
+                <span><strong>{nameProduct}</strong></span>
+                <span>{unitOfMeasure}</span>
+                <span>מחיר: {price}</span>
             </div>
             <div className="end">
-                <button className="received-button" onClick={productReceived}>המוצר התקבל</button>
-                <button className="return-to-order-management-button" onClick={returnToOrderManagement}>החזרה להזמנות</button>
-                <button onClick={deleteProduct} className="delete-item">מחק</button>
+                <button className="received-button" onClick={productReceived}><img src={vIcon} className="icon"/> </button>
+                <button onClick={returnToOrderManagement}>
+                    <img src={return_icon} alt="החזר להזמנות" className="icon" />
+                </button>
+                <button onClick={deleteProduct}>
+                    <img src={trash_icon} alt="delete" className="icon" />
+                </button>
             </div>
         </div>
     );

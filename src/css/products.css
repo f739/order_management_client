@@ -15,19 +15,18 @@
   
   .new-item label.price-label .price-input-container select,
   .new-item label.price-label .price-input-container input {
-    flex: 1; /* מאפשרים לשניהם לתפוס את כל המקום הזמין באופן שווה */
-    margin-right: 10px; /* מרווח בין ה-select ל-input */
+    flex: 1;
+    margin-right: 10px; 
   }
   
   .new-item label.price-label .price-input-container button {
-    margin-left: 10px; /* מרווח משמאל לכפתור */
+    margin-left: 10px; 
   }
-  
-  /* הגדרות נוספות לעיצוב ה-select, ה-input וה-button כדי להתאים לעיצוב הכללי */
+
   .new-item select, .new-item input, .new-item button {
     padding: 8px;
     border-radius: 4px;
     border: 1px solid #ddd;
-    margin-top: 0; /* מורידים את המרווח מלמעלה שהוגדר כללית ל-inputs ו-selects */
+    margin-top: 0; 
   }
   

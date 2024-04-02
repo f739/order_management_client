@@ -4,10 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getActiveOrders, removeProduct } from "../dl/slices/orders";
 import { NewOrderToDeliver } from '../components/NewOrderToDeliver';
 import { getProducts } from '../dl/slices/products';
-import trash_icon from '../assetes/trash_icon.png';
-import edit_pencile from '../assetes/edit_pencile.png';
-import plus_icon from '../assetes/plus_icon.png';
-import save from '../assetes/save.png';
+import edit from '../assetes/edit.svg';
+import trash_icon from '../assetes/trash_icon.svg'
 import { BoxPrice } from '../components/BoxPrice';
 import '../css/orderManagement.css';
 
@@ -17,10 +15,10 @@ export const OrderManagement = () => {
   const { allProducts } = useSelector(state => state.products);
   const { user } = useSelector(state => state.users);
   const [showSendEmail, setShowSendEmail] = useState(false);
-  const [whichFactoryToSend, setWhichFactoryToSend] = useState(null);
   const [activeOrdersFiltred, setActiveOrdersFiltred] = useState([]);
   const [factoriesFilter, setFactoriesFilter] = useState([])
   const [orderList, setOrderList] = useState([]);
+
   useEffect(() => {
     dispatch(getActiveOrders())
     if (allProducts.length === 0) {
@@ -70,7 +68,7 @@ export const OrderManagement = () => {
             <option value="bakery">מאפיה</option>
       </select>
       {!showSendEmail && <button onClick={() => setShowSendEmail(old => !old)} className='send-order'>שלח הזמנה לספק</button>}
-      {showSendEmail && <NewOrderToDeliver orderList={orderList} whichFactoryToSend={whichFactoryToSend}  setShowSendEmail={setShowSendEmail} />}
+      {showSendEmail && <NewOrderToDeliver orderList={orderList} setShowSendEmail={setShowSendEmail} />}
       {factoriesFilter.length > 0 ? factoriesFilter.map(invitation => (
         <Invitation
           invitation={invitation.listProducts}
@@ -83,7 +81,6 @@ export const OrderManagement = () => {
           allProducts={allProducts}
           allActiveOrders={allActiveOrders}
           idInvitation={invitation._id}
-          setWhichFactoryToSend={setWhichFactoryToSend}
           setOrderList={setOrderList}
           key={invitation._id} />
       )) : <p>אין הזמנות לטיפול</p>}
@@ -93,26 +90,24 @@ export const OrderManagement = () => {
 
 const Invitation = props => {
   const { invitation, date, time, orderList, dispatch, idInvitation, userName, factory,
-    allProducts, allActiveOrders, setOrderList, setWhichFactoryToSend } = props;
+    allProducts, allActiveOrders, setOrderList } = props;
   return (
     <div className="invitation-container">
       <div className="title">
-        <span>{userName}</span>
         <span className={`factory-${factory}`}>{factory && factory.charAt(0).toUpperCase()}</span>
+        <span>{userName}</span>
         <span>תאריך: {date}</span>
         <span>שעה: {time}</span>
       </div>
       {invitation.map(product => (
         <Product
           product={product}
-          factory={factory}
           orderList={orderList}
           idInvitation={idInvitation}
           allProducts={allProducts}
           allActiveOrders={allActiveOrders}
           dispatch={dispatch}
           setOrderList={setOrderList}
-          setWhichFactoryToSend={setWhichFactoryToSend}
           key={product._id} />
       ))}
     </div>
@@ -120,7 +115,7 @@ const Invitation = props => {
 }
 
 const Product = props => {
-  const { product, orderList, factory, dispatch, idInvitation, allProducts, setOrderList, allActiveOrders, setWhichFactoryToSend } = props;
+  const { product, orderList, dispatch, idInvitation, allProducts, setOrderList, allActiveOrders } = props;
   const isSelected = orderList.some(orderProduct => orderProduct._id === product._id);
   const [editQuantity, setEditQuantity] = useState(product.temporaryQuantity);
   const [cheapestSupplier, setCheapestSupplier] = useState({ nameSupplier: '', price: '' });
@@ -153,7 +148,6 @@ const Product = props => {
   }, [allProducts, product]);
 
   const addToOrder = (newProduct, editQuantity) => {
-    setWhichFactoryToSend(factory)
     setOrderList(prev => {
       const isProductExist = prev.some(product => product._id === newProduct._id);
       if (isProductExist) {
@@ -189,24 +183,27 @@ const Product = props => {
   return (
     <>
       <div className={`show-product ${isSelected ? 'selected-style' : ''}`}>
-        <div className="product-details">
-          <span className='start'>
+        <div className="product-details" onClick={() => addToOrder(product, editQuantity)}>
+          <div className='up'>
             <input type="number" onChange={e => setEditQuantity(Number(e.target.value))}
               value={editQuantity} />
             <span>{product.nameProduct}</span>
             <span>{product.unitOfMeasure}</span>
-            {product.note && <span className='note'>{product.note}</span>}
-          </span>
-          <div className="edit-price center">
+            <button onClick={deleteProduct}>
+              <img src={trash_icon} alt="delete" className="icon" />
+            </button>
+          </div>
+          <div className="center">
             <label>מחיר מומלץ:</label>
             <span>{cheapestSupplier.nameSupplier}</span>
             <input defaultValue={cheapestSupplier.price}
               onChange={e => priceToDeliver(e.target.value, product._id)} />
-            <button onClick={() => setShowPrices(old => !old)} className='edit-item' >ערוך מחירים</button>
+            <button onClick={() => setShowPrices(old => !old)} >
+              <img src={edit} alt="ערוך" className='icon'/>
+            </button>
           </div>
-          <div className='buttons end'>
-            <button onClick={() => addToOrder(product, editQuantity)}>הוסף לשליחה</button>
-            <button onClick={deleteProduct} className="delete-item">מחק</button>
+          <div className='end'>
+              {product.note && <span className='note'>{product.note}</span>}
           </div>
         </div>
         {showPrices && (

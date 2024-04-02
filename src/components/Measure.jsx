@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { getMeasures, createNewMeasure, removeMeasure } from "../dl/slices/measures";
 import { handleFormHook } from './HandleFormHook';
-import trash_icon from '../assetes/trash_icon.png';
-import '../css/measure.css';
+import trash_icon from '../assetes/trash_icon.svg';
 
 export const Measure = () => {
     const dispatch = useDispatch();
@@ -52,7 +51,7 @@ const ShowMeasures = props => {
                     <div key={measure._id} className="show-item">
                         <span>{measure.measureName}</span>
                         <button onClick={() => deleteMeasure(measure._id)} className="delete-item">
-                            <img src={trash_icon} alt="delete" />
+                            <img src={trash_icon} alt="delete" className="icon"/>
                         </button>
                     </div>
                 )) ) : (<div>אין משתמשים להצגה</div>)}

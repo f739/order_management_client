@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import picture from '../assetes/picture.svg';
 
 function Camera() {
   const videoRef = useRef(null);
@@ -43,7 +44,9 @@ function Camera() {
 
   return (
     <div>
-      <button onClick={startCamera}>צלם תעודת משלוח</button>
+      <button onClick={startCamera}>
+        <img src={picture} alt="צלם תעודת משלוח" className='icon' />
+      </button>
       <video ref={videoRef} autoPlay></video>
       <button onClick={captureImage}>תפוס תמונה</button>
       {imageSrc && <button onClick={openImageInNewTab}>Show Image in New Tab</button>}

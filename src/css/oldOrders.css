@@ -1,14 +1,5 @@
-.container-orders {
+.container-old-orders {
     margin-top: 40px;
-}
-.supplier-container {
-    direction: rtl;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
 }
 
 .supplier-title {
@@ -17,7 +8,7 @@
 }
 
 .order-container {
-    padding: 20px;
+    padding: 10px;
     border: 1px solid #ddd;
     border-radius: 10px;
     margin-bottom: 15px;
@@ -25,20 +16,10 @@
 }
 
 .title-order {
-    display: grid;
+    display: flex;
     justify-content: space-between; 
-    grid-template-columns: repeat(3, 1fr);
     padding: 5px;
     margin-bottom: 5px;
-    span:first-of-type {
-        justify-self: start;
-    }
-    span:nth-of-type(2) {
-        justify-self: center;
-    }
-    span:last-of-type {
-        justify-self: end;
-    }
 }
 
 .order-item {
@@ -48,23 +29,30 @@
     margin-bottom: 5px;
     display: grid;
     grid-template-areas:
-        "start end";
+        "up"
+        "end";
     justify-content: space-between; 
-    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
 }
 
-.start {
-    grid-area: start;
-    justify-self: start;
-    p {
+.up {
+    grid-area: up;
+    display: flex;
+    justify-content: space-between;
+    span {
         margin-right: 3px;
         display: inline;
     }
 }
+.order-details > * {
+    margin: 10px;
+  }
 
 .end {
     grid-area: end;
-    justify-self: end;
+    display: flex;
+    justify-content: space-between;
+    
     button {
         margin-right: 10px;
     }

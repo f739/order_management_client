@@ -1,5 +1,5 @@
 .invitation-container {
-  margin-top: 40px;
+  margin-top: 5px;
   direction: rtl;
   margin-bottom: 15px;
   border: 1px solid #ddd;
@@ -34,41 +34,46 @@
   margin-bottom: 3px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   grid-template-areas:
-    "start center end";
-  grid-template-columns: repeat(3, 1fr);
-  justify-content: space-between;
+    "up"
+    "center"
+    "end";
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: auto;
+  gap: 5px;
+  .note {
+    background-color: rgb(202, 10, 10);
+    color: rgb(255, 255, 255);
+    border-radius: 1px;
+    padding: 2px;
+  }
 }
 
-.start {
-  grid-area: start;
-  align-items: end;
+.up {
+  grid-area: up;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .center {
   grid-area: center;
-  align-items: end;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .end {
   grid-area: end;
-  align-items: end;
+  width: 100%;
 }
 
-.start>*,
-.center>* {
-  margin-left: 10px;
+.center>*,
+.up > * {
+  margin: 0 auto;
 }
 
-.buttons {
-  display: inline;
-}
-
-.buttons button {
-  margin-right: 10px;
-}
-
-.start input,
-.start input:focus,
+.up input,
+.up input:focus,
 .center input,
 .center input:focus {
   width: 40px;
@@ -77,22 +82,15 @@
   background: none;
 }
 
-.product-details {
-  .note {
-    background-color: rgb(202, 10, 10);
-    color: rgb(255, 255, 255);
-    border-radius: 1px;
-    padding: 2px;
-  }
-}
 .send-order {
-  position: fixed; 
-    bottom: 20px; 
-    right: 20px; 
-    color: white; 
-    padding: 10px 20px; 
-    border-radius: 25px; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
-    cursor: pointer; 
-    z-index: 1000; 
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: white;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  border-radius: 25px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 1000;
 }

@@ -5,7 +5,7 @@ import { handleFormHook } from './HandleFormHook';
 import { getMeasures } from "../dl/slices/measures";
 import { getSuppliers } from "../dl/slices/suppliers";
 import { getCategories } from "../dl/slices/categories";
-import trash_icon from '../assetes/trash_icon.png'
+import trash_icon from '../assetes/trash_icon.svg'
 import '../css/products.css';
 
 export const Products = () => {
@@ -139,12 +139,12 @@ const ShowProducts = props => {
         <h1 className="title">מוצרים קיימים:</h1>
         {allProducts && allProducts.length > 0 ? allProducts.map( product => (
                 <div className="show-item" key={product._id}>
-                    <span>{product.nameProduct}</span>
                     <span className={`factory-${product.factory}`}>{product.factory && product.factory.charAt(0).toUpperCase()}</span>
+                    <span>{product.nameProduct}</span>
                     <span>{product.unitOfMeasure}</span>
                     <span>{product.category}</span>
                     <button onClick={() => deleteProduct(product._id)} className="delete-item">
-                        <img src={trash_icon} alt="delete" />
+                        <img src={trash_icon} alt="delete" className="icon" />
                     </button>
                 </div>
             )) :  (<div>אין מוצרים להצגה</div>)}

@@ -5,10 +5,11 @@ import { getSuppliers } from '../dl/slices/suppliers';
 import { newOrderToDeliver } from "../dl/slices/orders";
 import '../css/newOrderToDeliver.css';
 
-export const NewOrderToDeliver = ({orderList, setShowSendEmail, whichFactoryToSend}) => {
+export const NewOrderToDeliver = ({orderList, setShowSendEmail}) => {
     const dispatch = useDispatch();
     const {license} = useSelector( state => state.users.user);
     const {allSuppliers} = useSelector( state => state.suppliers);
+    const [messageError ,setMessageError] = useState('')
     const [emailForm, setEmailForm] = useState(
         {supplier: null, titleMessage: '', messageContent: '', orderList }
     )
@@ -27,8 +28,18 @@ export const NewOrderToDeliver = ({orderList, setShowSendEmail, whichFactoryToSe
     }
 
     const sendOrder = async () => {
-        if (license === 'purchasingManager') {
-        dispatch( newOrderToDeliver({emailForm, whichFactoryToSend}))
+        if (license === 'purchasingManager' && orderList.length > 0 ) {
+            const firstFactory = orderList[0].factory;
+            const ifSameFactories = orderList.every(product => product.factory === firstFactory);
+            if (ifSameFactories) {
+                dispatch( newOrderToDeliver({emailForm, whichFactoryToSend: firstFactory}));
+                setShowSendEmail(false);
+                setMessageError('')
+            }else {
+                setMessageError('אין לשלוח כמה הזמנות למפעלים שונים')
+            } 
+        }else {
+            setMessageError('אין לך רישיון מתאים')
         }
     }
 
@@ -36,6 +47,7 @@ export const NewOrderToDeliver = ({orderList, setShowSendEmail, whichFactoryToSe
         <div className="backdrop-email">
                 <div className="titles">
                     <label>הזמנה חדשה</label>
+                    { messageError !== '' && < label style={{color: 'red'}}>{messageError}</label>}
                     <button onClick={ () => setShowSendEmail(false)} className='close-button' >X</button>
                 </div>
                 <div className="box-email">

@@ -11,8 +11,8 @@ export const Orders = () => {
     const {allProducts, isLoading} = useSelector( state => state.products);
     const { user } = useSelector( state => state.users);
     const {allCategories} = useSelector( state => state.categories);
-    const [whichFactoryToSend, setWhichFactoryToSend] = useState(null);
     const [itemsListFiltered, setItemsListFiltered] = useState([]);
+    const [showSelect, setShowSelect] = useState(false);
 
     useEffect(() => {
         if (!allProducts || allProducts.length === 0) {
@@ -36,10 +36,6 @@ export const Orders = () => {
             dispatch( getCategories())
         }
     },[allCategories]);
-      
-    const SendAnInvitation = async () => {
-        dispatch( sendAnInvitation({user, whichFactoryToSend}))   
-    }
     
     const filterProducts = e => {
         const { value } = e.target;
@@ -49,11 +45,22 @@ export const Orders = () => {
             setItemsListFiltered( () => allProducts.filter( product => product.category === value));
         }
     }
+    const toggleSelectVisibility = () => {
+        if(user.license === 'purchasingManager') {
+            setShowSelect(old => !old);
+        } else {
+            SendAnInvitation();
+        }
+    };
+
+    const SendAnInvitation = value => {
+        const whichFactoryToSend = user.license !== 'purchasingManager' ? user.factory : value;
+        dispatch( sendAnInvitation({user, whichFactoryToSend}));
+    }
 
     if (isLoading) return <h1>🌀 Loading...</h1>;
     return(
         <div className="container-orders">
-            <button onClick={SendAnInvitation} className="send-an-invitation">שלח הזמנה</button>
             { allCategories && <select id="categories-select" name="category" onChange={filterProducts}>
                 <option value="allCategories">כל הקטגוריות</option>
                 { allCategories.map( category => (
@@ -68,10 +75,24 @@ export const Orders = () => {
                     unitOfMeasure={item.unitOfMeasure}
                     category={item.category}
                     note={item.note}
-                    setWhichFactoryToSend={setWhichFactoryToSend}
                     _id={item._id}/>
                 </div>
             ))}
+            
+            <button onClick={toggleSelectVisibility} className="send-an-invitation">
+                <div>שלח הזמנה</div>
+                {user.license === 'purchasingManager' && 
+                    <div className={`arrow-down ${showSelect ? 'arrow-up' : ''}`}></div>
+                }
+            </button>
+            {showSelect && user.license === 'purchasingManager' && (
+                <select className={`select-factory-corner ${showSelect ? 'show' : ''}`} 
+                size="3" onChange={e => SendAnInvitation(e.target.value)}>
+                    <option value="catering">קייטרינג</option>
+                    <option value="restaurant">מסעדה</option>
+                    <option value="bakery">מאפיה</option>
+                </select>
+            )}
         </div>
     )
 }

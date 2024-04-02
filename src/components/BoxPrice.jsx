@@ -22,6 +22,7 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
     const handleSaveNewPrice = () => {
       if (license === 'purchasingManager' && newPrice.price !== '' && newPrice.nameSupplier !== '') {
         dispatch( addPrice({...newPrice, _idProduct: productId}));
+        setShowPrices(false)
       }
     }
     return (

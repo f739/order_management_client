@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { getCategories, createNewCategory, removeCategory } from "../dl/slices/categories";
 import { handleFormHook } from './HandleFormHook';
-import trash_icon from '../assetes/trash_icon.png';
-import '../css/categories.css';
+import trash_icon from '../assetes/trash_icon.svg';
 
 export const Categories = () => {
     const dispatch = useDispatch();
@@ -52,7 +51,7 @@ const ShowCategories = props => {
                 <div key={category._id} className="show-item">
                     <span>{category.nameCategory}</span>
                     <button onClick={() => deleteCategory(category._id)} className="delete-item">
-                        <img src={trash_icon} alt="delete" />
+                        <img src={trash_icon} alt="delete" className="icon" />
                     </button>  
                 </div>
                 )) : (<div>אין משתמשים להצגה</div>)}

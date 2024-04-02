@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { createNewUser, getUsers, removeUser } from '../dl/slices/users';
 import { handleFormHook } from "../components/HandleFormHook";
-import trash_icon from '../assetes/trash_icon.png'
-import '../css/users.css';
+import trash_icon from '../assetes/trash_icon.svg'
 
 export const CreateUsers = () => {
     const  dispatch = useDispatch();
@@ -79,12 +78,12 @@ const ShowUsers = ({dispatch}) => {
             {allUsers && allUsers.length > 0 ? (
             allUsers.map(user => (
                 <div key={user._id} className="show-item">
+                    <span className={`factory-${user.factory}`}>{user.factory && user.factory.charAt(0).toUpperCase()}</span>
                     <span>{user.userName}</span>
                     <span>{user.email}</span>
                     <span>{user.license}</span>
-                    <span className={`factory-${user.factory}`}>{user.factory && user.factory.charAt(0).toUpperCase()}</span>
-                    <button onClick={() => deleteUser(user._id)} className="delete-item">
-                        <img src={trash_icon} alt="delete" />
+                    <button onClick={() => deleteUser(user._id)} >
+                        <img src={trash_icon} alt="delete" className="icon" />
                     </button>
                 </div>
             ))

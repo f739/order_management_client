@@ -149,7 +149,7 @@ export const slice = createSlice({
             state.allProducts = action.payload;
           })
           builder.addCase(sendAnInvitation.fulfilled, (state, action) => {
-            state.allProducts = action.payload.resetQuantityProducts;
+            state.allProducts = action.payload.allProducts;
         })
 
         }

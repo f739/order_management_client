@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useDispatch } from 'react-redux';
 import { createNewNote, removeNote, addOrSubtract } from "../dl/slices/products";
+import save from '../assetes/save.svg';
+import trash_icon from '../assetes/trash_icon.svg';
 
 export const ItemsBox = props => {
     const dispatch = useDispatch()
     const { nameProduct, factory, temporaryQuantity, _id,
-        category, unitOfMeasure, note, setWhichFactoryToSend } = props;
+        category, unitOfMeasure, note } = props;
 
     const addItem = async () => {
-        setWhichFactoryToSend(factory)
         const newTemporaryQuantity = Number(temporaryQuantity) +1 ;
         dispatch( addOrSubtract({_id, newTemporaryQuantity}))
     }
@@ -21,10 +22,10 @@ export const ItemsBox = props => {
     return (
         <div className="box-product-from-the-order">
             <div className="start-order">
-                <h4>{nameProduct}</h4>
+                <span className={`factory-${factory}`}>{factory && factory.charAt(0).toUpperCase()}</span>
+                <span><strong>{nameProduct}</strong></span>
                 <span>{unitOfMeasure}</span>
                 <span>{category}</span>
-                <span className={`factory-${factory}`}>{factory && factory.charAt(0).toUpperCase()}</span>
             </div>
             <ShowNote note={note} _id={_id} dispatch={dispatch} />
             <div className="quantity-controls end-order">
@@ -51,21 +52,19 @@ const ShowNote = props => {
     if (!note) {
         return (
             <div className="note center-order">
-                <label>
-                    הוסף הערה:
-                </label>
                 <input onChange={e => setNewNote(e.target.value)} className="input-note" value={newNote}/>
-                <button onClick={sendNewNote} className="send-note">שלח</button>
+                <button onClick={sendNewNote} className="send-note">
+                    <img src={save} alt="שמור" className="icon" />
+                </button>
             </ div>
         )
     }else {
         return (
             <div className="note center-order">
-                <label>
-                    הערה להזמנה:
-                </label>
                 <span className="show-note">{note}</span>
-                <button onClick={deleteNote} className="delete-note">מחק הערה</button>
+                <button onClick={deleteNote} className="delete-note">
+                    <img src={trash_icon} alt="מחק הערה" className="icon" />
+                </button>
             </div>
         )
     }

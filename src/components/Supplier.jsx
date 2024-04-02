@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { getSuppliers, createNewSupplier, removeSupplier } from "../dl/slices/suppliers";
 import { handleFormHook } from "./HandleFormHook";
-import trash_icon from '../assetes/trash_icon.png';
-import '../css/suppliers.css';
+import trash_icon from '../assetes/trash_icon.svg';
 
 export const Supplier = () => {
     const dispatch = useDispatch();
@@ -60,7 +59,7 @@ const ShowSuppliers = props => {
                     <span>{supplier.tel}</span>
                     <span>{supplier.email}</span>
                     <button onClick={() => deleteSupplier(supplier._id)} className="delete-item">
-                        <img src={trash_icon} alt="delete" />
+                        <img src={trash_icon} alt="delete" className="icon"/>
                     </button>
                 </div>
             )) ) : (<div>אין ספקים להצגה</div>)}

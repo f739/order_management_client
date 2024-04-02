@@ -24,9 +24,9 @@ export function Layout () {
   },[]) 
   return (
     <>
-    <div className="logo-container">
+    {/* <div className="logo-container">
       <img src={bic_logo} alt="Logo" className="logo" />
-    </div>
+    </div> */}
       {license && 
       <>
         <nav>
