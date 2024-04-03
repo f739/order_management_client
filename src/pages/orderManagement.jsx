@@ -147,30 +147,34 @@ const Product = props => {
     }
   }, [allProducts, product]);
 
-  const addToOrder = (newProduct, editQuantity) => {
-    setOrderList(prev => {
-      const isProductExist = prev.some(product => product._id === newProduct._id);
-      if (isProductExist) {
-        return prev.filter(product => product._id !== newProduct._id);
-      } else {
-        const updatedOrderList = prev.filter(product => product._id !== newProduct._id);
-        let totalQuantity = allActiveOrders.flatMap(order => order.listProducts)
-          .filter(product => product._id === newProduct._id)
-          .reduce((acc, product) => acc + product.temporaryQuantity, 0);
-        if (editQuantity !== newProduct.temporaryQuantity) {
-          totalQuantity = editQuantity;
+  const addToOrder = (event, newProduct, editQuantity) => {
+    if (event.target === event.currentTarget) {
+      setOrderList(prev => {
+        const isProductExist = prev.some(product => product._id === newProduct._id);
+        if (isProductExist) {
+          return prev.filter(product => product._id !== newProduct._id);
+        } else {
+          const updatedOrderList = prev.filter(product => product._id !== newProduct._id);
+          let totalQuantity = allActiveOrders.flatMap(order => order.listProducts)
+            .filter(product => product._id === newProduct._id)
+            .reduce((acc, product) => acc + product.temporaryQuantity, 0);
+          if (editQuantity !== newProduct.temporaryQuantity) {
+            totalQuantity = editQuantity;
+          }
+          const newProductWithTotalQuantity = {
+            ...newProduct, temporaryQuantity: Number(totalQuantity),
+            price: cheapestSupplier.price
+          };
+          return [...updatedOrderList, newProductWithTotalQuantity];
         }
-        const newProductWithTotalQuantity = {
-          ...newProduct, temporaryQuantity: Number(totalQuantity),
-          price: cheapestSupplier.price
-        };
-        return [...updatedOrderList, newProductWithTotalQuantity];
-      }
 
-    });
+      });
+    }
   };
 
-  const priceToDeliver = (value, idProduct) => {
+  const priceToDeliver = (e, idProduct) => {
+    const {value} = e.target;
+    e.preventDefault()
     setCheapestSupplier(old => { return { ...old, price: value } })
     setOrderList(prev => prev.map(product => {
       if (product.id === idProduct) {
@@ -183,9 +187,9 @@ const Product = props => {
   return (
     <>
       <div className={`show-product ${isSelected ? 'selected-style' : ''}`}>
-        <div className="product-details" onClick={() => addToOrder(product, editQuantity)}>
+        <div className={`product-details ${product.note ? 'show-div-note' : null}`} onClick={e => addToOrder(e, product, editQuantity)}>
           <div className='up'>
-            <input type="number" onChange={e => setEditQuantity(Number(e.target.value))}
+            <input type="number" onChange={e => setEditQuantity(Number(e.target.value)) }
               value={editQuantity} />
             <span>{product.nameProduct}</span>
             <span>{product.unitOfMeasure}</span>
@@ -197,14 +201,16 @@ const Product = props => {
             <label>מחיר מומלץ:</label>
             <span>{cheapestSupplier.nameSupplier}</span>
             <input defaultValue={cheapestSupplier.price}
-              onChange={e => priceToDeliver(e.target.value, product._id)} />
+              onChange={e => priceToDeliver(e, product._id)} />
             <button onClick={() => setShowPrices(old => !old)} >
               <img src={edit} alt="ערוך" className='icon'/>
             </button>
           </div>
-          <div className='end'>
-              {product.note && <span className='note'>{product.note}</span>}
+          {product.note &&
+          <div className={product.note ? 'end': 'none'}>
+               <span className='note'>{product.note}</span>
           </div>
+          }
         </div>
         {showPrices && (
           <div className='backdrop'>

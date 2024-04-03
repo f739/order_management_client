@@ -33,19 +33,25 @@
   border-radius: 10px;
   margin-bottom: 3px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  grid-template-areas:
-    "up"
-    "center"
-    "end";
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas: 
+  "up"
+  "center";
+  grid-template-rows: repeat(2, 1fr);
   grid-template-columns: auto;
   gap: 5px;
   .note {
-    background-color: rgb(202, 10, 10);
-    color: rgb(255, 255, 255);
+    border: 1px solid rgb(202, 10, 10);
+    color: rgb(0, 0, 0);
     border-radius: 1px;
     padding: 2px;
   }
+}
+.product-details.show-div-note {
+  grid-template-areas: 
+    "up"
+    "center"
+    "end";
+  grid-template-rows: repeat(3, 1fr); /* שינוי כאשר יש note */
 }
 
 .up {
@@ -66,7 +72,10 @@
   grid-area: end;
   width: 100%;
 }
+.remove-note {
+  display: none ;
 
+}
 .center>*,
 .up > * {
   margin: 0 auto;

@@ -30,11 +30,11 @@ export function Layout () {
       {license && 
       <>
         <nav>
-          <NavLink to='/orders'>הזמנות חדשות</NavLink> ||
-          <NavLink to='./orderManagement'>הזמנות בתהליך</NavLink> ||
-          <NavLink to='./oldOrders'>קליטת הזמנות</NavLink> ||
-          <NavLink to='./issuingReports'>הנפקת דוחות</NavLink> ||
-          <NavLink to='/privateArea'>אזור אישי</NavLink> ||
+          <NavLink to='/orders'>הזמנות חדשות</NavLink>
+          <NavLink to='./orderManagement'>הזמנות בתהליך</NavLink>
+          <NavLink to='./oldOrders'>קליטת הזמנות</NavLink>
+          <NavLink to='./issuingReports'>הנפקת דוחות</NavLink>
+          <NavLink to='/privateArea'>אזור אישי</NavLink>
         </nav>
         <ToastContainer />
         <Outlet />

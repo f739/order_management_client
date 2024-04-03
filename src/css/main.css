@@ -66,9 +66,25 @@ select {
   color: #333;
   font-size: 16px;
   font-weight: bold;
-  overflow-x: scroll;
+  overflow-x: auto;
   max-width: calc(100% / 5);
 }
+::-webkit-scrollbar {
+  height: 4px;
+}
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+
+::-webkit-scrollbar-thumb {
+  background:#007bff;
+  border-radius: 2px; 
+}
+
 
 @media (max-width: 600px) {
   .show-item span {
@@ -88,10 +104,10 @@ nav {
 nav a {
   color: #666;
   text-decoration: none;
-  margin: 5 15px;
   padding-bottom: 5px;
   position: relative;
   font-size: 16px;
+  margin: 5px 5px;
 }
 
 nav a::after {
@@ -118,8 +134,7 @@ nav a.active::after {
   }
 
   nav a {
-    margin: 5px 10px;
-    font-size: 14px;
+    font-size: 12px;
   }
 }
 

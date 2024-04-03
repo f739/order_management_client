@@ -52,7 +52,7 @@ const ShowNote = props => {
     if (!note) {
         return (
             <div className="note center-order">
-                <input onChange={e => setNewNote(e.target.value)} className="input-note" value={newNote}/>
+                <input onChange={e => setNewNote(e.target.value)} className="input-note" placeholder="הוסף הערה להזמנה..." value={newNote}/>
                 <button onClick={sendNewNote} className="send-note">
                     <img src={save} alt="שמור" className="icon" />
                 </button>
