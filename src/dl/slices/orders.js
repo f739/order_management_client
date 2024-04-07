@@ -39,7 +39,6 @@ export const getOldOrders = createAsyncThunk("orders/getOldOrders",
 export const newOrderToDeliver = createAsyncThunk( "orders/newOrderToDeliver",
   async ({emailForm, whichFactoryToSend}, { rejectWithValue }) => {
     try {
-      console.log(whichFactoryToSend);
       const res = await $.post( `${URL}/orderManagement/newOrderToDeliver`, {emailForm, whichFactoryToSend} );
       const { newOldOrder, activeOrders } = res.data;
       const activesDeletedEmpty = activeOrders.filter( arr => arr.listProducts.length > 0);
