@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { createNewUser, getUsers, removeUser } from '../dl/slices/users';
 import { handleFormHook } from "../components/HandleFormHook";
 import trash_icon from '../assetes/trash_icon.svg'
+import { SelectFactoryHook } from "../components/SelectFactoryHook";
 
 export const CreateUsers = () => {
     const  dispatch = useDispatch();
@@ -43,15 +44,7 @@ export const CreateUsers = () => {
                         <option value="Bookkeeping">הנהלת חשבונות</option>
                     </select>
                 </label>
-                <label htmlFor="Factory">
-                    :מפעל
-                    <select name="factory" value={formCreateUser.factory} onChange={e => handleFormHook(e.target, setFormCreateUser)}>
-                    <option value="">--בחר אפשרות--</option>
-                        <option value="catering">קייטרינג</option>
-                        <option value="restaurant">מסעדה</option>
-                        <option value="bakery">מאפיה</option>
-                    </select>
-                </label>
+                <SelectFactoryHook set={setFormCreateUser} form={formCreateUser} />
                 <button onClick={createUser}>צור משתמש</button>
             </div>
             <ShowUsers dispatch={dispatch} />

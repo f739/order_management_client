@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { getProducts, createNewProduct, removeProduct } from "../dl/slices/products";
 import { handleFormHook } from './HandleFormHook';
+import { SelectFactoryHook } from './SelectFactoryHook';
+import { SelectSuppliersHook } from './SelectSuppliersHook'
 import { getMeasures } from "../dl/slices/measures";
 import { getSuppliers } from "../dl/slices/suppliers";
 import { getCategories } from "../dl/slices/categories";
@@ -73,26 +75,12 @@ export const Products = () => {
                         {newProduct.price && newProduct.price.map((price, i) => (
                             <span key={i} className="price-span">{price.nameSupplier} - {price.price}</span>
                         ))}
-                        <select id="suppliers-select" name="nameSupplier" value={newPrice.nameSupplier} onChange={e => handleFormHook(e.target, setNewPrice)}>
-                            <option value="">--בחר אפשרות--</option>
-                            {allSuppliers.length > 0 && allSuppliers.map(supplier => (    
-                                <option value={supplier.nameSupplier} key={supplier._id}>{supplier.nameSupplier}</option>
-                            ))}
-                        </select>
+                        <SelectSuppliersHook set={setNewPrice} form={newPrice} />
                         <input type="text" name="price" value={newPrice.price} onChange={e => handleFormHook(e.target, setNewPrice)} />
                         <button onClick={handleSaveNewPrice}>שמור מחיר</button>
                     </div>
                 </label>
-   
-                <label>
-                    מפעל:
-                    <select name="factory" value={newProduct.factory} onChange={e => handleFormHook(e.target, setNewProduct)}>
-                        <option value="">--בחר אפשרות--</option>
-                        <option value="catering">קייטרינג</option>
-                        <option value="restaurant">מסעדה</option>
-                        <option value="bakery">מאפיה</option>
-                    </select>
-                </label>
+                <SelectFactoryHook  set={setNewProduct} form={newProduct} />
                 <label>
                     קטגוריה:
                     { <select id="categories-select" name="category" value={newProduct.category} onChange={e => handleFormHook(e.target, setNewProduct)}>

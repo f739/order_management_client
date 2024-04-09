@@ -8,6 +8,8 @@ import edit from '../assetes/edit.svg';
 import trash_icon from '../assetes/trash_icon.svg'
 import { BoxPrice } from '../components/BoxPrice';
 import '../css/orderManagement.css';
+import { SelectFactoryHook } from '../components/SelectFactoryHook';
+import moment from 'moment';
 
 export const OrderManagement = () => {
   const dispatch = useDispatch();
@@ -49,9 +51,9 @@ export const OrderManagement = () => {
       }
     }
   }, [allActiveOrders]);
-  const filterProducts = e => {
-    const { value } = e.target;
-    setFactoriesFilter( prev => {
+  const filterProducts = target => {
+    const { value } = target;
+    setFactoriesFilter( () => {
       if (value === 'allFactories') {
         return activeOrdersFiltred;
       } else {
@@ -61,12 +63,7 @@ export const OrderManagement = () => {
   }
   return (
     <div>
-       <select onChange={filterProducts}>
-            <option value="allFactories">כל המפעלים</option>
-            <option value="catering">קייטרינג</option>
-            <option value="restaurant">מסעדה</option>
-            <option value="bakery">מאפיה</option>
-      </select>
+      <SelectFactoryHook set={filterProducts} showAllFactoryLine={true} />
       {!showSendEmail && <button onClick={() => setShowSendEmail(old => !old)} className='send-order'>שלח הזמנה לספק</button>}
       {showSendEmail && <NewOrderToDeliver orderList={orderList} setShowSendEmail={setShowSendEmail} />}
       {factoriesFilter.length > 0 ? factoriesFilter.map(invitation => (
@@ -96,7 +93,7 @@ const Invitation = props => {
       <div className="title">
         <span className={`factory-${factory}`}>{factory && factory.charAt(0).toUpperCase()}</span>
         <span>{userName}</span>
-        <span>תאריך: {date}</span>
+        <span>תאריך: {moment.unix(date).format("DD.MM.YYYY")}</span>
         <span>שעה: {time}</span>
       </div>
       {invitation.map(product => (

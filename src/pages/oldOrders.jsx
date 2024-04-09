@@ -6,6 +6,7 @@ import trash_icon from '../assetes/trash_icon.svg'
 import return_icon from '../assetes/return_icon.svg'
 import '../css/oldOrders.css';
 import Camera from "../components/Camera";
+import moment from 'moment';
 
 export const OldOrders = () => {
     const dispatch = useDispatch();
@@ -23,7 +24,7 @@ export const OldOrders = () => {
             if (user.license !== 'purchasingManager') {
                 oldOrdersFiltered = oldOrdersFiltered.filter( product => product.factory === user.factory)
             }
-            oldOrdersFiltered = oldOrdersFiltered.sort((a, b) => a.date.localeCompare(b.date));
+            oldOrdersFiltered = oldOrdersFiltered.sort((a, b) => a.date > b.date);
             const groupBySupplier = oldOrdersFiltered.reduce((acc, order) => {
                 const nameSupplier = order.supplier.nameSupplier; 
                 acc[nameSupplier] = acc[nameSupplier] || [];
@@ -43,8 +44,8 @@ export const OldOrders = () => {
                     <h3 className="supplier-title"> ספק: {supplierName}</h3>
                     {orders.map(order => (
                         <OldVendorOrders key={`${order._id}-${order.orderList.length}`} date={order.date} time={order.time} 
-                        orderList={order.orderList} license={user.license} supplierName={supplierName} ifWasAccepted={order.ifWasAccepted} dispatch={dispatch} 
-                        supplier={supplierName} factory={order.factory} idOrderList={order._id}/>
+                        orderList={order.orderList} license={user.license} ifWasAccepted={order.ifWasAccepted} dispatch={dispatch} 
+                        _idSupplier={order.supplier._id} factory={order.factory} idOrderList={order._id}/>
                     ))}
                 </div>
             ))}
@@ -53,7 +54,7 @@ export const OldOrders = () => {
 };
 
 
-const OldVendorOrders = ({ orderList, factory, date, time, idOrderList, dispatch, ifWasAccepted, license, supplier }) => {
+const OldVendorOrders = ({ orderList, factory, date, time, idOrderList, dispatch, ifWasAccepted, license, _idSupplier }) => {
     const orderListSorted = [...orderList].sort((a, b) => a.category.localeCompare(b.category));
     
     return (
@@ -64,7 +65,7 @@ const OldVendorOrders = ({ orderList, factory, date, time, idOrderList, dispatch
                     <span className={`factory-${factory}`}>{factory && factory.charAt(0).toUpperCase()}</span>
                     <span>{idOrderList.substring(0,8)}</span>
                     <span>{time}</span>
-                    <span>{date}</span>
+                    <span>{moment.unix(date).format("DD.MM.YYYY")}</span>
                 </div>
                 {orderListSorted.map(order => (
                     <ShowOldOrder key={order._id}
@@ -72,7 +73,7 @@ const OldVendorOrders = ({ orderList, factory, date, time, idOrderList, dispatch
                     time={time}
                     date={date}
                     factory={factory}
-                    supplierName={supplier}
+                    _idSupplier={_idSupplier}
                     order={order}
                     dispatch={dispatch}
                     idOrderList={idOrderList}
@@ -91,14 +92,14 @@ const OldVendorOrders = ({ orderList, factory, date, time, idOrderList, dispatch
 };
 
 
-const ShowOldOrder = ({ _id, idOrderList, nameProduct, factory, order, time, date, supplierName,
+const ShowOldOrder = ({ _id, idOrderList, nameProduct, factory, order, time, date, _idSupplier,
      temporaryQuantity, unitOfMeasure, category, price, dispatch, license }) => {
     const {user} = useSelector( state => state.users);
     const [valueTemporaryQuantity, setValueTemporaryQuantity] = useState(temporaryQuantity)
 
     const productReceived = () => {
         if (license === 'purchasingManager') {
-            dispatch(productReceivedAction({ numberOrder: idOrderList, time, date, factory, supplierName,
+            dispatch(productReceivedAction({ numberOrder: idOrderList, time, date, factory, _idSupplier,
                 product: {...order, temporaryQuantity: valueTemporaryQuantity}}));
         }
     }
