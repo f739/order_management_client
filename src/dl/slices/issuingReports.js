@@ -7,7 +7,18 @@ export const sendProductReport = createAsyncThunk('issuingReports/sendProductRep
     console.log(formToDeliver);
       try {
         const res = await $.post(`${URL}/issuingReports/sendProductReport`, formToDeliver);
-        console.log(res.data.OrdersReceivedFilterd);
+        console.log(res.data);
+        return res.data
+      }catch (err) {
+        return rejectWithValue(err.response.data.message)
+      }
+  }
+);
+
+export const sendBookkeepingReport = createAsyncThunk('issuingReports/sendBookkeepingReport', 
+  async (email, {rejectWithValue}) => {  
+      try {
+        const res = await $.put(`${URL}/issuingReports/${email}/sendBookkeepingReport`);
         console.log(res.data);
         return res.data
       }catch (err) {
