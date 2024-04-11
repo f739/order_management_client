@@ -10,22 +10,26 @@ import { BoxPrice } from '../components/BoxPrice';
 import '../css/orderManagement.css';
 import { SelectFactoryHook } from '../components/SelectFactoryHook';
 import moment from 'moment';
+import { getSuppliers } from '../dl/slices/suppliers';
 
 export const OrderManagement = () => {
   const dispatch = useDispatch();
   const { allActiveOrders } = useSelector(state => state.orders);
-  const { allProducts } = useSelector(state => state.products);
   const { user } = useSelector(state => state.users);
+  const { allSuppliers } = useSelector(state => state.suppliers);
   const [showSendEmail, setShowSendEmail] = useState(false);
   const [activeOrdersFiltred, setActiveOrdersFiltred] = useState([]);
   const [factoriesFilter, setFactoriesFilter] = useState([])
   const [orderList, setOrderList] = useState([]);
+  const { allProducts, isLoading } = useSelector(state => state.products);
 
   useEffect(() => {
-    dispatch(getActiveOrders())
-    if (allProducts.length === 0) {
-      dispatch(getProducts())
-    }
+      dispatch(getActiveOrders()) 
+      if (allProducts.length === 0) {
+        dispatch(getProducts());
+      }if (allSuppliers.length === 0) {
+        dispatch( getSuppliers());
+      }
   }, [])
 
   useEffect(() => {
@@ -46,26 +50,30 @@ export const OrderManagement = () => {
         }));
         const filteredOrdersWithProducts = sortedActiveOrders
         .filter(order => order.listProducts.length > 0);
+
         setActiveOrdersFiltred(filteredOrdersWithProducts);
         setFactoriesFilter(filteredOrdersWithProducts);
       }
     }
   }, [allActiveOrders]);
-  const filterProducts = target => {
-    const { value } = target;
+
+  const filterProducts = value => {
     setFactoriesFilter( () => {
       if (value === 'allFactories') {
         return activeOrdersFiltred;
       } else {
-        return activeOrdersFiltred.filter((product) => product.factory === value);
+        return activeOrdersFiltred.filter( product => product.factory === value);
       }
     });
   }
+
+  if (isLoading) return <h1>🌀 Loading...</h1>;
+
   return (
     <div>
-      <SelectFactoryHook set={filterProducts} showAllFactoryLine={true} />
+      <SelectFactoryHook set={filterProducts} showAllFactoryLine={true} ifFunc={true} />
       {!showSendEmail && <button onClick={() => setShowSendEmail(old => !old)} className='send-order'>שלח הזמנה לספק</button>}
-      {showSendEmail && <NewOrderToDeliver orderList={orderList} setShowSendEmail={setShowSendEmail} />}
+      {showSendEmail && <NewOrderToDeliver orderList={orderList} setOrderList={setOrderList} setShowSendEmail={setShowSendEmail} />}
       {factoriesFilter.length > 0 ? factoriesFilter.map(invitation => (
         <Invitation
           invitation={invitation.listProducts}
@@ -75,7 +83,6 @@ export const OrderManagement = () => {
           factory={invitation.factory}
           dispatch={dispatch}
           orderList={orderList}
-          allProducts={allProducts}
           allActiveOrders={allActiveOrders}
           idInvitation={invitation._id}
           setOrderList={setOrderList}
@@ -86,8 +93,7 @@ export const OrderManagement = () => {
 }
 
 const Invitation = props => {
-  const { invitation, date, time, orderList, dispatch, idInvitation, userName, factory,
-    allProducts, allActiveOrders, setOrderList } = props;
+  const { invitation, date, time, orderList, dispatch, idInvitation, userName, factory, allActiveOrders, setOrderList } = props;
   return (
     <div className="invitation-container">
       <div className="title">
@@ -101,48 +107,49 @@ const Invitation = props => {
           product={product}
           orderList={orderList}
           idInvitation={idInvitation}
-          allProducts={allProducts}
           allActiveOrders={allActiveOrders}
           dispatch={dispatch}
           setOrderList={setOrderList}
-          key={product._id} />
+          key={`${product._id}-${product.price.length}`} />
       ))}
     </div>
   )
 }
 
 const Product = props => {
-  const { product, orderList, dispatch, idInvitation, allProducts, setOrderList, allActiveOrders } = props;
+  const { product, orderList, dispatch, idInvitation, setOrderList, allActiveOrders } = props;
   const isSelected = orderList.some(orderProduct => orderProduct._id === product._id);
+  const { allProducts, isLoading } = useSelector(state => state.products);
+  const { allSuppliers } = useSelector(state => state.suppliers);
+  const { license } = useSelector(state => state.users.user);
   const [editQuantity, setEditQuantity] = useState(product.temporaryQuantity);
-  const [cheapestSupplier, setCheapestSupplier] = useState({ nameSupplier: '', price: '' });
+  const [cheapestSupplier, setCheapestSupplier] = useState({ _idSupplier: '', price: '' });
   const [prices, setPrices] = useState([]);
   const [showPrices, setShowPrices] = useState(false);
-  const { license } = useSelector(state => state.users.user);
-
+  
   const deleteProduct = () => {
     if (license === 'purchasingManager') {
       dispatch(removeProduct({ _id: product._id, idInvitation }));
     }
   }
-
+    
   useEffect(() => {
-    let productSchema;
-    if (allProducts.length > 0) {
-      productSchema = allProducts.find(p => p._id === product._id);
-      setPrices(productSchema.price);
-    }
+    if (allProducts.length === 0) return;
+    let productSchema = allProducts.find(p => p._id === product._id);
     if (productSchema && productSchema.price && productSchema.price.length > 0) {
+      console.log(productSchema.price);
+      setPrices(productSchema.price);
       const cheapest = productSchema.price.reduce((acc, supplier) => {
         const accPrice = parseFloat(acc.price);
         const supplierPrice = parseFloat(supplier.price);
         return accPrice < supplierPrice ? acc : supplier;
-      }, { nameSupplier: '', price: Infinity });
+      }, { _idSupplier: '', price: Infinity });
       setCheapestSupplier(cheapest);
     } else {
-      setCheapestSupplier({ nameSupplier: '', price: '' });
+      setCheapestSupplier({ _idSupplier: '', price: '' });
     }
-  }, [allProducts, product]);
+  
+  }, [allProducts.length]);
 
   const addToOrder = (event, newProduct, editQuantity) => {
     if (event.target === event.currentTarget) {
@@ -180,10 +187,17 @@ const Product = props => {
       return product;
     }));
   }
-
+  const handleNameSupplier = _idSupplier => {
+    if (allSuppliers) {
+      const supplier = allSuppliers.find(supplier => supplier._id === _idSupplier);
+      return supplier?.nameSupplier;
+    }
+  }
+  if (isLoading) return <h1>🌀 Loading...</h1>;
+  
   return (
-    <>
-      <div className={`show-product ${isSelected ? 'selected-style' : ''}`}>
+    <div>
+     { allProducts.length > 0 ? <div  className={`show-product ${isSelected ? 'selected-style' : ''}`}>
         <div className={`product-details ${product.note ? 'show-div-note' : null}`} onClick={e => addToOrder(e, product, editQuantity)}>
           <div className='up'>
             <input type="number" onChange={e => setEditQuantity(Number(e.target.value)) }
@@ -196,9 +210,12 @@ const Product = props => {
           </div>
           <div className="center">
             <label>מחיר מומלץ:</label>
-            <span>{cheapestSupplier.nameSupplier}</span>
-            <input defaultValue={cheapestSupplier.price}
-              onChange={e => priceToDeliver(e, product._id)} />
+            { cheapestSupplier.price !== '' ? <>
+              <span>{handleNameSupplier(cheapestSupplier._idSupplier)}</span>
+              <input defaultValue={cheapestSupplier.price}
+                onChange={e => priceToDeliver(e, product._id)} />
+              </> : <span style={{color: 'red'}}>הגדר מחירים!</span>
+            }
             <button onClick={() => setShowPrices(old => !old)} >
               <img src={edit} alt="ערוך" className='icon'/>
             </button>
@@ -212,14 +229,15 @@ const Product = props => {
         {showPrices && (
           <div className='backdrop'>
             <div className="prices-table">
-              <BoxPrice prices={prices}
+              <BoxPrice 
+                prices={prices}
                 setShowPrices={setShowPrices}
                 productId={product._id}
                 license={license} />
             </div>
           </div>
         )}
-      </div>
-    </>
+      </div> : <p></p>}
+    </div> 
   )
 }

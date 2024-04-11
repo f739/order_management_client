@@ -6,11 +6,11 @@ import trash_icon from '../assetes/trash_icon.svg';
 
 export const Supplier = () => {
     const dispatch = useDispatch();
-    const [newSupplier, setNewSupplier] = useState({nameSupplier: '', tel: '', email: ''});
+    const [newSupplier, setNewSupplier] = useState({nameSupplier: '', tel: '', email: '', supplierNumber: ''});
 
     const handleSaveNewSupplier  = async () => {
         dispatch( createNewSupplier(newSupplier));
-        setNewSupplier({nameSupplier: '', tel: '', email: ''})
+        setNewSupplier({nameSupplier: '', tel: '', email: '', supplierNumber: ''})
     }
     return (
         <div className="suppliers">
@@ -26,6 +26,10 @@ export const Supplier = () => {
                 <label>
                     אמייל ספק:
                 <input type="email" name="email" value={newSupplier.email} onChange={e => handleFormHook(e.target, setNewSupplier)}/> 
+                </label>
+                <label>
+                   מספר ספק:
+                <input type="text" name="supplierNumber" value={newSupplier.supplierNumber} onChange={e => handleFormHook(e.target, setNewSupplier)}/> 
                 </label>
                 <button onClick={handleSaveNewSupplier}>שמור ספק חדש</button>
             </div>
@@ -58,6 +62,7 @@ const ShowSuppliers = props => {
                     <span>{supplier.nameSupplier}</span>
                     <span>{supplier.tel}</span>
                     <span>{supplier.email}</span>
+                    {/* <span>{supplier.supplierNumber}</span> */}
                     <button onClick={() => deleteSupplier(supplier._id)} className="delete-item">
                         <img src={trash_icon} alt="delete" className="icon"/>
                     </button>

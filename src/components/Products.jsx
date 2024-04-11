@@ -13,27 +13,25 @@ import '../css/products.css';
 export const Products = () => {
     const dispatch = useDispatch();
     const [newProduct, setNewProduct] = useState({nameProduct: '', factory: '', category: '', unitOfMeasure: '', sku: '', price: []});
-    const [newPrice, setNewPrice] = useState({nameSupplier: '', price: ''});
+    const [newPrice, setNewPrice] = useState({_idSupplier: '', price: ''});
     const {allCategories} = useSelector( state => state.categories);
     const {allSuppliers} = useSelector( state => state.suppliers);
     const {allMeasures} = useSelector( state => state.measures);
-
+    
     useEffect( () => {
         if (allCategories.length === 0) {
             dispatch( getCategories())
-        }if (allSuppliers.length === 0) {
-            dispatch( getSuppliers())
         }if (allMeasures.length === 0) {
             dispatch( getMeasures())
         }
     },[dispatch])
 
     const handleSaveNewPrice = () => {
-        if (newPrice.nameSupplier === '' || newPrice.price === '') {
+        if (newPrice._idSupplier === '' || newPrice.price === '') {
             return
         }
         setNewProduct(prev => {
-            const supplierIndex = prev.price.findIndex(supplier => supplier.supplierName === newPrice.nameSupplier);
+            const supplierIndex = prev.price.findIndex(supplier => supplier._id === newPrice._idSupplier);
             let updatedPrice = [...prev.price];
             if (supplierIndex !== -1) {
                 updatedPrice[supplierIndex] = {...updatedPrice[supplierIndex], price: newPrice.price};
@@ -45,7 +43,7 @@ export const Products = () => {
                 price: updatedPrice
             };
         });
-        setNewPrice({nameSupplier: '', price: ''});
+        setNewPrice({_idSupplier: '', price: ''});
     }
     
     const handleSaveNewProduct = () => {
@@ -56,7 +54,10 @@ export const Products = () => {
             setNewProduct({nameProduct: '', factory: '', category: '', unitOfMeasure: '', sku: '', price: []});
         }
     }
-    if (!allCategories || !allMeasures || !allSuppliers) return <h1>לא נמצאו</h1>;
+    const getDetalesSupplier = _idSupplier => {
+        return  allSuppliers.find( supp => supp._id === _idSupplier);
+    }
+    if (!allCategories || !allMeasures || !allSuppliers) return <h1>🌀 Loading...</h1>;
     
     return (
         <div>
@@ -73,7 +74,7 @@ export const Products = () => {
                     מחיר:
                     <div className="price-input-container">
                         {newProduct.price && newProduct.price.map((price, i) => (
-                            <span key={i} className="price-span">{price.nameSupplier} - {price.price}</span>
+                            <span key={i} className="price-span">{getDetalesSupplier(price._idSupplier)?.nameSupplier || ''} - {price.price}</span>
                         ))}
                         <SelectSuppliersHook set={setNewPrice} form={newPrice} />
                         <input type="text" name="price" value={newPrice.price} onChange={e => handleFormHook(e.target, setNewPrice)} />

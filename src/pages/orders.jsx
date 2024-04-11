@@ -11,6 +11,7 @@ export const Orders = () => {
     const {allProducts, isLoading} = useSelector( state => state.products);
     const { user } = useSelector( state => state.users);
     const {allCategories} = useSelector( state => state.categories);
+    const [productsOfLicense, setProductsOfLicense] = useState([]);
     const [itemsListFiltered, setItemsListFiltered] = useState([]);
     const [showSelect, setShowSelect] = useState(false);
 
@@ -22,11 +23,13 @@ export const Orders = () => {
     useEffect(() => {
         if (user.license === 'purchasingManager') {
             const sortedProducts = [...allProducts].sort((a, b) => a.category.localeCompare(b.category));
+            setProductsOfLicense(sortedProducts);
             setItemsListFiltered(sortedProducts);
         }else {
             const sortedProducts = [...allProducts]
             .filter( product => product.factory === user.factory)
             .sort((a, b) => a.category.localeCompare(b.category))
+            setProductsOfLicense(sortedProducts);
             setItemsListFiltered(sortedProducts);
         }
     }, [allProducts]);
@@ -40,9 +43,9 @@ export const Orders = () => {
     const filterProducts = e => {
         const { value } = e.target;
         if (value === 'allCategories') {
-            setItemsListFiltered( allProducts);
+            setItemsListFiltered( productsOfLicense);
         }else {
-            setItemsListFiltered( () => allProducts.filter( product => product.category === value));
+            setItemsListFiltered( () => productsOfLicense.filter( product => product.category === value));
         }
     }
     const toggleSelectVisibility = () => {

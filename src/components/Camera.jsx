@@ -43,12 +43,12 @@ function Camera() {
   };
 
   return (
-    <div>
+    <div className='box-camera'>
       <button onClick={startCamera}>
         <img src={picture} alt="צלם תעודת משלוח" className='icon' />
       </button>
       <video ref={videoRef} autoPlay></video>
-      <button onClick={captureImage}>תפוס תמונה</button>
+      {/* <button onClick={captureImage} >תפוס תמונה</button> */}
       {imageSrc && <button onClick={openImageInNewTab}>Show Image in New Tab</button>}
     </div>
   );

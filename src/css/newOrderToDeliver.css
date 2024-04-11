@@ -78,7 +78,11 @@
 .textarea-message-content:focus,
 .input-title-message:focus {
     outline: none;
-    font-size: medium;
+}
+.textarea-message-content,
+.input-title-message {
+    font-size: large;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 .button-send-email {
@@ -97,6 +101,7 @@
         left: 0px;
         width: 100%;
         border-top-left-radius: 0px;
+        z-index: 1000;
     }
     .titles {
         border-top-left-radius: 0px;

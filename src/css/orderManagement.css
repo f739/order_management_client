@@ -39,6 +39,8 @@
   grid-template-rows: repeat(2, 1fr);
   grid-template-columns: auto;
   gap: 5px;
+  position: relative; 
+
   .note {
     border: 1px solid rgb(202, 10, 10);
     color: rgb(0, 0, 0);
@@ -46,6 +48,17 @@
     padding: 2px;
   }
 }
+.product-details::after {
+  content: "";
+  position: absolute;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  top: 0;
+  width: 6px; 
+  height: 100%; 
+  background-color: #007BFF;
+}
+
 .product-details.show-div-note {
   grid-template-areas: 
     "up"

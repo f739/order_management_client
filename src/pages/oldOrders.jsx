@@ -11,16 +11,16 @@ import moment from 'moment';
 export const OldOrders = () => {
     const dispatch = useDispatch();
     const [groupedOrders, setGroupedOrders] = useState([]);
-    const allOrders = useSelector( state => state.orders.allOldOrders);
-    const {user} = useSelector( state => state.users);
+    const { allOldOrders } = useSelector( state => state.orders);
+    const { user } = useSelector( state => state.users);
 
     useEffect( () => {
         dispatch( getOldOrders())
     },[]);
 
     useEffect(() => {
-        if (allOrders.length || !allOrders) {
-            let oldOrdersFiltered = [...allOrders];
+        if (allOldOrders.length || !allOldOrders) {
+            let oldOrdersFiltered = [...allOldOrders];
             if (user.license !== 'purchasingManager') {
                 oldOrdersFiltered = oldOrdersFiltered.filter( product => product.factory === user.factory)
             }
@@ -35,7 +35,7 @@ export const OldOrders = () => {
         }else {
             setGroupedOrders([]);
         }
-    }, [allOrders]);
+    }, [allOldOrders]);
     
     return (
         <div className="container-old-orders">
@@ -68,7 +68,7 @@ const OldVendorOrders = ({ orderList, factory, date, time, idOrderList, dispatch
                     <span>{moment.unix(date).format("DD.MM.YYYY")}</span>
                 </div>
                 {orderListSorted.map(order => (
-                    <ShowOldOrder key={order._id}
+                    <ShowOldOrder key={`${order._id}-${order.temporaryQuantity}`}
                     _id={order._id}
                     time={time}
                     date={date}
@@ -118,7 +118,7 @@ const ShowOldOrder = ({ _id, idOrderList, nameProduct, factory, order, time, dat
     return (
         <div className="order-item">
             <div className="order-details up">
-                <input value={valueTemporaryQuantity}
+                <input type="number" value={valueTemporaryQuantity}
                 onChange={ e => setValueTemporaryQuantity(e.target.value)}/>
                 <span><strong>{nameProduct}</strong></span>
                 <span>{unitOfMeasure}</span>
