@@ -23,13 +23,14 @@ export const Products = () => {
             dispatch( getCategories())
         }if (allMeasures.length === 0) {
             dispatch( getMeasures())
+        }if (allSuppliers.length === 0){
+            dispatch( getSuppliers())
         }
-    },[dispatch])
+    },[])
 
     const handleSaveNewPrice = () => {
-        if (newPrice._idSupplier === '' || newPrice.price === '') {
-            return
-        }
+        if (newPrice._idSupplier === '' || newPrice.price === '' || !/^\d*\.?\d+$/.test(newPrice.price)) return;
+        if (newProduct.price.some(prod => prod._idSupplier === newPrice._idSupplier)) return;
         setNewProduct(prev => {
             const supplierIndex = prev.price.findIndex(supplier => supplier._id === newPrice._idSupplier);
             let updatedPrice = [...prev.price];
@@ -55,9 +56,9 @@ export const Products = () => {
         }
     }
     const getDetalesSupplier = _idSupplier => {
-        return  allSuppliers.find( supp => supp._id === _idSupplier);
+        return  allSuppliers?.find( supp => supp._id === _idSupplier);
     }
-    if (!allCategories || !allMeasures || !allSuppliers) return <h1>🌀 Loading...</h1>;
+    if (!allCategories || !allMeasures || !allSuppliers) return 'לא נמצאו שדות'
     
     return (
         <div>
@@ -70,17 +71,18 @@ export const Products = () => {
                     מק"ט:
                     <input type="text" name="sku" value={newProduct.sku} onChange={e => handleFormHook(e.target, setNewProduct)} />
                 </label>
-                <label className="price-label">
-                    מחיר:
+                <label className="price-label">מחיר:</label>
                     <div className="price-input-container">
-                        {newProduct.price && newProduct.price.map((price, i) => (
-                            <span key={i} className="price-span">{getDetalesSupplier(price._idSupplier)?.nameSupplier || ''} - {price.price}</span>
+                        {newProduct.price && newProduct.price.map(price => (
+                            <div key={price._idSupplier} className="price-span">{getDetalesSupplier(price._idSupplier)?.nameSupplier || ''} - {price.price}</div>
                         ))}
-                        <SelectSuppliersHook set={setNewPrice} form={newPrice} />
-                        <input type="text" name="price" value={newPrice.price} onChange={e => handleFormHook(e.target, setNewPrice)} />
+                        <div className="price-inputs">
+                            <SelectSuppliersHook set={setNewPrice} form={newPrice} />
+                            <input type="text" name="price" value={newPrice.price} onChange={e => handleFormHook(e.target, setNewPrice)} />
+                        </div>
                         <button onClick={handleSaveNewPrice}>שמור מחיר</button>
                     </div>
-                </label>
+                <label>מפעל:</label>
                 <SelectFactoryHook  set={setNewProduct} form={newProduct} />
                 <label>
                     קטגוריה:

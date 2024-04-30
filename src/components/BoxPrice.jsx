@@ -67,7 +67,7 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
         <button onClick={ () => setShowAddPrice( old => !old)} className='button-primary'>הגדרת מחיר חדש</button>
         { showAddPrice && <div className='AddPrice'>
             <select name="_idSupplier" className='select-input' onChange={e => handleFormHook(e.target, setNewPrice)}>
-                <option value="">--בחר אפשרות--</option>
+                <option value="">--בחר ספק--</option>
                 {allSuppliers.length > 0 && allSuppliers ? allSuppliers.map(supplier => ( 
                   <React.Fragment key={supplier._id}>
                     {prices && !prices.some(priceInfo => priceInfo._idSupplier === supplier._id) &&

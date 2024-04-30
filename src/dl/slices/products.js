@@ -99,7 +99,7 @@ export const addPrice = createAsyncThunk('products/addPrice',
         const res = await $.put(`${URL}/products/${_idSupplier}/${price}/${_idProduct}/addPrice`);
         const updatedProducts = getState().products.allProducts.map( product => {
           if (product._id === _idProduct) {
-            return res.data.updateProduct;
+            return {...product, price: res.data.updateProduct.price};
           }
           return product;
         });
@@ -109,6 +109,7 @@ export const addPrice = createAsyncThunk('products/addPrice',
       }
   }
 );
+
 
 
 const initialState = {

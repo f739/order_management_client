@@ -7,45 +7,45 @@ import { SelectFactoryHook } from "../components/SelectFactoryHook";
 
 export const CreateUsers = () => {
     const  dispatch = useDispatch();
+    const [message, setMessage] = useState('');
     const [formCreateUser, setFormCreateUser] = useState(
         {userName: '', password: '',email: '', license: '', factory: '' });
 
     const createUser = async () => {
+        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!regex.test(formCreateUser.email)) return setMessage('האימייל אינו תקני');
         if (Object.values(formCreateUser).every(value => value !== '')) {
             dispatch( createNewUser(formCreateUser));
-            setFormCreateUser({userName: '', password: '',email: '', license: '', factory: '' })
+            setFormCreateUser({userName: '', password: '',email: '', license: '', factory: '' });
+            setMessage('')
+        }else {
+            return setMessage('חסר פרטים הכרחיים בטופס')
         }
     }
     return(
         <>
             <div className="new-item">
                 <h1>צור משתמש חדש</h1>
-                <label htmlFor="userName">
-                    שם משתמש:
-                    <input type="text" name="userName" id="userName"
+                <label>שם משתמש:</label>
+                    <input type="text" name="userName"
                     value={formCreateUser.userName} onChange={e => handleFormHook(e.target, setFormCreateUser)} />
-                </label>
-                <label htmlFor="password">
-                    :קוד משתמש
-                    <input type="text" name="password" id="password" 
+                    <label>סיסמה:</label>
+                    <input type="password" name="password" 
                     value={formCreateUser.password} onChange={e => handleFormHook(e.target, setFormCreateUser)} />
-                </label>
-                <label htmlFor="email">
-                    אימייל:
-                    <input type="email" name="email" id="email" 
+                    <label>אימייל:</label>
+                    <input type="email" name="email"
                     value={formCreateUser.email} onChange={e => handleFormHook(e.target, setFormCreateUser)} />
-                </label>
-                <label htmlFor="license">
-                    :רישיון
+                    <label>רישיון:</label>
                     <select name="license" value={formCreateUser.license} onChange={e => handleFormHook(e.target, setFormCreateUser)}>
-                        <option >--בחר אפשרות--</option>
+                        <option >--בחר רישיון--</option>
                         <option value="cooker">טבח</option>
                         <option value="purchasingManager">מנהל רכש</option>
                         <option value="Bookkeeping">הנהלת חשבונות</option>
                     </select>
-                </label>
+                    <label>מפעל:</label>
                 <SelectFactoryHook set={setFormCreateUser} form={formCreateUser} />
                 <button onClick={createUser}>צור משתמש</button>
+                <span>{message}</span>
             </div>
             <ShowUsers dispatch={dispatch} />
         </>

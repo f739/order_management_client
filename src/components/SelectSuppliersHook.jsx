@@ -5,10 +5,9 @@ import { handleFormHook } from "./HandleFormHook";
 
 export const SelectSuppliersHook = ({set, form, ifFunc=false}) => {
     const dispatch = useDispatch();
-    const {allSuppliers} = useSelector( state => state.suppliers);
-    
+    const { allSuppliers } = useSelector( state => state.suppliers);
     useEffect( () => {
-        if (allSuppliers.length === 0) {
+        if (allSuppliers && allSuppliers.length === 0) {
             dispatch( getSuppliers())
         }
     },[])

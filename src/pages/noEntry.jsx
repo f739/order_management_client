@@ -19,19 +19,17 @@ export const NoEntry = () => {
     return (
         <div className="container-entry">
             <img src={noEntry} alt="No Entry Sign" className="image-no-entry" />
-            <label className="input-label-entry">
-               סיסמה:
-                <input  type="text"  name="password" value={form.password} 
-                onChange={e => handleFormHook(e.target, setForm)} className="input-password-entry" 
-                />
-            </label>
-            <label className="input-label-entry">
-               מייל:
-                <input  type="text"  name="email" value={form.email} 
-                onChange={e => handleFormHook(e.target, setForm)} className="input-email-entry" 
-                />
-            </label>
-            <button onClick={connect}>התחבר</button>
+            <div className='form-entry'>
+                <label className="input-label-entry">אימייל:</label>
+                    <input  type="text"  name="email" value={form.email} 
+                    onChange={e => handleFormHook(e.target, setForm)} className="input-entry" 
+                    />
+                <label className="input-label-entry">סיסמה:</label>
+                    <input type="password"  name="password" value={form.password} 
+                    onChange={e => handleFormHook(e.target, setForm)} className="input-entry" 
+                    />
+                <button onClick={connect} className='connect'>התחבר</button>
+            </div>
         </div>
     );
 };

@@ -1,25 +1,23 @@
-
-.new-item label.price-label {
+.new-item {
     display: flex;
     align-items: center; 
     justify-content: space-between; 
     flex-wrap: wrap; 
   }
   
-  .new-item label.price-label .price-input-container {
+  .new-item  {
     display: flex;
     align-items: center; 
     flex-grow: 1; 
     margin-top: 5px; 
   }
   
-  .new-item label.price-label .price-input-container select,
-  .new-item label.price-label .price-input-container input {
+  .new-item {
     flex: 1;
     margin-right: 10px; 
   }
   
-  .new-item label.price-label .price-input-container button {
+  .new-item {
     margin-left: 10px; 
   }
 
@@ -29,4 +27,14 @@
     border: 1px solid #ddd;
     margin-top: 0; 
   }
-  
+  .price-inputs {
+    display: flex;
+    justify-content: center;
+    input {
+      margin: 0px 5px;
+    }
+    select {
+      margin-top: 5px;
+      height: 35px;
+    }
+  }

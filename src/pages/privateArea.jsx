@@ -20,7 +20,7 @@ export const PrivateArea = () => {
                 </nav>
                 <Outlet />
             </>
-            : <NoEntry />}
+             : <NoEntry />} 
         </>
     )
 }

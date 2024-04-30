@@ -6,7 +6,7 @@ export const getSuppliers = createAsyncThunk('suppliers/getSuppliers',
   async (_, {rejectWithValue}) => {  
       try {
         const res = await $.put(`${URL}/suppliers/getAllsuppliers`);
-        return res.data.allSuppliers
+          return res.data.allSuppliers
       }catch (err) {
         return rejectWithValue(err.response.data.message)
       }

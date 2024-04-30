@@ -42,11 +42,11 @@
   flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
-  width: 100%;
+  width: 50%;
 }
 
 .supplier-name {
-  margin-right: 10px;
+  /* margin-right: 10px; */
   font-weight: bold;
 }
 
@@ -74,7 +74,7 @@
 
 .select-input,
 .input-text {
-  width: 350px;
+  width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;

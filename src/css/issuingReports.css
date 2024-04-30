@@ -1,0 +1,57 @@
+.container-Bookkeeping {
+    margin-top: 5px;
+    direction: rtl;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.report {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative; 
+}
+.report::after {
+    content: "";
+    position: absolute;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    top: 0;
+    right: 0;
+    width: 6px; 
+    height: 100%; 
+    background-color: #007BFF;
+}
+.line {
+    border: 1px solid #007BFF;
+    margin-bottom: 10px;
+    margin-top: 2px;
+}
+.choose-date {
+    margin: 5px 0px;
+    display: flex;
+    justify-content:space-around;
+}
+.choose-date input[type=date] {
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+button.send-report {
+    padding: 5px;
+    margin-top: 5px;
+    background-color: #007BFF;
+    color: #ddd;
+}
+.message {
+    border: 1px solid #ddd;
+    display: block;
+    color: #3d3d3d;
+    padding: 5px;
+    margin-top: 5px;
+}

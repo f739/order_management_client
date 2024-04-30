@@ -38,7 +38,7 @@ export const Orders = () => {
         if (!allCategories || allCategories.length === 0) {
             dispatch( getCategories())
         }
-    },[allCategories]);
+    },[]);
     
     const filterProducts = e => {
         const { value } = e.target;
@@ -64,7 +64,7 @@ export const Orders = () => {
     if (isLoading) return <h1>🌀 Loading...</h1>;
     return(
         <div className="container-orders">
-            { allCategories && <select id="categories-select" name="category" onChange={filterProducts}>
+            { allCategories && allCategories.length === 0 && <select id="categories-select" name="category" onChange={filterProducts}>
                 <option value="allCategories">כל הקטגוריות</option>
                 { allCategories.map( category => (
                     <option value={category.nameCategory} key={category._id}>{category.nameCategory}</option>
