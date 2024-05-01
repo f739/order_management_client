@@ -1,12 +1,12 @@
-import React, { useRef, useState } from 'react';
-import picture from '../assetes/picture.svg';
+import React, { useEffect, useRef, useState } from 'react';
+const URL = import.meta.env.VITE_API_URL;
+import $ from 'axios';
 
-function Camera() {
+
+export const Camera = ({setShowCamera, numberOrder, setImageSrc}) => {
   const videoRef = useRef(null);
-  const [imageSrc, setImageSrc] = useState('');
-
-  const startCamera = () => {
-    navigator.mediaDevices.getUserMedia({ video: true })
+  useEffect(() => {
+    navigator.mediaDevices.getUserMedia({ video: {facingMode: 'environment'} })
       .then((stream) => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -15,10 +15,21 @@ function Camera() {
       .catch((error) => {
         console.error("Error accessing the camera", error);
       });
-  };
 
-  // צילום התמונה
-  const captureImage = () => {
+    return () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'visible';
+    };
+  });
+
+  const captureImage = async () => {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     const video = videoRef.current;
@@ -28,30 +39,25 @@ function Camera() {
       canvas.height = video.videoHeight;
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // המרת התמונה מה-canvas ל-URL ושמירתה
-      const imageSrc = canvas.toDataURL('image/png');
+      const imageSrc = canvas.toDataURL('image/jpeg', 0.7);
       setImageSrc(imageSrc);
-    }
-  };
 
-  // פונקציה להצגת התמונה בחלון חדש
-  const openImageInNewTab = () => {
-    if (imageSrc) {
-      const imageWindow = window.open();
-      imageWindow.document.write(`<img src="${imageSrc}" alt="Captured Image"/>`);
+      // שליחת התמונה לשרת
+      try {
+        const response = await $.post(`${URL}/oldOrders/sendingPhotoOfADeliveryCertificate`, {image: imageSrc, numberOrder });
+        setShowCamera(false)
+        console.log('Image sent successfully', response);
+      } catch (error) {
+        console.error('Error sending the image', error);
+      }
     }
   };
 
   return (
     <div className='box-camera'>
-      <button onClick={startCamera}>
-        <img src={picture} alt="צלם תעודת משלוח" className='icon' />
-      </button>
+      <div className='return' onClick={ () => setShowCamera(false)}> &lt;= </div>
       <video ref={videoRef} autoPlay></video>
-      {/* <button onClick={captureImage} >תפוס תמונה</button> */}
-      {imageSrc && <button onClick={openImageInNewTab}>Show Image in New Tab</button>}
+      <button onClick={captureImage}>O</button>
     </div>
   );
 }
-
-export default Camera;

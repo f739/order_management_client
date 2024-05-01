@@ -5,7 +5,8 @@ import  vIcon from '../assetes/vIcon.svg';
 import trash_icon from '../assetes/trash_icon.svg'
 import return_icon from '../assetes/return_icon.svg'
 import '../css/oldOrders.css';
-import Camera from "../components/Camera";
+import {Camera} from "../components/Camera";
+import picture from '../assetes/picture.svg';
 import moment from 'moment';
 
 export const OldOrders = () => {
@@ -56,7 +57,8 @@ export const OldOrders = () => {
 
 const OldVendorOrders = ({ orderList, factory, date, time, idOrderList, dispatch, ifWasAccepted, license, _idSupplier }) => {
     const orderListSorted = [...orderList].sort((a, b) => a.category.localeCompare(b.category));
-    
+    const [showCamera, setShowCamera] = useState(false);
+    const [imageSrc, setImageSrc] = useState('');
     return (
         <div key={idOrderList}>
             { !ifWasAccepted &&  
@@ -84,7 +86,10 @@ const OldVendorOrders = ({ orderList, factory, date, time, idOrderList, dispatch
                     price={order.price}
                     category={order.category} />
                 ))}
-                { <Camera /> }
+                {!showCamera ? <img src={picture} alt="צלם תעודת משלוח" 
+                className='icon' onClick={() => setShowCamera( old => !old)} /> 
+                : <Camera setShowCamera={setShowCamera} numberOrder={idOrderList} setImageSrc={setImageSrc}/> }
+                {imageSrc !== '' && <a href={`https://deliverycertificate.s3.us-east-1.amazonaws.com/${idOrderList}.jpeg`}>לצפייה בתמונה</a> }
             </div>
             }
         </div>
