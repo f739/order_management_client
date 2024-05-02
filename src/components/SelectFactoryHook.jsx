@@ -6,7 +6,7 @@ export const SelectFactoryHook = ({set, form, showAllFactoryLine=false, ifFunc=f
             <option value="">--בחר מפעל--</option>
             {showAllFactoryLine &&  <option value="allFactories">כל המפעלים</option>}
             <option value="catering">קייטרינג</option>
-            <option value="restaurant">מסעדה</option>
+            <option value="hazor">קייטרינג חצור</option>
             <option value="bakery">מאפיה</option>
         </select>
     )

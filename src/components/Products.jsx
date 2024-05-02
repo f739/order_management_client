@@ -2,20 +2,20 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { getProducts, createNewProduct, removeProduct } from "../dl/slices/products";
 import { handleFormHook } from './HandleFormHook';
-import { SelectFactoryHook } from './SelectFactoryHook';
 import { SelectSuppliersHook } from './SelectSuppliersHook'
 import { getMeasures } from "../dl/slices/measures";
 import { getSuppliers } from "../dl/slices/suppliers";
 import { getCategories } from "../dl/slices/categories";
 import trash_icon from '../assetes/trash_icon.svg'
 import '../css/products.css';
+import Select from 'react-select';
 
 export const Products = () => {
     const dispatch = useDispatch();
-    const [newProduct, setNewProduct] = useState({nameProduct: '', factory: '', category: '', unitOfMeasure: '', sku: '', price: []});
+    const [newProduct, setNewProduct] = useState({nameProduct: '', factories: [], category: '', unitOfMeasure: '', sku: '', price: []});
     const [newPrice, setNewPrice] = useState({_idSupplier: '', price: ''});
     const {allCategories} = useSelector( state => state.categories);
-    const {allSuppliers} = useSelector( state => state.suppliers);
+    const {allSuppliers, isLoading} = useSelector( state => state.suppliers);
     const {allMeasures} = useSelector( state => state.measures);
     
     useEffect( () => {
@@ -23,8 +23,8 @@ export const Products = () => {
             dispatch( getCategories())
         }if (allMeasures.length === 0) {
             dispatch( getMeasures())
-        }if (allSuppliers.length === 0){
-            dispatch( getSuppliers())
+        }if (allSuppliers.length === 0 && !isLoading) {
+            dispatch(getSuppliers());
         }
     },[])
 
@@ -46,13 +46,19 @@ export const Products = () => {
         });
         setNewPrice({_idSupplier: '', price: ''});
     }
-    
+    const handleSelectFactory = factoriesArr => {
+        console.log(factoriesArr);
+        setNewProduct(old => { return {...old, factories: factoriesArr }});
+        console.log(newProduct);
+    }
     const handleSaveNewProduct = () => {
-        if (newProduct.nameProduct === '' || newProduct.category === '' ||
-        newProduct.unitOfMeasure === '' || newProduct.sku === '' || newProduct.factory === '' ) {
+        if (newProduct.nameProduct === '' || newProduct.category === '' || newProduct.price.length === 0 || 
+        newProduct.unitOfMeasure === '' || newProduct.sku === '' || newProduct.factories.length === 0 ) {
         }else {
-            dispatch( createNewProduct(newProduct));
-            setNewProduct({nameProduct: '', factory: '', category: '', unitOfMeasure: '', sku: '', price: []});
+            newProduct.factories.forEach( factory => {
+                dispatch( createNewProduct({...newProduct, factory: factory.value}));
+            })
+            setNewProduct({nameProduct: '', factories: [], category: '', unitOfMeasure: '', sku: '', price: []});
         }
     }
     const getDetalesSupplier = _idSupplier => {
@@ -77,13 +83,21 @@ export const Products = () => {
                             <div key={price._idSupplier} className="price-span">{getDetalesSupplier(price._idSupplier)?.nameSupplier || ''} - {price.price}</div>
                         ))}
                         <div className="price-inputs">
-                            <SelectSuppliersHook set={setNewPrice} form={newPrice} />
+                            <SelectSuppliersHook set={setNewPrice} form={newPrice} ifGet={false}/>
                             <input type="text" name="price" value={newPrice.price} onChange={e => handleFormHook(e.target, setNewPrice)} />
                         </div>
                         <button onClick={handleSaveNewPrice}>שמור מחיר</button>
                     </div>
                 <label>מפעל:</label>
-                <SelectFactoryHook  set={setNewProduct} form={newProduct} />
+                <Select 
+                    value={newProduct.factories}
+                    options={[{ value: "catering", label: 'קייטרינג' },{ value: 'hazor', label: 'קייטרינג חצור' }, { value: 'bakery', label: 'מאפיה' }]}
+                    isMulti
+                    onChange={handleSelectFactory}
+                    placeholder='בחר מפעלים'
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                 />
                 <label>
                     קטגוריה:
                     { <select id="categories-select" name="category" value={newProduct.category} onChange={e => handleFormHook(e.target, setNewProduct)}>
@@ -128,7 +142,7 @@ const ShowProducts = props => {
     return (
         <div className="show-items">
         <h1 className="title">מוצרים קיימים:</h1>
-        {allProducts && allProducts.length > 0 ? allProducts.map( product => (
+        {allProducts ? allProducts.map( product => (
                 <div className="show-item" key={product._id}>
                     <span className={`factory-${product.factory}`}>{product.factory && product.factory.charAt(0).toUpperCase()}</span>
                     <span>{product.nameProduct}</span>

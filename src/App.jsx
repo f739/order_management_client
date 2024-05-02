@@ -5,30 +5,27 @@ import { ToastContainer } from 'react-toastify';
 import { NoEntry } from "./pages/noEntry";
 import 'react-toastify/dist/ReactToastify.css';
 import './css/main.css';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import bic_logo from './assetes/bic_logo.png';
 
 export function Layout () {
   const dispatch = useDispatch();
-  const [license, setLicense] = useState('');
+  const { license, isLoadingToken } = useSelector( state => state.users.user);
 
   useEffect( () => {
-    const testTokenFunc = async () => {
       const token = localStorage.getItem('token');
       if (token) {
-        const res =  await dispatch( testToken(token))
-        setLicense(res.payload);
+        dispatch( testToken(token))
       }
-    }; testTokenFunc()
   },[]) 
-  return (
+  if (isLoadingToken) return <h1>🌀 Loading...</h1>;
+  else if (license === '') return <NoEntry />;
+  else return (
     <>
     {/* <div className="logo-container">
       <img src={bic_logo} alt="Logo" className="logo" />
     </div> */}
-      {license && 
-      <>
         <nav>
           <NavLink to='/orders'>הזמנות חדשות</NavLink>
           <NavLink to='./orderManagement'>הזמנות בתהליך</NavLink>
@@ -39,10 +36,6 @@ export function Layout () {
         <ToastContainer />
         <Outlet />
       </>
-      }
-      {!license && <NoEntry />}
-    </>
-
   )
 }
 

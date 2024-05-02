@@ -92,7 +92,7 @@ export const Orders = () => {
                 <select className={`select-factory-corner ${showSelect ? 'show' : ''}`} 
                 size="3" onChange={e => SendAnInvitation(e.target.value)}>
                     <option value="catering">קייטרינג</option>
-                    <option value="restaurant">מסעדה</option>
+                    <option value="hazor">קייטרינג חצור</option>
                     <option value="bakery">מאפיה</option>
                 </select>
             )}
