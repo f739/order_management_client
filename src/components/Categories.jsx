@@ -16,10 +16,8 @@ export const Categories = () => {
     return (
         <div className="category">
             <div className="new-item">
-                <label>
-                    שם קטגוריה:
-                    <input type="text" name="nameCategory" value={newCategory.nameCategory} onChange={e => handleFormHook(e.target, setNewCategory)}/> 
-                </label>
+                <label>שם קטגוריה:</label>
+                <input type="text" name="nameCategory" value={newCategory.nameCategory} onChange={e => handleFormHook(e.target, setNewCategory)}/> 
                 <button onClick={handleSaveNewCategory}>שמור קטגוריה חדשה</button>
             </div>
             { errorMessage && <h4 className="error-message">{errorMessage}</h4>}

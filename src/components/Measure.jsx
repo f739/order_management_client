@@ -15,11 +15,9 @@ export const Measure = () => {
     return (
         <div className="measure">
             <div className="new-item">
-                <label>
-                    שם יחידת מידה:
+                <label>שם יחידת מידה:</label>
                     <input type="text" name="measureName" value={newMeasure.measureName} 
                     onChange={ e => handleFormHook(e.target, setNewMeasure)}/> 
-                </label>
                 <button onClick={handleSaveNewMeasure}>שמור יחידת מידה חדשה</button>
             </div>
             <ShowMeasures  dispatch={dispatch} />

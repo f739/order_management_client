@@ -4,13 +4,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getActiveOrders, removeProduct } from "../dl/slices/orders";
 import { NewOrderToDeliver } from '../components/NewOrderToDeliver';
 import { getProducts } from '../dl/slices/products';
+import { BoxPrice } from '../components/BoxPrice';
+import { SelectFactoryHook } from '../components/SelectFactoryHook';
+import { getSuppliers } from '../dl/slices/suppliers';
+import moment from 'moment';
 import edit from '../assetes/edit.svg';
 import trash_icon from '../assetes/trash_icon.svg'
-import { BoxPrice } from '../components/BoxPrice';
 import '../css/orderManagement.css';
-import { SelectFactoryHook } from '../components/SelectFactoryHook';
-import moment from 'moment';
-import { getSuppliers } from '../dl/slices/suppliers';
 
 export const OrderManagement = () => {
   const dispatch = useDispatch();

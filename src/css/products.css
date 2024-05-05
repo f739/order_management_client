@@ -3,21 +3,10 @@
     align-items: center; 
     justify-content: space-between; 
     flex-wrap: wrap; 
-  }
-  
-  .new-item  {
-    display: flex;
-    align-items: center; 
     flex-grow: 1; 
     margin-top: 5px; 
-  }
-  
-  .new-item {
     flex: 1;
     margin-right: 10px; 
-  }
-  
-  .new-item {
     margin-left: 10px; 
   }
 
@@ -25,19 +14,33 @@
     padding: 8px;
     border-radius: 4px;
     border: 1px solid #ddd;
-    margin-top: 0; 
   }
-  .price-inputs {
+  
+  .price-input-container .price-inputs {
     display: flex;
-    justify-content: center;
-    input {
-      margin: 0px 5px;
-    }
-    select {
-      margin-top: 5px;
-      height: 35px;
-    }
+    justify-content: space-evenly;
+  }
+  .price-input-container .price-inputs input {
+    width: 40px;
+  }
+  .price-input-container .price-inputs select {
+    width: 70%;
+    margin-left: 10px;
+  }
+  .price-inputs select {
+    margin-top: 5px;
+    height: 35px;
+  }
+  @media (max-width: 600px) {
+    
+    /* .price-inputs select, .price-inputs input {
+      width: 120px;
+    } */
+    /* .price-inputs select {
+      margin-left: 15px;
+    } */
   }
   .basic-multi-select {
     width: 100%;
+    margin: 5px 0px;
   }

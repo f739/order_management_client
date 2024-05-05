@@ -15,22 +15,17 @@ export const Supplier = () => {
     return (
         <div className="suppliers">
             <div className="new-item">
-                <label>
-                    שם ספק:
-                    <input type="text" name="nameSupplier" value={newSupplier.nameSupplier} onChange={e => handleFormHook(e.target, setNewSupplier)}/> 
-                </label>
-                <label>
-                    פלאפון ספק:
+                <label>שם ספק:</label>
+                <input type="text" name="nameSupplier" value={newSupplier.nameSupplier} onChange={e => handleFormHook(e.target, setNewSupplier)}/> 
+
+                <label>פלאפון ספק:</label>
                 <input type="tel" name="tel" value={newSupplier.tel} onChange={e => handleFormHook(e.target, setNewSupplier)}/> 
-                </label>
-                <label>
-                    אמייל ספק:
+                
+                <label>אמייל ספק:</label>
                 <input type="email" name="email" value={newSupplier.email} onChange={e => handleFormHook(e.target, setNewSupplier)}/> 
-                </label>
-                <label>
-                   מספר ספק:
+
+                <label>מספר ספק:</label>
                 <input type="text" name="supplierNumber" value={newSupplier.supplierNumber} onChange={e => handleFormHook(e.target, setNewSupplier)}/> 
-                </label>
                 <button onClick={handleSaveNewSupplier}>שמור ספק חדש</button>
             </div>
             <ShowSuppliers dispatch={dispatch} />

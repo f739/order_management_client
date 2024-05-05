@@ -34,3 +34,27 @@
     color: #1976D2; 
   }
   
+  @media (max-width: 600px) {
+    .logger-table, .logger-table thead, .logger-table tbody, .logger-table th, .logger-table td, .logger-table tr {
+        display: block;
+    }
+
+    .logger-table tr {
+        margin-bottom: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .logger-table td {
+        display: block;
+        text-align: right;
+        padding-left: 50%; 
+        position: relative;
+    }
+
+    .logger-table td::before {
+        content: attr(data-label); 
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+    }
+}

@@ -1,0 +1,23 @@
+.form-edit-detales-email {
+    text-align: right;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    button {
+        padding: 10px;
+    }
+    input {
+        height: 30px;
+        border: 1px solid #ddd;
+        width: 95%;
+    }
+}
+.form-edit-detales-email label, .form-edit-detales-email button {
+    display: block;
+    margin: 5px;
+}
+.delete-db {
+    background-color: red;
+    color: #ffffff;
+}

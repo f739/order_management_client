@@ -69,22 +69,20 @@ export const Products = () => {
     return (
         <div>
             <div className="new-item">
-                <label>
-                    שם מוצר:
-                    <input type="text" name="nameProduct" value={newProduct.nameProduct} onChange={e => handleFormHook(e.target, setNewProduct)} />
-                </label>
-                <label>
-                    מק"ט:
-                    <input type="text" name="sku" value={newProduct.sku} onChange={e => handleFormHook(e.target, setNewProduct)} />
-                </label>
-                <label className="price-label">מחיר:</label>
+                <label>שם מוצר:</label>
+                <input type="text" name="nameProduct" value={newProduct.nameProduct} onChange={e => handleFormHook(e.target, setNewProduct)} />
+
+                <label>מק"ט:</label>
+                <input type="text" name="sku" value={newProduct.sku} onChange={e => handleFormHook(e.target, setNewProduct)} /> 
+                
+                <label>מחיר:</label>
                     <div className="price-input-container">
                         {newProduct.price && newProduct.price.map(price => (
                             <div key={price._idSupplier} className="price-span">{getDetalesSupplier(price._idSupplier)?.nameSupplier || ''} - {price.price}</div>
                         ))}
                         <div className="price-inputs">
                             <SelectSuppliersHook set={setNewPrice} form={newPrice} ifGet={false}/>
-                            <input type="text" name="price" value={newPrice.price} onChange={e => handleFormHook(e.target, setNewPrice)} />
+                            <input type="text" name="price" placeholder="מחיר" value={newPrice.price} onChange={e => handleFormHook(e.target, setNewPrice)} />
                         </div>
                         <button onClick={handleSaveNewPrice}>שמור מחיר</button>
                     </div>

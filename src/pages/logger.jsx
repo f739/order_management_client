@@ -37,7 +37,7 @@ export const Logger = () => {
                         <td>{moment(log.timestamp).format('YYYY-MM-DD HH:mm')}</td>
                     </tr>
                     ))) : (
-                        <div>אין שגיאות להצגה</div>
+                        <tr><td colSpan="5">אין שגיאות להצגה</td></tr>
                     )}
                 </tbody>
             </table>
