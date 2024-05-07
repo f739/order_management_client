@@ -40,6 +40,23 @@ export const removeProduct = createAsyncThunk('products/removeProduct',
   }
 );
 
+export const editProduct = createAsyncThunk('products/editProduct', 
+  async (productUpdated, {getState, rejectWithValue}) => {  
+    console.log(productUpdated);
+      try {
+        const res = await $.put(`${URL}/products/editProduct`, productUpdated);
+        const newProduct = res.data.newProduct;
+        console.log(newProduct);
+        const updatedProduct = getState().products.allProducts
+        .map( el => el._id !== newProduct._id ? el : newProduct)
+        return updatedProduct;
+      }catch (err) {
+        return rejectWithValue(err.response.data.message)
+      }
+  }
+);
+
+
 export const createNewNote = createAsyncThunk('products/createNewNote', 
   async ({_id, newNote}, {getState, rejectWithValue}) => {  
       try {
@@ -138,6 +155,9 @@ export const slice = createSlice({
             state.allProducts.push(action.payload);
           })
           builder.addCase(removeProduct.fulfilled, (state, action) => {
+            state.allProducts = action.payload;
+          })
+          builder.addCase(editProduct.fulfilled, (state, action) => {
             state.allProducts = action.payload;
           })
           builder.addCase(createNewNote.fulfilled, (state, action) => {

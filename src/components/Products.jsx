@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
-import { getProducts, createNewProduct, removeProduct } from "../dl/slices/products";
+import { getProducts, createNewProduct, removeProduct, editProduct } from "../dl/slices/products";
 import { handleFormHook } from './HandleFormHook';
 import { SelectSuppliersHook } from './SelectSuppliersHook'
 import { getMeasures } from "../dl/slices/measures";
 import { getSuppliers } from "../dl/slices/suppliers";
 import { getCategories } from "../dl/slices/categories";
-import trash_icon from '../assetes/trash_icon.svg'
+import { EditItemHook } from './EditItemHook';
+import edit from '../assetes/edit.svg'
 import '../css/products.css';
 import Select from 'react-select';
 
@@ -125,15 +126,30 @@ export const Products = () => {
 const ShowProducts = props => {
     const { dispatch } = props;
     const {allProducts, isLoading} = useSelector( state => state.products);
-
+    const [showEdit, setShowEdit] = useState(false);
+    const fields = [
+        {label: 'שם מוצר',type: 'input', typeInput: 'text', name: 'nameProduct'},
+        {label: 'מק"ט',type: 'input', typeInput: 'text', name: 'sku'},
+        { label: 'מחיר',type: 'price', name: 'price' },
+        { label: 'מפעל', type: 'select', name: 'factory' },
+        {label: 'קטגוריה', type: 'select', name: 'category'},
+        {label: 'יחידות מידה', type: 'select', name: 'unitOfMeasure'}
+      ];
+    
+      
     useEffect( () => {
         if (allProducts.length === 0) {
             dispatch( getProducts())
         }
     },[])
 
-    const deleteProduct = (_id) => {
-       dispatch( removeProduct(_id))
+    const deleteProduct = _id => {
+       dispatch( removeProduct(_id));
+       setShowEdit(false);
+    }
+    const handleEditItem = productUpdated => {
+        dispatch( editProduct(productUpdated));
+        setShowEdit(false);
     }
     if (isLoading) return <h1>🌀 Loading...</h1>;
 
@@ -146,9 +162,17 @@ const ShowProducts = props => {
                     <span>{product.nameProduct}</span>
                     <span>{product.unitOfMeasure}</span>
                     <span>{product.category}</span>
-                    <button onClick={() => deleteProduct(product._id)} className="delete-item">
-                        <img src={trash_icon} alt="delete" className="icon" />
+                    <button onClick={() => setShowEdit(true)}>
+                        <img src={edit} alt="ערוך" className='icon'/>
                     </button>
+                    { showEdit && 
+                        <EditItemHook initialData={product} 
+                        onSubmit={handleEditItem}
+                        fields={fields}
+                        setShowEdit={setShowEdit}
+                        deleteItem={deleteProduct}
+                        />
+                    }
                 </div>
             )) :  (<div>אין מוצרים להצגה</div>)}
         </div>

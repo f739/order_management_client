@@ -39,6 +39,21 @@ export const removeSupplier = createAsyncThunk('suppliers/removeSupplier',
   }
 );
 
+export const editSupplier = createAsyncThunk('suppliers/editSupplier', 
+  async (supplierUpdated, {getState, rejectWithValue}) => {  
+      try {
+        const res = await $.put(`${URL}/suppliers/editSupplier`, supplierUpdated);
+        const newSupplier = res.data.newSupplier;
+        console.log(newSupplier);
+        const updatedSuppliers = getState().suppliers.allSuppliers
+        .map( el => el._id !== newSupplier._id ? el : newSupplier)
+        return updatedSuppliers;
+      }catch (err) {
+        return rejectWithValue(err.response.data.message)
+      }
+  }
+);
+
 
 const initialState = {
     allSuppliers: [],
@@ -62,6 +77,9 @@ export const slice = createSlice({
           })
           builder.addCase(createNewSupplier.fulfilled, (state, action) => {
             state.allSuppliers.push(action.payload);
+          })
+          builder.addCase(editSupplier.fulfilled, (state, action) => {
+            state.allSuppliers = action.payload;
           })
           builder.addCase(removeSupplier.fulfilled, (state, action) => {
             state.allSuppliers = action.payload;

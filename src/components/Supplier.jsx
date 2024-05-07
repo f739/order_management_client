@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
-import { getSuppliers, createNewSupplier, removeSupplier } from "../dl/slices/suppliers";
+import { getSuppliers, createNewSupplier, removeSupplier, editSupplier } from "../dl/slices/suppliers";
 import { handleFormHook } from "./HandleFormHook";
-import trash_icon from '../assetes/trash_icon.svg';
+import { EditItemHook } from "./EditItemHook";
+import edit from '../assetes/edit.svg';
 
 export const Supplier = () => {
     const dispatch = useDispatch();
@@ -37,14 +38,26 @@ export const Supplier = () => {
 const ShowSuppliers = props => {
     const { dispatch } = props;
     const {allSuppliers, isLoading} = useSelector( state => state.suppliers);
-
+    const [showEdit, setShowEdit] = useState(false);
+    const fields = [
+        {name: 'nameSupplier',label: 'שם ספק',typeInput: 'text', type: 'input'},
+        {name: 'tel',label: 'פלאפון ספק',typeInput: 'tel', type: 'input'},
+        {name: 'email',label: 'אימייל ספק',typeInput: 'email', type: 'input'},
+        {name: 'supplierNumber',label: 'מספר ספק',typeInput: 'text', type: 'input'}
+      ];      
     useEffect(() => {
         if (!allSuppliers.length) {
             dispatch(getSuppliers());
         }
     }, [dispatch]);
-    const deleteSupplier = (_id) => {
-        dispatch(removeSupplier(_id))
+    const deleteSupplier = _id => {
+        dispatch(removeSupplier(_id));
+        setShowEdit(false);
+    }
+    const handleEditItem = supplierUpdated => {
+        dispatch( editSupplier(supplierUpdated));
+        setShowEdit(false);
+
     }
     if (isLoading) return <h1>🌀 Loading...</h1>;
 
@@ -57,9 +70,17 @@ const ShowSuppliers = props => {
                     <span>{supplier.nameSupplier}</span>
                     <span>{supplier.tel}</span>
                     <span>{supplier.email}</span>
-                    <button onClick={() => deleteSupplier(supplier._id)} className="delete-item">
-                        <img src={trash_icon} alt="delete" className="icon"/>
+                    <button onClick={() => setShowEdit(true)}>
+                        <img src={edit} alt="ערוך" className='icon'/>
                     </button>
+                    { showEdit && 
+                        <EditItemHook initialData={supplier} 
+                        onSubmit={handleEditItem}
+                        fields={fields}
+                        setShowEdit={setShowEdit}
+                        deleteItem={deleteSupplier}
+                        />
+                    }
                 </div>
             )) ) : (<div>אין ספקים להצגה</div>)}
         </div>
