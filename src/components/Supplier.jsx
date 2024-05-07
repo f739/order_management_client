@@ -57,7 +57,6 @@ const ShowSuppliers = props => {
                     <span>{supplier.nameSupplier}</span>
                     <span>{supplier.tel}</span>
                     <span>{supplier.email}</span>
-                    {/* <span>{supplier.supplierNumber}</span> */}
                     <button onClick={() => deleteSupplier(supplier._id)} className="delete-item">
                         <img src={trash_icon} alt="delete" className="icon"/>
                     </button>

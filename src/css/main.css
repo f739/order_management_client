@@ -54,17 +54,23 @@ select {
   justify-content: space-between;
   transition: box-shadow 0.3s ease;
 }
-
-.show-item:hover {
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
 .show-item span {
   color: #333;
   font-size: 16px;
   font-weight: bold;
   overflow-x: auto;
-  max-width: calc(100% / 5);
+  overflow-y: scroll;
+  max-height: 65px;
+  max-width: 20%;
+}
+.measure-items .show-item span, .categories-items .show-item span {
+  max-width: 80%;
+}
+
+
+
+.show-item:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 ::-webkit-scrollbar {
   height: 4px;
@@ -83,12 +89,12 @@ select {
 }
 
 
-@media (max-width: 600px) {
+/* @media (max-width: 600px) {
   .show-item span {
     font-size: 12;
 
   }
-}
+} */
 
 nav {
   display: flex;

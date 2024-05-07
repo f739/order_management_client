@@ -43,7 +43,7 @@ const ShowCategories = props => {
 
     if (isLoading) return <h1>🌀 Loading...</h1>;
     return (
-            <div className="show-items">
+            <div className="show-items categories-items">
                 <h1 className="title">קטגוריות קיימות:</h1>
                 {allCategories && allCategories.length > 0 ? allCategories.map( category => (
                 <div key={category._id} className="show-item">

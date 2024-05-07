@@ -42,7 +42,7 @@ const ShowMeasures = props => {
 
     if (isLoading) return <h1>🌀 Loading...</h1>;
     return (
-        <div className="show-items">
+        <div className="show-items measure-items">
                 <h1 className="title">יחידות מידה קיימות:</h1>
                 {allMeasures && allMeasures.length > 0 ? (
                  allMeasures.map( measure => (
