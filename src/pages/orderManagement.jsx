@@ -232,15 +232,11 @@ const Product = props => {
           }
         </div>
         {showPrices && (
-          <div className='backdrop'>
-            <div className="prices-table">
-              <BoxPrice 
-                prices={prices}
-                setShowPrices={setShowPrices}
-                productId={product._id}
-                license={license} />
-            </div>
-          </div>
+            <BoxPrice 
+              prices={prices}
+              setShowPrices={setShowPrices}
+              productId={product._id}
+              license={license} />
         )}
       </div> : <p></p>}
     </div> 

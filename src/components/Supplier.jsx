@@ -38,7 +38,7 @@ export const Supplier = () => {
 const ShowSuppliers = props => {
     const { dispatch } = props;
     const {allSuppliers, isLoading} = useSelector( state => state.suppliers);
-    const [showEdit, setShowEdit] = useState(false);
+    const [showEditSupplier, setShowEditSupplier] = useState(false);
     const fields = [
         {name: 'nameSupplier',label: 'שם ספק',typeInput: 'text', type: 'input'},
         {name: 'tel',label: 'פלאפון ספק',typeInput: 'tel', type: 'input'},
@@ -52,11 +52,11 @@ const ShowSuppliers = props => {
     }, [dispatch]);
     const deleteSupplier = _id => {
         dispatch(removeSupplier(_id));
-        setShowEdit(false);
+        setShowEditSupplier(false);
     }
     const handleEditItem = supplierUpdated => {
         dispatch( editSupplier(supplierUpdated));
-        setShowEdit(false);
+        setShowEditSupplier(false);
 
     }
     if (isLoading) return <h1>🌀 Loading...</h1>;
@@ -70,14 +70,14 @@ const ShowSuppliers = props => {
                     <span>{supplier.nameSupplier}</span>
                     <span>{supplier.tel}</span>
                     <span>{supplier.email}</span>
-                    <button onClick={() => setShowEdit(true)}>
+                    <button onClick={() => setShowEditSupplier(supplier)}>
                         <img src={edit} alt="ערוך" className='icon'/>
                     </button>
-                    { showEdit && 
-                        <EditItemHook initialData={supplier} 
+                    { showEditSupplier._id === supplier._id && 
+                        <EditItemHook initialData={showEditSupplier} 
                         onSubmit={handleEditItem}
                         fields={fields}
-                        setShowEdit={setShowEdit}
+                        setShowEdit={setShowEditSupplier}
                         deleteItem={deleteSupplier}
                         />
                     }

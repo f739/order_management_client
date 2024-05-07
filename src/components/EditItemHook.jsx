@@ -5,7 +5,6 @@ import { SelectFactoryHook } from './SelectFactoryHook';
 import { SelectCatgoryHook } from './SelectCatgoryHook';
 import { SelectMeasureHook } from './SelectMeasureHook';
 import { BoxPrice } from './BoxPrice';
-import trash_icon from '../assetes/trash_icon.svg';
 
 export const EditItemHook = ({ initialData, onSubmit, fields, setShowEdit, deleteItem }) => {
     const [formData, setFormData] = useState(initialData);

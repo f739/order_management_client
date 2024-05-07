@@ -126,7 +126,7 @@ export const Products = () => {
 const ShowProducts = props => {
     const { dispatch } = props;
     const {allProducts, isLoading} = useSelector( state => state.products);
-    const [showEdit, setShowEdit] = useState(false);
+    const [showEditProduct, setShowEditProduct] = useState('');
     const fields = [
         {label: 'שם מוצר',type: 'input', typeInput: 'text', name: 'nameProduct'},
         {label: 'מק"ט',type: 'input', typeInput: 'text', name: 'sku'},
@@ -145,11 +145,11 @@ const ShowProducts = props => {
 
     const deleteProduct = _id => {
        dispatch( removeProduct(_id));
-       setShowEdit(false);
+       setShowEditProduct('');
     }
     const handleEditItem = productUpdated => {
         dispatch( editProduct(productUpdated));
-        setShowEdit(false);
+        setShowEditProduct('');
     }
     if (isLoading) return <h1>🌀 Loading...</h1>;
 
@@ -162,14 +162,14 @@ const ShowProducts = props => {
                     <span>{product.nameProduct}</span>
                     <span>{product.unitOfMeasure}</span>
                     <span>{product.category}</span>
-                    <button onClick={() => setShowEdit(true)}>
+                    <button onClick={() => setShowEditProduct(product)}>
                         <img src={edit} alt="ערוך" className='icon'/>
                     </button>
-                    { showEdit && 
-                        <EditItemHook initialData={product} 
+                    { showEditProduct._id === product._id && 
+                        <EditItemHook initialData={showEditProduct} 
                         onSubmit={handleEditItem}
                         fields={fields}
-                        setShowEdit={setShowEdit}
+                        setShowEdit={setShowEditProduct}
                         deleteItem={deleteProduct}
                         />
                     }
