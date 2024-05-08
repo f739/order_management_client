@@ -49,12 +49,12 @@ export const NewOrderToDeliver = ({orderList, setShowSendEmail, setOrderList}) =
 
     return(
         <div className="backdrop-email">
-                <div className="titles">
-                    <label>הזמנה חדשה</label>
-                    { messageError !== '' && < label style={{color: 'red'}}>{messageError}</label>}
-                    <button onClick={ () => setShowSendEmail(false)} className='close-button' >X</button>
-                </div>
-                <div className="box-email">
+            <div className="titles">
+                <label>הזמנה חדשה</label>
+                { messageError !== '' && < label style={{color: 'red'}}>{messageError}</label>}
+                <button onClick={ () => setShowSendEmail(false)} className='close-button' >X</button>
+            </div>
+            <div className="box-email">
                 <div className="label-row">
                     <label>אל</label>
                     <SelectSuppliersHook set={handleSupplierChange} form={emailForm} ifFunc={true}/>

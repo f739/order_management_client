@@ -103,10 +103,8 @@ const ShowOldOrder = ({ _id, idOrderList, nameProduct, factory, order, time, dat
     const [valueTemporaryQuantity, setValueTemporaryQuantity] = useState(temporaryQuantity)
 
     const productReceived = () => {
-        if (license === 'purchasingManager') {
-            dispatch(productReceivedAction({ numberOrder: idOrderList, time, date, factory, _idSupplier,
-                product: {...order, temporaryQuantity: valueTemporaryQuantity}}));
-        }
+        dispatch(productReceivedAction({ numberOrder: idOrderList, time, date, factory, _idSupplier,
+            product: {...order, temporaryQuantity: valueTemporaryQuantity}}));
     }
     const returnToOrderManagement = async () => {
         if (license === 'purchasingManager') {

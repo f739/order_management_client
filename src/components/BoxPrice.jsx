@@ -9,6 +9,7 @@ import '../css/boxPrice.css';
 export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
     const dispatch = useDispatch();
     const [newPrice, setNewPrice] = useState({price: '', _idSupplier: ''});
+    const [messageError, setMessageError] = useState('');
     const { allSuppliers } = useSelector( state => state.suppliers);
     useEffect( () => {
         if (allSuppliers.length === 0) {
@@ -17,10 +18,14 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
     },[]);
 
     const handleFormChangePrice = (target, _idSupplier) => {
-      setNewPrice({price: target.value, _idSupplier})
+      if (/^\d*\.?\d+$/.test(target.value)) {
+        setNewPrice({price: target.value, _idSupplier})
+      }else {
+        setMessageError('הכנס מספר תקני')
+      }
     }
     const handleSaveNewPrice = () => {
-      if (license === 'purchasingManager' && newPrice.price !== '' && newPrice._idSupplier !== '') {
+      if (license === 'purchasingManager' && newPrice.price !== '' && newPrice._idSupplier !== '' ) {
         dispatch( addPrice({...newPrice, _idProduct: productId}));
         setShowPrices(false)
       }
@@ -51,6 +56,7 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
             setNewPrice={setNewPrice}
             handleSaveNewPrice={handleSaveNewPrice}
             newPrice={newPrice}/>
+            { messageError !== '' && <div className='message'>{messageError}</div> }
           </div>
       </div>
       
@@ -60,7 +66,6 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
   const ShowNewPrices = props => {
     const { allSuppliers, prices, newPrice, setNewPrice, handleSaveNewPrice } = props;
     const [showAddPrice, setShowAddPrice] = useState(false);
-    console.log(prices);
 
     return (
       <>

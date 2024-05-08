@@ -9,7 +9,7 @@
     border-top-left-radius: 20px;
     display: flex;
     flex-direction: column;
-
+    z-index: 150;
 }
 
 .box-email {

@@ -15,9 +15,7 @@ const consoleMid = store => next => action => {
 }
 
 export const store = configureStore({
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(
-    consoleMid
-),
+ 
   reducer: {
     general,
     categories,
