@@ -41,6 +41,7 @@ export const newOrderToDeliver = createAsyncThunk( "orders/newOrderToDeliver",
     try {
       const res = await $.post( `${URL}/orderManagement/newOrderToDeliver`, {emailForm, whichFactoryToSend} );
       const { newOldOrder, activeOrders } = res.data;
+      console.log(res.data.pdfBase64);
       const activesDeletedEmpty = activeOrders.filter( arr => arr.listProducts.length > 0);
       return { newOldOrder, activesDeletedEmpty };
     } catch (err) {

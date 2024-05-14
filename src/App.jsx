@@ -11,8 +11,9 @@ import bic_logo from './assetes/bic_logo.png';
 
 export function Layout () {
   const dispatch = useDispatch();
-  const { license, isLoadingToken } = useSelector( state => state.users.user);
-
+  const { license } = useSelector( state => state.users.user);
+  const { isLoadingToken } = useSelector( state => state.users);
+  
   useEffect( () => {
       const token = localStorage.getItem('token');
       if (token) {

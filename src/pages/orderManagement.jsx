@@ -11,6 +11,8 @@ import moment from 'moment';
 import edit from '../assetes/edit.svg';
 import trash_icon from '../assetes/trash_icon.svg'
 import '../css/orderManagement.css';
+import { SelectSuppliersHook } from '../components/SelectSuppliersHook';
+import { toast } from "react-toastify";
 
 export const OrderManagement = () => {
   const dispatch = useDispatch();
@@ -131,12 +133,12 @@ const Product = props => {
   });
   const cheapestPrice = useSelector(state => {
     const pr = state.products.allProducts.find(p => p._id === product._id);
-    return pr ? ([...pr.price].sort((a, b) => a.price - b.price)[0] || 'No price available') : 'Product not found';
+    return pr ? ([...pr.price].sort((a, b) => a.price - b.price)[0] || '') : '';
   });
-  const [priceToDeliver, setPriceToDeliver] = useState(cheapestPrice.price);
+  const [priceToDeliver, setPriceToDeliver] = useState(cheapestPrice);
 
   useEffect(() => {
-    setPriceToDeliver(cheapestPrice?.price);
+    setPriceToDeliver(cheapestPrice);
   }, [cheapestPrice]);
 
   const deleteProduct = () => {
@@ -146,6 +148,7 @@ const Product = props => {
   }
 
   const addToOrder = (event, newProduct, editQuantity) => {
+    if(newProduct.price.length === 0) return toast.error('הגדר מחיר תחילה');
     if (event.target === event.currentTarget) {
       setOrderList(prev => {
         const isProductExist = prev.some(product => product._id === newProduct._id);
@@ -159,24 +162,33 @@ const Product = props => {
           if (editQuantity !== newProduct.temporaryQuantity) {
             totalQuantity = editQuantity;
           }
+          const ifsupplierExist = testIfSupplierExist(prev, priceToDeliver._idSupplier);
+          if (!ifsupplierExist) {
+            toast.error('ניסית לשים מוצרים מכמה ספקים אחרים')
+            return prev
+          }
           const newProductWithTotalQuantity = {
             ...newProduct, temporaryQuantity: Number(totalQuantity),
-            price: priceToDeliver
+            price: priceToDeliver.price, _idSupplier: priceToDeliver._idSupplier
           };
+          
           return [...updatedOrderList, newProductWithTotalQuantity];
         }
 
       });
     }
   };
+  const testIfSupplierExist = (prev, _idSupplierNew) => {
+    return prev.length === 0 || prev[0]._idSupplier === _idSupplierNew ? true : false;
+  }
 
-  const changePriceToDeliver = (e, idProduct) => {
+  const changePriceToDeliver = (e, idProduct, _idSupplier) => {
     const {value} = e.target;
     e.preventDefault()
-    setPriceToDeliver(value);
+    setPriceToDeliver({price: value, _idSupplier});
     setOrderList(prev => prev.map(product => {
       if (product.id === idProduct) {
-        return { ...product, price: value };
+        return { ...product, price: value, _idSupplier };
       }
       return product;
     }));
@@ -192,18 +204,31 @@ const Product = props => {
     }))
   }
 
-  const handleNameSupplier = _idSupplier => {
-    if (allSuppliers) {
-      const supplier = allSuppliers.find(supplier => supplier._id === _idSupplier);
-      return supplier?.nameSupplier;
+  const ShowSupplierToDeliver = ({isSelected}) => {
+    const findPriceBySupplierId = (prices, _idSupplier) => {
+      return prices.find( pr => pr._idSupplier === _idSupplier)
     }
+
+    const changeSupplier = _idSupplier => {
+      const allPrice = findPriceBySupplierId(prices, _idSupplier);
+      allPrice ? setPriceToDeliver(allPrice) : null
+    }
+
+    return <SelectSuppliersHook set={changeSupplier} ifFunc={true} ifGet={false} form={priceToDeliver} allName={false} isSelected={isSelected} />
   }
+
+  const editPrices = e => {
+    e.stopPropagation();
+    setShowPrices( old => !old)
+  }
+
   if (isLoading) return <h1>🌀 Loading...</h1>;
   
   return (
     <div>
      { allProducts.length > 0 ? <div  className={`show-product ${isSelected ? 'selected-style' : ''}`}>
-        <div className={`product-details ${product.note ? 'show-div-note' : null}`} onClick={e => addToOrder(e, product, editQuantity)}>
+        <div className={`product-details ${product.note ? 'show-div-note' : null}`} 
+        onClick={e => addToOrder(e, product, editQuantity)}>
           <div className='up'>
             <input type="setEditQuantitynumber" onChange={e => handleEditQuantity(Number(e.target.value), product._id) }
               value={editQuantity} />
@@ -215,13 +240,13 @@ const Product = props => {
           </div>
           <div className="center">
             <label>מחיר מומלץ:</label>
-            { cheapestPrice.price !== '' ? <>
-              <span>{handleNameSupplier(cheapestPrice._idSupplier)}</span>
-              <input  value={priceToDeliver}
-                onChange={e => changePriceToDeliver(e, product._id)} />
+            { cheapestPrice !== '' ? <>
+              <ShowSupplierToDeliver isSelected={isSelected}/>
+              <input  value={priceToDeliver.price}
+                onChange={e => changePriceToDeliver(e, product._id, cheapestPrice._idSupplier)} />
               </> : <span style={{color: 'red'}}>הגדר מחירים!</span>
             }
-            <button onClick={() => setShowPrices(old => !old)} >
+            <button onClick={e => editPrices(e)} >
               <img src={edit} alt="ערוך" className='icon'/>
             </button>
           </div>
@@ -233,7 +258,7 @@ const Product = props => {
         </div>
         {showPrices && (
             <BoxPrice 
-              prices={prices}
+              prices={prices && prices.length !== 0 ? prices : [{_id: 0}]}
               setShowPrices={setShowPrices}
               productId={product._id}
               license={license} />

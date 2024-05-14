@@ -35,7 +35,8 @@ export const EditItemHook = ({ initialData, onSubmit, fields, setShowEdit, delet
                         field.type === 'price' ?
                         <>
                             { !showPrices ? <button onClick={setShowPrices} style={{padding: '5px', width: '100%'}}>הצג מחירים</button> :
-                            <BoxPrice  prices={prices} setShowPrices={setShowPrices} 
+                            <BoxPrice  prices={prices.length !== 0 ? prices : [{_id: 0}]}
+                             setShowPrices={setShowPrices} 
                             productId={initialData._id} license='purchasingManager' /> }
                         </> :
                         field.type === 'select' && field.name === 'factory' ?  

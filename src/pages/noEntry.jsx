@@ -11,15 +11,19 @@ export const NoEntry = () => {
     const [form, setForm] = useState({password: '', email: ''});
     const [messageError, setMessageError] = useState('');
     const connect = async () => {
-        const actionResult = await dispatch( connectUser(form) );
-        const result = unwrapResult(actionResult);
-        setMessageError(result)
+        try {
+            const actionResult = await dispatch( connectUser(form) );
+            const result = unwrapResult(actionResult);
+            setMessageError(result)
+        }catch (err) {
+            setMessageError(err)
+        }
     };
 
     return (
         <div className="container-entry">
             <img src={noEntry} alt="No Entry Sign" className="image-no-entry" />
-            <form className='form-entry'>
+            <div className='form-entry'>
                 <label className="input-label-entry">אימייל:</label>
                     <input  type="text"  name="email" value={form.email} 
                     onChange={e => handleFormHook(e.target, setForm)} className="input-entry" 
@@ -30,7 +34,7 @@ export const NoEntry = () => {
                     />
                 <button onClick={connect} className='connect'>התחבר</button>
                 <div className='message-error'>{messageError}</div>
-            </form>
+            </div>
         </div>
     );
 };

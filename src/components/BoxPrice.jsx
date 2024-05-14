@@ -25,7 +25,7 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
       }
     }
     const handleSaveNewPrice = () => {
-      if (license === 'purchasingManager' && newPrice.price !== '' && newPrice._idSupplier !== '' ) {
+      if (license === 'purchasingManager' && newPrice.price !== '' && newPrice._idSupplier !== ''  ) {
         dispatch( addPrice({...newPrice, _idProduct: productId}));
         setShowPrices(false)
       }
@@ -41,8 +41,8 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
         <div className="box">
             <button onClick={ () => setShowPrices(false)} className='close-button' >X</button>
           <div className="price-row">
-                {allSuppliers && allSuppliers.length > 0 ? prices.map( (price, i) => (
-                    <div key={i}>
+                {allSuppliers && allSuppliers.length > 0  && prices[0]._id !== 0 ? prices.map( price => (
+                    <div key={price._id}>
                         <div className="supplier-name" >{handleNameSupplier(price._idSupplier)}</div>
                         <input className="supplier-price"
                         name='price' 
@@ -70,7 +70,7 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
     return (
       <>
         <button onClick={ () => setShowAddPrice( old => !old)} className='button-primary'>הגדרת מחיר חדש</button>
-        { showAddPrice && <div className='AddPrice'>
+        { showAddPrice && <div className='add-price'>
             <select name="_idSupplier" className='select-input' onChange={e => handleFormHook(e.target, setNewPrice)}>
                 <option value="">--בחר ספק--</option>
                 {allSuppliers.length > 0 && allSuppliers ? allSuppliers.map(supplier => ( 

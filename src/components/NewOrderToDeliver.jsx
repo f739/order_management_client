@@ -29,8 +29,8 @@ export const NewOrderToDeliver = ({orderList, setShowSendEmail, setOrderList}) =
     }
 
     const sendOrder = async () => {
-        if (emailForm.supplier.length === 0) return setMessageError('לא נבחר ספק');
         if (orderList.length === 0) return setMessageError('אין מוצרים לשליחה');
+        if (emailForm.supplier.length === 0) return setMessageError('לא נבחר ספק');
         if (license === 'purchasingManager') {
             const firstFactory = orderList[0].factory;
             const ifSameFactories = orderList.every(product => product.factory === firstFactory);
