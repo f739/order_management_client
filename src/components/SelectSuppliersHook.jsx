@@ -7,11 +7,11 @@ export const SelectSuppliersHook = ({set, form, ifFunc=false, ifGet=true, allNam
     const dispatch = useDispatch();
     const { allSuppliers } = useSelector( state => state.suppliers || { allSuppliers: [] });
 
-    useEffect( () => {
-        if (allSuppliers.length === 0 && ifGet) {
-            dispatch(getSuppliers());
-        }
-    },[])
+    // useEffect( () => {
+    //     if (allSuppliers.length === 0 && ifGet) {
+    //         dispatch(getSuppliers());
+    //     }
+    // },[])
 
     return (
         <select style={!allName ? { width: '20%', border: 'none', margin: '0px' } : {}} className={isSelected ? 'selected-style' : null} name="_idSupplier" value={form._idSupplier} onChange={e => handleFormHook(e.target, set, ifFunc)}>

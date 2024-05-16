@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from 'react-redux';
-import { createNewNote, removeNote, addOrSubtract } from "../dl/slices/products";
-import save from '../assetes/save.svg';
-import trash_icon from '../assetes/trash_icon.svg';
+import { addOrSubtract } from "../dl/slices/products";
 
 export const ItemsBox = props => {
     const dispatch = useDispatch()
     const { nameProduct, factory, temporaryQuantity, _id,
-        category, unitOfMeasure, note } = props;
+        category, unitOfMeasure } = props;
+    const [temporaryQuantityToShow, setTemporaryQuantityToShow] = useState(Number(temporaryQuantity))
+
+    useEffect(() => {
+        setTemporaryQuantityToShow(temporaryQuantity);
+    }, [temporaryQuantity]);
 
     const addItem = async () => {
         const newTemporaryQuantity = Number(temporaryQuantity) +1 ;
@@ -19,6 +22,17 @@ export const ItemsBox = props => {
             dispatch( addOrSubtract({_id, newTemporaryQuantity}))
         }
     }
+    const editTemporaryQuantity = e => {
+        const newValue = parseInt(e.target.value || e.target.innerText, 10);
+        if (!isNaN(newValue)) {
+            dispatch( addOrSubtract({_id, newTemporaryQuantity: newValue}))
+        }
+    }
+    const changeTemporaryQuantity = e => {
+        if (e.target.value !== '') {
+            setTemporaryQuantityToShow(parseInt(e.target.value, 10))
+        }
+    }
     return (
         <div className="box-product-from-the-order">
             <div className="start-order">
@@ -27,46 +41,14 @@ export const ItemsBox = props => {
                 <span>{unitOfMeasure}</span>
                 <span>{category}</span>
             </div>
-            <ShowNote note={note} _id={_id} dispatch={dispatch} />
             <div className="quantity-controls end-order">
                 <button onClick={addItem}>+</button>
-                <span>{temporaryQuantity}</span>
+                <input type="number" 
+                onChange={changeTemporaryQuantity}
+                value={temporaryQuantityToShow}
+                onBlur={editTemporaryQuantity} className="delete-defalt-style"/>
                 <button onClick={removeItem}>-</button>
             </div>
         </div>
     )
-}
-
-const ShowNote = props => {
-    const { note, _id, dispatch } = props;
-    const [newNote, setNewNote] = useState('');
-    const sendNewNote = () => {
-        if (newNote !== '') {
-            dispatch( createNewNote({_id, newNote}))
-        }
-    }
-    const deleteNote = () => {
-        dispatch( removeNote(_id));
-        setNewNote('')
-    }
-    if (!note) {
-        return (
-            <div className="note center-order">
-                <input onChange={e => setNewNote(e.target.value)} className="input-note" placeholder="הוסף הערה להזמנה..." value={newNote}/>
-                <button onClick={sendNewNote} className="send-note">
-                    <img src={save} alt="שמור" className="icon" />
-                </button>
-            </ div>
-        )
-    }else {
-        return (
-            <div className="note center-order">
-                <span className="show-note">{note}</span>
-                <button onClick={deleteNote} className="delete-note">
-                    <img src={trash_icon} alt="מחק הערה" className="icon" />
-                </button>
-            </div>
-        )
-    }
-   
 }

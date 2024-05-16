@@ -3,9 +3,10 @@ const URL = import.meta.env.VITE_API_URL
 import $ from "axios";
 
 export const sendAnInvitation = createAsyncThunk("orders/sendAnInvitation",
-  async ({user, whichFactoryToSend}, { getState, rejectWithValue }) => {
+  async ({user, whichFactoryToSend, note}, { getState, dispatch, rejectWithValue }) => {
     try {
-      const res = await $.post(`${URL}/orders/sendAnInvitation`, {user, whichFactoryToSend});
+      const res = await $.post(`${URL}/orders/sendAnInvitation`, {user, whichFactoryToSend, note});
+      dispatch( getActiveOrders())
       const { newActiveOrder, allProducts } = res.data;
       return { allProducts, newActiveOrder };
     } catch (err) {
@@ -41,7 +42,6 @@ export const newOrderToDeliver = createAsyncThunk( "orders/newOrderToDeliver",
     try {
       const res = await $.post( `${URL}/orderManagement/newOrderToDeliver`, {emailForm, whichFactoryToSend} );
       const { newOldOrder, activeOrders } = res.data;
-      console.log(res.data.pdfBase64);
       const activesDeletedEmpty = activeOrders.filter( arr => arr.listProducts.length > 0);
       return { newOldOrder, activesDeletedEmpty };
     } catch (err) {
@@ -73,10 +73,11 @@ export const removeProductInOldOrder = createAsyncThunk("orders/removeProductInO
 );
 
 export const returnProduct = createAsyncThunk("orders/returnProduct",
-  async (data, { getState, rejectWithValue }) => {
+  async (data, { getState, dispatch, rejectWithValue }) => {
     try {
       const res = await $.post(`${URL}/oldOrders/returnProduct`, {...data});
       const { newActiveOrder } = res.data;
+      dispatch( getActiveOrders())
       const updatedOrders = getState().orders.allOldOrders.map(order => {
         const filteredProducts = order.orderList.filter(product => product._id !== data._id);
         return {
@@ -152,7 +153,7 @@ export const slice = createSlice({
       if (orderIndex !== -1) {
         state.allActiveOrders[orderIndex].listProducts = state.allActiveOrders[
           orderIndex
-        ].listProducts.filter((product) => product._id !== _id);
+        ].listProducts.filter((product) => product._idProduct._id !== _id);
         if (state.allActiveOrders[orderIndex].listProducts.length === 0) {
           state.allActiveOrders.splice(orderIndex, 1);
         }

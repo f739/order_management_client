@@ -4,6 +4,9 @@ import { getProducts } from "../dl/slices/products";
 import { getCategories } from "../dl/slices/categories";
 import { sendAnInvitation } from "../dl/slices/orders";
 import { ItemsBox } from "../components/ItemsBox";
+import { SelectCatgoryHook } from "../components/SelectCatgoryHook";
+import { DialogSendOrder } from "../components/cssComponents/DialogSendOrder";
+import {Button, Box } from '@mui/material';
 import '../css/orders.css'
 
 export const Orders = () => {
@@ -13,11 +16,16 @@ export const Orders = () => {
     const {allCategories} = useSelector( state => state.categories);
     const [productsOfLicense, setProductsOfLicense] = useState([]);
     const [itemsListFiltered, setItemsListFiltered] = useState([]);
+    const [catgorySelected, setCategorySelected] = useState('allCategories')
     const [showSelect, setShowSelect] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
 
     useEffect(() => {
         if (!allProducts || allProducts.length === 0) {
             dispatch(getProducts());
+        }
+        if (!allCategories || allCategories.length === 0) {
+            dispatch( getCategories())
         }
     }, []);
     useEffect(() => {
@@ -33,43 +41,23 @@ export const Orders = () => {
             setItemsListFiltered(sortedProducts);
         }
     }, [allProducts]);
-
-    useEffect( () => {
-        if (!allCategories || allCategories.length === 0) {
-            dispatch( getCategories())
-        }
-    },[]);
     
-    const filterProducts = e => {
-        const { value } = e.target;
+    const filterProducts = value => {
         if (value === 'allCategories') {
             setItemsListFiltered( productsOfLicense);
         }else {
             setItemsListFiltered( () => productsOfLicense.filter( product => product.category === value));
         }
     }
-    const toggleSelectVisibility = () => {
-        if(user.license === 'purchasingManager') {
-            setShowSelect(old => !old);
-        } else {
-            SendAnInvitation();
-        }
-    };
 
-    const SendAnInvitation = value => {
-        const whichFactoryToSend = user.license !== 'purchasingManager' ? user.factory : value;
-        dispatch( sendAnInvitation({user, whichFactoryToSend}));
+    const SendAnInvitation = (whichFactoryToSend, note) => {
+        dispatch( sendAnInvitation({user, whichFactoryToSend, note}));
     }
 
     if (isLoading) return <h1>🌀 Loading...</h1>;
     return(
         <div className="container-orders">
-            { allCategories && allCategories.length === 0 && <select id="categories-select" name="category" onChange={filterProducts}>
-                <option value="allCategories">כל הקטגוריות</option>
-                { allCategories.map( category => (
-                    <option value={category.nameCategory} key={category._id}>{category.nameCategory}</option>
-                )  )}
-            </select>}
+            <SelectCatgoryHook set={filterProducts} form={catgorySelected} ifFunc={true} />
             { itemsListFiltered && itemsListFiltered.map( item => (
                 <div className="box-item"  key={item._id}>
                     <ItemsBox nameProduct={item.nameProduct} 
@@ -81,21 +69,16 @@ export const Orders = () => {
                     _id={item._id}/>
                 </div>
             ))}
-            
-            <button onClick={toggleSelectVisibility} className="send-an-invitation">
-                <div>שלח הזמנה</div>
-                {user.license === 'purchasingManager' && 
-                    <div className={`arrow-down ${showSelect ? 'arrow-up' : ''}`}></div>
-                }
-            </button>
-            {showSelect && user.license === 'purchasingManager' && (
-                <select className={`select-factory-corner ${showSelect ? 'show' : ''}`} 
-                size="3" onChange={e => SendAnInvitation(e.target.value)}>
-                    <option value="catering">קייטרינג</option>
-                    <option value="hazor">קייטרינג חצור</option>
-                    <option value="bakery">מאפיה</option>
-                </select>
-            )}
+
+    <Box sx={{ position: 'fixed', bottom: 16, right: 16}}>
+        <Button variant="contained" className="send-an-invitation" onClick={() => setOpenDialog(true)} >
+        שלח הזמנה
+        </Button>
+    </Box>
+         { openDialog && <DialogSendOrder 
+            setOpenDialog={setOpenDialog} 
+            SendAnInvitation={SendAnInvitation}
+            user={user} />}
         </div>
     )
 }

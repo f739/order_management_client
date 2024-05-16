@@ -77,21 +77,11 @@
 }
 
 .send-an-invitation {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
-    background-color: #007BFF;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
+    position: absolute;
+    bottom: 20;
+    right: 20;
     z-index: 1000;
-    width: 150px;
-}
+  }
 
 .select-factory-corner {
     display: none;
@@ -196,4 +186,11 @@
         margin: 5px;
         width: 140px;
     }
+}
+
+.delete-defalt-style {
+    width: 20px;
+  border: none;
+  direction: none;
+  background: none;
 }

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { sendAnInvitation } from './orders';
+import { sendAnInvitation, getActiveOrders } from './orders';
 const URL = import.meta.env.VITE_API_URL
 import $ from 'axios';
 
@@ -46,47 +46,9 @@ export const editProduct = createAsyncThunk('products/editProduct',
       try {
         const res = await $.put(`${URL}/products/editProduct`, productUpdated);
         const newProduct = res.data.newProduct;
-        console.log(newProduct);
         const updatedProduct = getState().products.allProducts
         .map( el => el._id !== newProduct._id ? el : newProduct)
         return updatedProduct;
-      }catch (err) {
-        return rejectWithValue(err.response.data.message)
-      }
-  }
-);
-
-
-export const createNewNote = createAsyncThunk('products/createNewNote', 
-  async ({_id, newNote}, {getState, rejectWithValue}) => {  
-      try {
-        const res = await $.put(`${URL}/orders/${_id}/${newNote}/createNewNote`);
-        if (res.data.newNote) {
-          const updatedProducts = getState().products.allProducts.map( product => {
-            if (product._id === _id) {
-              return {...product, note: newNote};
-            }
-            return product;
-          });
-          return updatedProducts;
-      }
-      }catch (err) {
-        return rejectWithValue(err.response.data.message)
-      }
-  }
-);
-
-export const removeNote = createAsyncThunk('products/removeNote', 
-  async (_id, {getState, rejectWithValue}) => {  
-      try {
-        await $.delete(`${URL}/orders/${_id}/deleteNote`);
-          const updatedProducts = getState().products.allProducts.map( product => {
-            if (product._id === _id) {
-              return {...product, note: ''};
-            }
-            return product;
-          });
-          return updatedProducts;
       }catch (err) {
         return rejectWithValue(err.response.data.message)
       }
@@ -111,9 +73,10 @@ export const addOrSubtract = createAsyncThunk('products/addOrSubtract',
 );
 
 export const addPrice = createAsyncThunk('products/addPrice', 
-  async ({ price, _idSupplier, _idProduct}, {getState, rejectWithValue}) => {  
+  async ({ price, _idSupplier, _idProduct}, {getState, dispatch, rejectWithValue}) => {  
       try {
         const res = await $.put(`${URL}/products/${_idSupplier}/${price}/${_idProduct}/addPrice`);
+        dispatch( getActiveOrders())
         const updatedProducts = getState().products.allProducts.map( product => {
           if (product._id === _idProduct) {
             return {...product, price: res.data.updateProduct.price};
@@ -126,7 +89,6 @@ export const addPrice = createAsyncThunk('products/addPrice',
       }
   }
 );
-
 
 
 const initialState = {
@@ -158,12 +120,6 @@ export const slice = createSlice({
             state.allProducts = action.payload;
           })
           builder.addCase(editProduct.fulfilled, (state, action) => {
-            state.allProducts = action.payload;
-          })
-          builder.addCase(createNewNote.fulfilled, (state, action) => {
-            state.allProducts = action.payload;
-          })
-          builder.addCase(removeNote.fulfilled, (state, action) => {
             state.allProducts = action.payload;
           })
           builder.addCase(addOrSubtract.fulfilled, (state, action) => {
