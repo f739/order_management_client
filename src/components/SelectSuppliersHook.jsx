@@ -1,24 +1,40 @@
-import { useEffect } from "react"
-import { useSelector, useDispatch } from 'react-redux';
-import { getSuppliers } from "../dl/slices/suppliers";
+import React from "react";
+import { useGetSuppliersQuery } from "../dl/api/suppliersApi";
+import { Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import { handleFormHook } from "./HandleFormHook";
 
-export const SelectSuppliersHook = ({set, form, ifFunc=false, ifGet=true, allName=true, isSelected=false}) => {
-    const dispatch = useDispatch();
-    const { allSuppliers } = useSelector( state => state.suppliers || { allSuppliers: [] });
+export const SelectSuppliersHook = ({ set, form, ifFunc = false, allName = true }) => {
+    const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
 
-    // useEffect( () => {
-    //     if (allSuppliers.length === 0 && ifGet) {
-    //         dispatch(getSuppliers());
-    //     }
-    // },[])
-
+    if (errorGetsuppliers) return <h3>ERROR: {errorGetsuppliers.error}</h3>
+    if (isLoadingGetsuppliers) return 'loading...';
     return (
-        <select style={!allName ? { width: '20%', border: 'none', margin: '0px' } : {}} className={isSelected ? 'selected-style' : null} name="_idSupplier" value={form._idSupplier} onChange={e => handleFormHook(e.target, set, ifFunc)}>
-            {allName && <option value="">--בחר ספק--</option>}
-            { allSuppliers && allSuppliers.map(supplier => (  
-                <option value={supplier._id} key={supplier._id}> {supplier.nameSupplier} {allName && `(${supplier.email})`}</option>
+        <>
+         <FormControl variant="standard" >
+        <InputLabel id="demo-simple-select-helper-label">בחר ספק</InputLabel>
+        <Select
+            labelId="demo-simple-select-helper-label"
+            id="demo-simple-select-helper"
+            label='בחר ספק'
+            value={form._idSupplier}
+            name="_idSupplier"
+            onChange={(e) => handleFormHook(e.target, set, ifFunc)}
+            sx={{
+                '& .MuiSelect-select': {
+                  padding: '10px, 0px', 
+                },
+                minWidth: '130px'
+              }}
+        >
+            {allName && <MenuItem value="" >--בחר ספק--</MenuItem>}
+            {allSuppliers && allSuppliers.map(supplier => (
+                <MenuItem value={supplier._id} key={supplier._id}  >
+                    {supplier.nameSupplier} {allName && `(${supplier.email})`}
+                </MenuItem>
             ))}
-        </select>
+        </Select>
+        </FormControl>
+        </>
     )
 }
+

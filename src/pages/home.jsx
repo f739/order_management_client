@@ -1,10 +1,11 @@
-
+import React from 'react';
 
 export const Home = () => {
-
     return (
-        <>
-            <h1>helllo</h1>
-        </>
-    )
-}
+        <div >
+          <h1>שלום!!</h1>
+        </div>
+      );
+    }
+
+

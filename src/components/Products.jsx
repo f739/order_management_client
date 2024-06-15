@@ -1,33 +1,34 @@
 import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from 'react-redux';
-import { getProducts, createNewProduct, removeProduct, editProduct } from "../dl/slices/products";
 import { handleFormHook } from './HandleFormHook';
 import { SelectSuppliersHook } from './SelectSuppliersHook'
-import { getMeasures } from "../dl/slices/measures";
-import { getSuppliers } from "../dl/slices/suppliers";
-import { getCategories } from "../dl/slices/categories";
 import { EditItemHook } from './EditItemHook';
+import { useGetProductsQuery, 
+    useCreateNewProductMutation,
+    useRemoveProductMutation,
+    useEditProductMutation } from '../dl/api/productsApi';
+import { useGetCategoriesQuery } from "../dl/api/categoriesApi";
+import { useGetMeasuresQuery } from "../dl/api/measuresApi";
+import { useGetSuppliersQuery } from "../dl/api/suppliersApi";
 import edit from '../assetes/edit.svg'
 import '../css/products.css';
 import Select from 'react-select';
 
 export const Products = () => {
-    const dispatch = useDispatch();
+    const [message, setMessage] = useState('')
     const [newProduct, setNewProduct] = useState({nameProduct: '', factories: [], category: '', unitOfMeasure: '', sku: '', price: []});
     const [newPrice, setNewPrice] = useState({_idSupplier: '', price: ''});
-    const {allCategories} = useSelector( state => state.categories);
-    const {allSuppliers, isLoading} = useSelector( state => state.suppliers);
-    const {allMeasures} = useSelector( state => state.measures);
-    
-    useEffect( () => {
-        if (allCategories.length === 0) {
-            dispatch( getCategories())
-        }if (allMeasures.length === 0) {
-            dispatch( getMeasures())
-        }if (allSuppliers.length === 0 && !isLoading) {
-            dispatch(getSuppliers());
+
+    const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
+    const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
+    const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
+
+    const [createNewProduct, { error, isLoading: isLoadingCreateProdact }] = useCreateNewProductMutation();
+
+    useEffect(() => {
+        if (error || errorGetCategories || errorGetMeasures || errorGetsuppliers) {
+            setMessage(error.data?.message || 'An error occurred');
         }
-    },[])
+    }, [error, errorGetCategories, errorGetMeasures, errorGetsuppliers]);
 
     const handleSaveNewPrice = () => {
         if (newPrice._idSupplier === '' || newPrice.price === '' || !/^\d*\.?\d+$/.test(newPrice.price)) return;
@@ -47,25 +48,29 @@ export const Products = () => {
         });
         setNewPrice({_idSupplier: '', price: ''});
     }
+
     const handleSelectFactory = factoriesArr => {
         console.log(factoriesArr);
         setNewProduct(old => { return {...old, factories: factoriesArr }});
         console.log(newProduct);
     }
+
     const handleSaveNewProduct = () => {
         if (newProduct.nameProduct === '' || newProduct.category === '' || newProduct.price.length === 0 || 
         newProduct.unitOfMeasure === '' || newProduct.sku === '' || newProduct.factories.length === 0 ) {
         }else {
-            newProduct.factories.forEach( factory => {
-                dispatch( createNewProduct({...newProduct, factory: factory.value}));
-            })
-            setNewProduct({nameProduct: '', factories: [], category: '', unitOfMeasure: '', sku: '', price: []});
+            try {
+                newProduct.factories.forEach( async factory => {
+                    await createNewProduct({...newProduct, factory: factory.value})
+                })
+                setNewProduct({nameProduct: '', factories: [], category: '', unitOfMeasure: '', sku: '', price: []});
+            }catch (err) { console.log(err) }
         }
     }
     const getDetalesSupplier = _idSupplier => {
         return  allSuppliers?.find( supp => supp._id === _idSupplier);
     }
-    if (!allCategories || !allMeasures || !allSuppliers) return 'לא נמצאו שדות'
+    if (isLoadingGetCategories || isLoadingGetMeasures || isLoadingGetsuppliers) return 'loading';
     
     return (
         <div>
@@ -82,7 +87,7 @@ export const Products = () => {
                             <div key={price._idSupplier} className="price-span">{getDetalesSupplier(price._idSupplier)?.nameSupplier || ''} - {price.price}</div>
                         ))}
                         <div className="price-inputs">
-                            <SelectSuppliersHook set={setNewPrice} form={newPrice} ifGet={false}/>
+                            <SelectSuppliersHook set={setNewPrice} form={newPrice} />
                             <input type="text" name="price" placeholder="מחיר" value={newPrice.price} onChange={e => handleFormHook(e.target, setNewPrice)} />
                         </div>
                         <button onClick={handleSaveNewPrice}>שמור מחיר</button>
@@ -117,15 +122,19 @@ export const Products = () => {
                     </select>}
                 </label>
                     <button onClick={handleSaveNewProduct}>שמור מוצר חדש</button>
+                    <span>{message}</span>
+                {isLoadingCreateProdact && <span>🌀</span>}
             </ div>
-            <ShowProducts dispatch={dispatch} />
+            <ShowProducts />
         </div>
     )
 }
 
-const ShowProducts = props => {
-    const { dispatch } = props;
-    const {allProducts, isLoading} = useSelector( state => state.products);
+const ShowProducts = () => {
+    const { data: allProducts, error: errorGetProducts, isLoading: isLoadingGetProducts } = useGetProductsQuery();
+    const [removeProduct, { error: errorRemoveProduct }] = useRemoveProductMutation();
+    const [editProduct, { error: errorEditProduct }] = useEditProductMutation();
+
     const [showEditProduct, setShowEditProduct] = useState('');
     const fields = [
         {label: 'שם מוצר',type: 'input', typeInput: 'text', name: 'nameProduct'},
@@ -135,23 +144,22 @@ const ShowProducts = props => {
         {label: 'קטגוריה', type: 'select', name: 'category'},
         {label: 'יחידות מידה', type: 'select', name: 'unitOfMeasure'}
       ];
-    
-      
-    useEffect( () => {
-        if (allProducts.length === 0) {
-            dispatch( getProducts())
-        }
-    },[])
 
-    const deleteProduct = _id => {
-       dispatch( removeProduct(_id));
-       setShowEditProduct('');
+    const deleteProduct = async _id => {
+        try {
+            await removeProduct(_id).unwrap();
+            setShowEditProduct('');
+        }catch (err) {
+            console.log(err);
+            console.log(errorRemoveProduct);
+        }
     }
-    const handleEditItem = productUpdated => {
-        dispatch( editProduct(productUpdated));
+    const handleEditItem = async productUpdated => {
+        await editProduct(productUpdated)
         setShowEditProduct('');
     }
-    if (isLoading) return <h1>🌀 Loading...</h1>;
+    if (errorGetProducts) return <h3>ERROR: {errorGetProducts.error}</h3>
+    if (isLoadingGetProducts) return <h1>🌀 Loading...</h1>;
 
     return (
         <div className="show-items">

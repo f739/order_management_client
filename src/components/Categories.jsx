@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from 'react-redux';
-import { getCategories, createNewCategory, removeCategory } from "../dl/slices/categories";
 import { handleFormHook } from './HandleFormHook';
 import trash_icon from '../assetes/trash_icon.svg';
-
+import { useGetCategoriesQuery,
+    useCreateNewCategoryMutation,
+    useRemoveCategoryMutation } from '../dl/api/categoriesApi';
 export const Categories = () => {
-    const dispatch = useDispatch();
+    const [message, setMessage] = useState('')
     const [newCategory, setNewCategory] = useState({nameCategory: ''});
-    const errorMessage = useSelector( state => state.categories.errorMessage);
+    const [createNewCategory, { error, isLoading }] = useCreateNewCategoryMutation();
 
-    const handleSaveNewCategory = () => {
-        dispatch( createNewCategory(newCategory));
-        setNewCategory({nameCategory: ''})
+    useEffect(() => {
+        if (error) {
+            setMessage(error.data?.message || 'An error occurred');
+        }
+    }, [error]);
+
+    const handleSaveNewCategory = async () => {
+        try {
+            await createNewCategory(newCategory).unwrap();
+            setNewCategory({nameCategory: ''})
+        }catch (err) { return }
     }
     return (
         <div className="category">
@@ -19,29 +27,30 @@ export const Categories = () => {
                 <label>שם קטגוריה:</label>
                 <input type="text" name="nameCategory" value={newCategory.nameCategory} onChange={e => handleFormHook(e.target, setNewCategory)}/> 
                 <button onClick={handleSaveNewCategory}>שמור קטגוריה חדשה</button>
+                <span>{message}</span>
+                {isLoading && <span>🌀</span>}
             </div>
-            { errorMessage && <h4 className="error-message">{errorMessage}</h4>}
-            <ShowCategories dispatch={dispatch} />
+            <ShowCategories />
         </div>
         
     )
 };
 
-const ShowCategories = props => {
-    const { dispatch } = props;
-    const {allCategories, isLoading} = useSelector( state => state.categories);
+const ShowCategories = () => {
+    const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
+    const [removeCategory, { error: errorRemoveCategory }] = useRemoveCategoryMutation();
 
-    useEffect(() => {
-        if (allCategories.length === 0) {
-            dispatch(getCategories());
+    const deleteCategory = async _id => {
+        try {
+            await removeCategory(_id).unwrap();
+        }catch (err) {
+            console.log(err);
+            console.log(errorRemoveCategory);
         }
-    }, [dispatch]);
-
-    const deleteCategory = (_id) => {
-        dispatch(removeCategory(_id))
     }
 
-    if (isLoading) return <h1>🌀 Loading...</h1>;
+    if (errorGetCategories) return <h3>ERROR: {errorGetCategories.error}</h3>
+    if (isLoadingGetCategories) return <h1>🌀 Loading...</h1>;
     return (
             <div className="show-items categories-items">
                 <h1 className="title">קטגוריות קיימות:</h1>

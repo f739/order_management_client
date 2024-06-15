@@ -1,22 +1,16 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { getSuppliers } from '../dl/slices/suppliers';
-import { addPrice } from '../dl/slices/products';
 import { handleFormHook } from './HandleFormHook';
+import { useGetSuppliersQuery } from '../dl/api/suppliersApi';
+import { useAddPriceMutation } from '../dl/api/productsApi';
 import '../css/boxPrice.css';
 
 export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
-    const dispatch = useDispatch();
     const [newPrice, setNewPrice] = useState({price: '', _idSupplier: ''});
     const [messageError, setMessageError] = useState('');
-    const { allSuppliers } = useSelector( state => state.suppliers);
-    useEffect( () => {
-        if (allSuppliers.length === 0) {
-            dispatch( getSuppliers() )
-        }
-    },[]);
-
+    const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
+    const [ addPrice, {error: errorAddPrice}] = useAddPriceMutation();
+    
     const handleFormChangePrice = (target, _idSupplier) => {
       if (/^\d*\.?\d+$/.test(target.value)) {
         setNewPrice({price: target.value, _idSupplier})
@@ -24,10 +18,12 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
         setMessageError('הכנס מספר תקני')
       }
     }
-    const handleSaveNewPrice = () => {
-      if (license === 'purchasingManager' && newPrice.price !== '' && newPrice._idSupplier !== ''  ) {
-        dispatch( addPrice({...newPrice, _idProduct: productId}));
+    const handleSaveNewPrice = async () => {
+      try {
+        await addPrice({...newPrice, _idProduct: productId, license});
         setShowPrices(false)
+      }catch (err) {
+        console.log(err, errorAddPrice);
       }
     }
     const handleNameSupplier = _idSupplier => {
@@ -36,6 +32,8 @@ export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
         return supplier?.nameSupplier;
       }
     }
+    if (isLoadingGetsuppliers) return <h1>louding...</h1>
+    
     return (
       <div className="backdrop">
         <div className="box">

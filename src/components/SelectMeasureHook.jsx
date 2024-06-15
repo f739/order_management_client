@@ -1,18 +1,12 @@
 import { useEffect } from "react"
-import { useSelector, useDispatch } from 'react-redux';
-import { getMeasures } from "../dl/slices/measures";
+import { useGetMeasuresQuery } from "../dl/api/measuresApi";
 import { handleFormHook } from "./HandleFormHook";
 
 export const SelectMeasureHook = ({set, form, ifFunc=false, ifGet=true}) => {
-    const dispatch = useDispatch();
-    const { allMeasures } = useSelector( state => state.measures);
+    const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
 
-    useEffect( () => {
-        if (allMeasures.length === 0 && ifGet) {
-            dispatch(getMeasures());
-        }
-    },[])
-
+    if (errorGetMeasures) return <h3>ERROR: {errorGetMeasures.error}</h3>
+    if (isLoadingGetMeasures) return 'loading...';
     return (
         <select name="unitOfMeasure" value={form.unitOfMeasure} onChange={e => handleFormHook(e.target, set, ifFunc)}>
             { allMeasures && allMeasures.map( measure => (  

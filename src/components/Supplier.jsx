@@ -1,17 +1,39 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from 'react-redux';
-import { getSuppliers, createNewSupplier, removeSupplier, editSupplier } from "../dl/slices/suppliers";
 import { handleFormHook } from "./HandleFormHook";
+import { validEmail, fieldsAreNotEmpty } from "./hooks/fanksHook";
 import { EditItemHook } from "./EditItemHook";
+import { useGetSuppliersQuery,
+    useCreateNewSupplierMutation,
+    useRemoveSupplierMutation,
+    useEditSupplierMutation } from '../dl/api/suppliersApi';
 import edit from '../assetes/edit.svg';
 
 export const Supplier = () => {
-    const dispatch = useDispatch();
+    const [message, setMessage] = useState('')
     const [newSupplier, setNewSupplier] = useState({nameSupplier: '', tel: '', email: '', supplierNumber: ''});
+    const [createNewSupplier, { error, isLoading }] = useCreateNewSupplierMutation();
+
+    useEffect(() => {
+        if (error) {
+            setMessage(error.data?.message || 'An error occurred');
+        }
+    }, [error]);
 
     const handleSaveNewSupplier  = async () => {
-        dispatch( createNewSupplier(newSupplier));
-        setNewSupplier({nameSupplier: '', tel: '', email: '', supplierNumber: ''})
+        if (!fieldsAreNotEmpty(newSupplier)) {
+            setMessage('חסר פרטים הכרחיים בטופס')
+        }
+        else if (!validEmail(newSupplier.email)) {
+            setMessage('האימייל אינו תקני') 
+        } 
+        else {
+            try {
+                await createNewSupplier(newSupplier).unwrap();
+                setNewSupplier({nameSupplier: '', tel: '', email: '', supplierNumber: ''})
+                setMessage('')
+            }catch (err) {return}
+        }
+        
     }
     return (
         <div className="suppliers">
@@ -28,39 +50,43 @@ export const Supplier = () => {
                 <label>מספר ספק:</label>
                 <input type="text" name="supplierNumber" value={newSupplier.supplierNumber} onChange={e => handleFormHook(e.target, setNewSupplier)}/> 
                 <button onClick={handleSaveNewSupplier}>שמור ספק חדש</button>
+                <span>{message}</span>
+                {isLoading && <span>🌀</span>}
             </div>
-            <ShowSuppliers dispatch={dispatch} />
+            <ShowSuppliers />
         </div>
         
     )
 };
 
-const ShowSuppliers = props => {
-    const { dispatch } = props;
-    const {allSuppliers, isLoading} = useSelector( state => state.suppliers);
+const ShowSuppliers = () => {
+    const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
+    const [removeSupplier, { error: errorRemoveSupplier }] = useRemoveSupplierMutation();
+    const [editSupplier, { error: errorEditSupplier }] = useEditSupplierMutation();
     const [showEditSupplier, setShowEditSupplier] = useState(false);
+
     const fields = [
         {name: 'nameSupplier',label: 'שם ספק',typeInput: 'text', type: 'input'},
         {name: 'tel',label: 'פלאפון ספק',typeInput: 'tel', type: 'input'},
         {name: 'email',label: 'אימייל ספק',typeInput: 'email', type: 'input'},
         {name: 'supplierNumber',label: 'מספר ספק',typeInput: 'text', type: 'input'}
-      ];      
-    useEffect(() => {
-        if (!allSuppliers.length) {
-            dispatch(getSuppliers());
+      ];     
+
+    const deleteSupplier = async _id => {
+        try {
+            await removeSupplier(_id).unwrap();
+            setShowEditSupplier(false);
+        }catch (err) {
+            console.log(err);
+            console.log(errorRemoveSupplier);
         }
-    }, [dispatch]);
-    const deleteSupplier = _id => {
-        dispatch(removeSupplier(_id));
+    }
+    const handleEditItem = async supplierUpdated => {
+        await editSupplier(supplierUpdated);
         setShowEditSupplier(false);
     }
-    const handleEditItem = supplierUpdated => {
-        dispatch( editSupplier(supplierUpdated));
-        setShowEditSupplier(false);
-
-    }
-    if (isLoading) return <h1>🌀 Loading...</h1>;
-
+    if (errorGetsuppliers) return <h3>ERROR: {errorGetsuppliers.error}</h3>
+    if (isLoadingGetsuppliers) return <h1>🌀 Loading...</h1>;
     return (
         <div className="show-items">
             <h1 className="title">ספקים קיימים:</h1>

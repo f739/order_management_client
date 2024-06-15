@@ -1,59 +1,5 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-const URL = import.meta.env.VITE_API_URL
-import $ from 'axios';
-
-export const getSuppliers = createAsyncThunk('suppliers/getSuppliers', 
-  async (_, {rejectWithValue}) => {  
-      try {
-        const res = await $.put(`${URL}/suppliers/getAllsuppliers`);
-          return res.data.allSuppliers
-      }catch (err) {
-        return rejectWithValue(err.response.data.message)
-      }
-  }
-);
-
-export const createNewSupplier = createAsyncThunk('suppliers/createNewSupplier', 
-  async (newSupplier, {rejectWithValue}) => {  
-      try {
-        const res = await $.post(`${URL}/suppliers/newSupplier`, newSupplier);
-        return res.data.newSupplier;
-      }catch (err) {
-        return rejectWithValue(err.response.data.message)
-      }
-  }
-);
-
-export const removeSupplier = createAsyncThunk('suppliers/removeSupplier', 
-  async (_id, {getState, rejectWithValue}) => {  
-      try {
-        const res = await $.delete(`${URL}/suppliers/${_id}/deleteSupplier`);
-        if (res) {
-            const updatedSuppliers = getState().suppliers.allSuppliers
-            .filter( el => el._id !== _id);
-            return updatedSuppliers;
-        }
-      }catch (err) {
-        return rejectWithValue(err.response.data.message)
-      }
-  }
-);
-
-export const editSupplier = createAsyncThunk('suppliers/editSupplier', 
-  async (supplierUpdated, {getState, rejectWithValue}) => {  
-      try {
-        const res = await $.put(`${URL}/suppliers/editSupplier`, supplierUpdated);
-        const newSupplier = res.data.newSupplier;
-        console.log(newSupplier);
-        const updatedSuppliers = getState().suppliers.allSuppliers
-        .map( el => el._id !== newSupplier._id ? el : newSupplier)
-        return updatedSuppliers;
-      }catch (err) {
-        return rejectWithValue(err.response.data.message)
-      }
-  }
-);
-
+import { createSlice } from "@reduxjs/toolkit";
+import { suppliersApi } from "../api/suppliersApi";
 
 const initialState = {
     allSuppliers: [],
@@ -66,31 +12,29 @@ export const slice = createSlice({
     reducers: {
         
         },
-        extraReducers: (builder) => {
-          builder.addCase(getSuppliers.pending, (state, action) => {
-            state.isLoading = true;
+        extraReducers: builder => {
+          builder.addMatcher(
+            suppliersApi.endpoints.getSuppliers.matchFulfilled,
+            (state, action) => {
             state.allSuppliers = action.payload;
-          })
-          builder.addCase(getSuppliers.fulfilled, (state, action) => {
-              state.allSuppliers = action.payload;
-              state.isLoading = false;
-          })
-          builder.addCase(createNewSupplier.fulfilled, (state, action) => {
-            state.allSuppliers.push(action.payload);
-          })
-          builder.addCase(editSupplier.fulfilled, (state, action) => {
-            state.allSuppliers = action.payload;
-          })
-          builder.addCase(removeSupplier.fulfilled, (state, action) => {
-            state.allSuppliers = action.payload;
-          })
-
+          });
+          builder.addMatcher(
+            suppliersApi.endpoints.createNewSupplier.matchFulfilled, (state, action) => {
+            state.allSuppliers.push(action.payload) 
+          });
+          builder.addMatcher(
+            suppliersApi.endpoints.removeSupplier.matchFulfilled, (state, action) => {
+            state.allSuppliers = state.allSuppliers.filter( el => el._id !== action.payload._id);
+          });
+          builder.addMatcher(
+            suppliersApi.endpoints.editSupplier.matchFulfilled, (state, action) => {
+              state.allSuppliers = state.allSuppliers
+              .map( el => el._id !== action.payload._id ? el : action.payload)
+          });
         }
     })
     
     
-    export const actions = slice.actions;
-    export default slice.reducer;
-    
-    
-// export const sendEmail = slice.actions.sendEmail;
+export const actions = slice.actions;
+export default slice.reducer;
+

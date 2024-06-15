@@ -1,168 +1,156 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-const URL = import.meta.env.VITE_API_URL
-import $ from "axios";
+import { createSlice } from "@reduxjs/toolkit";
+import { ordersApi } from '../api/ordersApi';
+import { oldOrdersApi } from "../api/oldOrdersApi";
 
-export const sendAnInvitation = createAsyncThunk("orders/sendAnInvitation",
-  async ({user, whichFactoryToSend, note}, { getState, dispatch, rejectWithValue }) => {
-    try {
-      const res = await $.post(`${URL}/orders/sendAnInvitation`, {user, whichFactoryToSend, note});
-      dispatch( getActiveOrders())
-      const { newActiveOrder, allProducts } = res.data;
-      return { allProducts, newActiveOrder };
-    } catch (err) {
-      return rejectWithValue(err.response.data.message);
-    }
-  }
-);
-
-export const getActiveOrders = createAsyncThunk( "orders/getActiveOrders",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await $.put(`${URL}/orderManagement/getAllActiveOrders`);
-      return res.data.allActiveOrders;
-    } catch (err) {
-      return rejectWithValue(err.response.data.message);
-    }
-  }
-);
-
-export const getOldOrders = createAsyncThunk("orders/getOldOrders",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await $.put(`${URL}/oldOrders/getOldOrders`);
-      return res.data.oldOrders;
-    } catch (err) {
-      return rejectWithValue(err.response.data.message);
-    }
-  }
-);
-
-export const newOrderToDeliver = createAsyncThunk( "orders/newOrderToDeliver",
-  async ({emailForm, whichFactoryToSend}, { rejectWithValue }) => {
-    try {
-      const res = await $.post( `${URL}/orderManagement/newOrderToDeliver`, {emailForm, whichFactoryToSend} );
-      const { newOldOrder, activeOrders } = res.data;
-      const activesDeletedEmpty = activeOrders.filter( arr => arr.listProducts.length > 0);
-      return { newOldOrder, activesDeletedEmpty };
-    } catch (err) {
-      return rejectWithValue(err.response.data.message);
-    }
-  }
-);
-
-export const removeProduct = createAsyncThunk("orders/removeProduct",
-  async ({ _id, idInvitation }, { getState, rejectWithValue }) => {
-    try {
-      await $.put( `${URL}/orderManagement/${_id}/${idInvitation}/removeProduct` );
-      return { _id, idInvitation };
-    } catch (err) {
-      return rejectWithValue(err.response.data.message);
-    }
-  }
-);
-
-export const removeProductInOldOrder = createAsyncThunk("orders/removeProductInOldOrder",
-  async ({ _id, idOrderList }, { rejectWithValue }) => {
-    try {
-      const res = await $.put( `${URL}/oldOrders/${_id}/${idOrderList}/removeProductInOldOrder` );
-      return res.data.doc;
-    } catch (err) {
-      return rejectWithValue(err.response.data.message);
-    }
-  }
-);
-
-export const returnProduct = createAsyncThunk("orders/returnProduct",
-  async (data, { getState, dispatch, rejectWithValue }) => {
-    try {
-      const res = await $.post(`${URL}/oldOrders/returnProduct`, {...data});
-      const { newActiveOrder } = res.data;
-      dispatch( getActiveOrders())
-      const updatedOrders = getState().orders.allOldOrders.map(order => {
-        const filteredProducts = order.orderList.filter(product => product._id !== data._id);
-        return {
-          ...order,
-          orderList: filteredProducts
-        };
-      });
-      return {newActiveOrder, updatedOrders};
-    } catch (err) {
-      console.log(err);
-      return rejectWithValue(err.response.data.message);
-    }
-  }
-);
-
-export const productReceivedAction = createAsyncThunk("orders/productReceivedAction",
-  async (productData, { rejectWithValue }) => {
-    try {
-      const res = await $.put(`${URL}/oldOrders/productReceived`, productData);
-      return res.data.allOldOrders;
-    } catch (err) {
-      return rejectWithValue(err.response.data.message);
-    }
-  }
-);
+const testIfSameFactory = (state, factory) => {
+  return factory === state[0]?.factory || state.length === 0;
+}
+const removeItemFromCart = (state, _id) => {
+  return state.filter( product => product._id !== _id);
+}
 
 const initialState = {
   allActiveOrders: [],
-  allOldOrders: [],
+  cartToDeliver: [],
+  cartToBookingManager: [],
+  errorAddOrRemoveToCart: '',
+  errorCartToBookingManager: {
+    errorIncrease: '',
+    errorChangeQuantity: '',
+
+  }
 };
 
 export const slice = createSlice({
   name: "orders",
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder.addCase(returnProduct.fulfilled, (state, action) => {
-      state.allActiveOrders.push(action.payload.newActiveOrder);
-      const filteredEmptyArrays = action.payload.updatedOrders
-      .filter(oldOrder => oldOrder.orderList.length > 0);
-      state.allOldOrders = filteredEmptyArrays; 
-    });
-    builder.addCase(sendAnInvitation.fulfilled, (state, action) => {
-      state.allActiveOrders.push(action.payload.newActiveOrder);
-    });
-    builder.addCase(getActiveOrders.fulfilled, (state, action) => {
+  reducers: {
+    addToCart(state, action) {
+      const {editQuantity, temporaryQuantity, ...newProduct} = action.payload;
+      const ifSameFactory = testIfSameFactory(state.cartToDeliver, newProduct.factory);
+       const ifsupplierExist = state.cartToDeliver[0]?._idSupplier === newProduct._idSupplier 
+       || state.cartToDeliver.length === 0;
+
+      if(newProduct.price.length === 0) {
+        state.errorAddOrRemoveToCart = 'הגדר מחיר תחילה';
+        return
+      }else if (!ifSameFactory) {
+        state.errorAddOrRemoveToCart = 'אין להכניס מוצרים המיועדים למפעל שונה';
+      }else if (!ifsupplierExist) {
+        state.errorAddOrRemoveToCart = 'ניסית לשים מוצרים מכמה ספקים שונים';
+      } else {
+        let totalQuantity = state.allActiveOrders.flatMap(order => order.listProducts)
+          .filter(product => product._idProduct._id === newProduct._id)
+          .reduce((acc, product) => acc + product.temporaryQuantity, 0);
+
+        editQuantity !== temporaryQuantity ? totalQuantity = editQuantity : null;
+        state.cartToDeliver.push({...newProduct, temporaryQuantity: totalQuantity});
+        state.errorAddOrRemoveToCart = '';
+      }
+    },
+    removeFromCart(state, action) {
+      const _id = action.payload;
+      state.cartToDeliver = state.cartToDeliver.filter( prod => prod._id !== _id);
+      state.errorAddOrRemoveToCart = '';
+    },
+    editQuantity(state, action) {
+      const {newQuantity, idProduct} = action.payload;
+      state.cartToDeliver = state.cartToDeliver.map( prod => {
+        return prod._id !== idProduct ? prod : {...prod, temporaryQuantity: newQuantity}
+      })
+    },
+    changePrice(state, action) {
+      const {idProduct, _idSupplier, price} = action.payload;
+      state.cartToDeliver = state.cartToDeliver.map( prod => {
+        return prod._id !== idProduct ? prod : {...prod, price, _idSupplier}
+      })
+    },
+    ifSelectedChangeSupplier( state, action) {
+      const {price, _idSupplier, _id} = action.payload;
+      if (state.cartToDeliver.length === 0) return;
+      state.cartToDeliver = state.cartToDeliver.map( prod => {
+        return prod._id !== _id ? prod : {...prod, price, _idSupplier};
+      })
+    },
+    increaseOne( state, action) {
+      const { _id, factory} = action.payload;
+      const ifSameFactory = testIfSameFactory(state.cartToBookingManager, factory);
+      
+      if (!ifSameFactory) {
+        state.errorCartToBookingManager.errorIncrease = 'אין להכניס מוצרים ממפעל שונה';
+        return
+      }
+      const productIndex = state.cartToBookingManager.findIndex(pr => pr._id === _id);
+      if (productIndex !== -1) {
+        state.cartToBookingManager = state.cartToBookingManager.map((pr, i) => {
+          return i === productIndex ? { ...pr, quantity: pr.quantity + 1 } : pr;
+        });
+      } else {
+        state.cartToBookingManager.push({...action.payload, quantity: 1})
+      }
+      state.errorCartToBookingManager.errorIncrease = '';
+    },
+    decreaseOne( state, action) {
+      const _id = action.payload;
+      const productIndex = state.cartToBookingManager.findIndex(pr => pr._id === _id);
+      if (isNaN(productIndex)) return;
+      state.cartToBookingManager = state.cartToBookingManager.map((pr, i) => {
+        return i === productIndex && pr.quantity !== 0 ?
+         { ...pr, quantity: pr.quantity - 1 } : pr;
+      });
+      
+    },
+    changeQuantityToBookingManager(state, action) {
+      console.log(action.payload);
+      const { _id, factory, quantity } = action.payload;
+      const ifSameFactory = testIfSameFactory(state.cartToBookingManager, factory);
+
+      if (!ifSameFactory) {
+        state.errorCartToBookingManager.errorChangeQuantity = 'אין להכניס מוצרים ממפעל שונה';
+        return
+      }
+      const productIndex = state.cartToBookingManager.findIndex(pr => pr._id === _id);
+      
+      if (productIndex === -1) { 
+        state.cartToBookingManager.push({factory, _id, quantity: Number(quantity) });
+         return }
+      
+      if (quantity === '0') { 
+        state.cartToBookingManager = removeItemFromCart(state.cartToBookingManager, _id);
+      }else {
+        state.cartToBookingManager = state.cartToBookingManager.map( (pr, i) => {
+          return i === productIndex ? {factory, _id, quantity: Number(quantity)} : pr;
+        })
+      }
+      state.errorCartToBookingManager.errorChangeQuantity = '';
+    },
+  },
+  extraReducers: builder => {
+    builder.addMatcher(
+      ordersApi.endpoints.getActiveOrders.matchFulfilled, (state, action) => {
       state.allActiveOrders = action.payload;
     });
-    builder.addCase(getOldOrders.fulfilled, (state, action) => {
-      state.allOldOrders = action.payload;
+    builder.addMatcher(
+      ordersApi.endpoints.sendAnInvitation.matchFulfilled, (state, action) => {
+        state.allActiveOrders.push(action.payload.newActiveOrder);
     });
-    builder.addCase(newOrderToDeliver.fulfilled, (state, action) => {
-      state.allOldOrders.push(action.payload.newOldOrder);
-      state.allActiveOrders = action.payload.activesDeletedEmpty;
+    builder.addMatcher(
+      ordersApi.endpoints.sendOrderFromCart.matchFulfilled, (state, action) => {
+        state.allActiveOrders = action.payload.activeOrders;
+        state.cartToDeliver = [];
     });
-    builder.addCase(removeProductInOldOrder.fulfilled, (state, action) => {
-      const updatedDoc = state.allOldOrders.map(oldOrder => {
-        return action.payload._id === oldOrder._id ? action.payload : oldOrder;
-      });
-
-      const filteredOrders = updatedDoc.filter(oldOrder => oldOrder.orderList.length > 0);
-      state.allOldOrders = filteredOrders; 
+    builder.addMatcher(
+      oldOrdersApi.endpoints.returnProduct.matchFulfilled, (state, action) => {
+        state.allActiveOrders.push(action.payload.newActiveOrder);
     });
-    builder.addCase(productReceivedAction.fulfilled, (state, action) => {
-      state.allOldOrders = action.payload;
-      // update OrdersReceivedSchema...
-    });
-    builder.addCase(removeProduct.fulfilled, (state, action) => {
-      const { _id, idInvitation } = action.payload;
-      const orderIndex = state.allActiveOrders.findIndex(
-        (order) => order._id === idInvitation
-      );
-      if (orderIndex !== -1) {
-        state.allActiveOrders[orderIndex].listProducts = state.allActiveOrders[
-          orderIndex
-        ].listProducts.filter((product) => product._idProduct._id !== _id);
-        if (state.allActiveOrders[orderIndex].listProducts.length === 0) {
-          state.allActiveOrders.splice(orderIndex, 1);
-        }
-      }
+    builder.addMatcher(
+      ordersApi.endpoints.removeProduct.matchFulfilled, (state, action) => {
+        state.allActiveOrders = state.allActiveOrders.map(active => {
+          return action.payload._id === active._id ? action.payload : active;
+        });  
     });
   },
 });
 
 export const actions = slice.actions;
 export default slice.reducer;
-
-// export const sendEmail = slice.actions.sendEmail;

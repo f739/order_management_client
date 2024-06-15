@@ -1,23 +1,31 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from 'react-redux';
-import { createNewUser, getUsers, removeUser } from '../dl/slices/users';
 import { handleFormHook } from "../components/HandleFormHook";
 import trash_icon from '../assetes/trash_icon.svg'
 import { SelectFactoryHook } from "../components/SelectFactoryHook";
+import { useGetUsersQuery,
+    useCreateNewUserMutation,
+    useRemoveUserMutation } from '../dl/api/usersApi';
 
 export const CreateUsers = () => {
-    const  dispatch = useDispatch();
     const [message, setMessage] = useState('');
     const [formCreateUser, setFormCreateUser] = useState(
         {userName: '', password: '',email: '', license: '', factory: '' });
-
+        
+    const [createNewUser, { error, isLoading }] = useCreateNewUserMutation();
+    useEffect(() => {
+        if (error) {
+            setMessage(error.data?.message || 'An error occurred');
+        }
+    }, [error]);
     const createUser = async () => {
         const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!regex.test(formCreateUser.email)) return setMessage('האימייל אינו תקני');
         if (Object.values(formCreateUser).every(value => value !== '')) {
-            dispatch( createNewUser(formCreateUser));
-            setFormCreateUser({userName: '', password: '',email: '', license: '', factory: '' });
-            setMessage('')
+            try {
+                await createNewUser(formCreateUser).unwrap();
+                setFormCreateUser({userName: '', password: '',email: '', license: '', factory: '' });
+                setMessage('')
+            }catch (err) {return}
         }else {
             return setMessage('חסר פרטים הכרחיים בטופס')
         }
@@ -46,25 +54,26 @@ export const CreateUsers = () => {
                 <SelectFactoryHook set={setFormCreateUser} form={formCreateUser} />
                 <button onClick={createUser}>צור משתמש</button>
                 <span>{message}</span>
+                {isLoading && <span>🌀</span>}
             </div>
-            <ShowUsers dispatch={dispatch} />
+            <ShowUsers />
         </>
     )
 }
 
-const ShowUsers = ({dispatch}) => {
-    const {allUsers, isLoading} = useSelector( state => state.users);
-
-    useEffect( () => {
-        if (!allUsers.length) {
-            dispatch( getUsers());
+const ShowUsers = () => {
+    const { data: allUsers, error: errorGetUsers, isLoading: isLoadingGetUsers } = useGetUsersQuery();
+    const [removeUser, { error: errorRemoveUser }] = useRemoveUserMutation();
+    
+    const deleteUser = async _id => {
+        try {
+            await removeUser(_id).unwrap();
+        }catch (err) {
+            console.log(err, errorRemoveUser);
         }
-    },[dispatch]);
-
-    const deleteUser = _id => {
-        dispatch( removeUser(_id))
     }
-    if (isLoading) return <h1>🌀 Loading...</h1>;
+    if (isLoadingGetUsers) return <h1>🌀 Loading...</h1>;
+    if (errorGetUsers) return <h1> {errorGetUsers} </h1>;
     return (
         <div className="show-items">
             <h1>משתמשים קיימים</h1>

@@ -1,18 +1,12 @@
 import { useEffect } from "react"
-import { useSelector, useDispatch } from 'react-redux';
-import { getCategories } from "../dl/slices/categories";
 import { handleFormHook } from "./HandleFormHook";
+import { useGetCategoriesQuery } from "../dl/api/categoriesApi";
 
 export const SelectCatgoryHook = ({set, form, ifFunc=false, ifGet=true}) => {
-    const dispatch = useDispatch();
-    const { allCategories } = useSelector( state => state.categories);
+    const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
 
-    useEffect( () => {
-        if (allCategories.length === 0 && ifGet) {
-            dispatch(getCategories());
-        }
-    },[])
-
+    if (errorGetCategories) return <h3>ERROR: {errorGetCategories.error}</h3>
+    if (isLoadingGetCategories) return 'loading...';
     return (
         <select name="category" value={form.category} onChange={e => handleFormHook(e.target, set, ifFunc)}>
             { allCategories && allCategories.map( category => (  

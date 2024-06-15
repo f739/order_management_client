@@ -1,17 +1,13 @@
 import { useEffect } from "react"
-import { useSelector, useDispatch } from 'react-redux';
-import { getProducts } from "../dl/slices/products";
+import { useGetProductsQuery } from "../dl/api/productsApi";
 import { handleFormHook } from './HandleFormHook';
 
 export const SelectProductsHook = ({set, form}) => {
-    const dispatch = useDispatch();
-    const {allProducts, isLoading} = useSelector( state => state.products);
+    const { data: allProducts, error: errorGetProducts, isLoading: isLoadingGetProducts } = useGetProductsQuery();
 
-    useEffect( () => {
-        if (allProducts.length === 0) {
-            dispatch( getProducts())
-        }
-    },[]);
+
+    if (errorGetProducts) return <h3>ERROR: {errorGetProducts.error}</h3>
+    if (isLoadingGetProducts) return 'loading...';
     return (
         <select id="products-select" name="skuProduct" value={form.skuProduct} onChange={e => handleFormHook(e.target, set)}>
             <option value="">*--בחר מוצר--</option>

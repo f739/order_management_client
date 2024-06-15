@@ -38,7 +38,6 @@ export const IssuingReports = () => {
     }
     return (
         <>
-            { license === 'Bookkeeping' || license === 'purchasingManager' ? 
             <div className="container-Bookkeeping">
                 <div className="report">
                     <label>דו"ח מוצר</label>
@@ -61,8 +60,6 @@ export const IssuingReports = () => {
                 </div>
                 
             </div>
-            : <NoEntry />
-            }
         </>
     )
 }

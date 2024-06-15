@@ -1,54 +1,49 @@
 import { useState, useEffect } from "react";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addOrSubtract } from "../dl/slices/products";
+import { actions } from "../dl/slices/orders";
+import { Box, Grid, ListItemText, TextField, Button } from "@mui/material";
+import { StackChips, IconRemoveButton, IconAddButton, ChangeQuantity } from "./indexComponents";
 
 export const ItemsBox = props => {
     const dispatch = useDispatch()
-    const { nameProduct, factory, temporaryQuantity, _id,
-        category, unitOfMeasure } = props;
-    const [temporaryQuantityToShow, setTemporaryQuantityToShow] = useState(Number(temporaryQuantity))
+    const { nameProduct, factory, _id, category, unitOfMeasure } = props;
 
-    useEffect(() => {
-        setTemporaryQuantityToShow(temporaryQuantity);
-    }, [temporaryQuantity]);
-
-    const addItem = async () => {
-        const newTemporaryQuantity = Number(temporaryQuantity) +1 ;
-        dispatch( addOrSubtract({_id, newTemporaryQuantity}))
+    const productActive = useSelector( state => {
+        return state.orders.cartToBookingManager.find( pr => pr._id === _id);
+    });
+    const { errorIncrease, errorChangeQuantity } = useSelector(state => state.orders.errorCartToBookingManager);
+    
+    const onIncrease = () => {
+        dispatch( actions.increaseOne({_id, factory}))
     }
-    const removeItem = async () => {
-        if (temporaryQuantity > 0) {
-            const newTemporaryQuantity = Number(temporaryQuantity) -1 ;
-            dispatch( addOrSubtract({_id, newTemporaryQuantity}))
-        }
+    const onDecrease = () => {
+        dispatch( actions.decreaseOne(_id))
     }
-    const editTemporaryQuantity = e => {
-        const newValue = parseInt(e.target.value || e.target.innerText, 10);
-        if (!isNaN(newValue)) {
-            dispatch( addOrSubtract({_id, newTemporaryQuantity: newValue}))
-        }
+    const onChangeQuantity = e => {
+        const {value} = e.target;
+        dispatch( actions.changeQuantityToBookingManager({quantity: value, _id, factory}))
     }
-    const changeTemporaryQuantity = e => {
-        if (e.target.value !== '') {
-            setTemporaryQuantityToShow(parseInt(e.target.value, 10))
-        }
-    }
-    return (
-        <div className="box-product-from-the-order">
-            <div className="start-order">
-                <span className={`factory-${factory}`}>{factory && factory.charAt(0).toUpperCase()}</span>
-                <span><strong>{nameProduct}</strong></span>
-                <span>{unitOfMeasure}</span>
-                <span>{category}</span>
-            </div>
-            <div className="quantity-controls end-order">
-                <button onClick={addItem}>+</button>
-                <input type="number" 
-                onChange={changeTemporaryQuantity}
-                value={temporaryQuantityToShow}
-                onBlur={editTemporaryQuantity} className="delete-defalt-style"/>
-                <button onClick={removeItem}>-</button>
-            </div>
-        </div>
+    
+    return (    
+        <Grid container spacing={1} alignItems="start" 
+        textAlign='start' justifyContent='space-between' sx={{paddingLeft: '20px'}}>
+            <Grid item xs={12}>   
+                <StackChips factory={factory} catgory={category} />
+            </Grid>
+            <Grid item>
+                <ListItemText primary={nameProduct} secondary={unitOfMeasure} />
+            </Grid>
+            <Grid item>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <IconRemoveButton action={onDecrease} title={'הפחת כמות'} />
+                    <ChangeQuantity 
+                        action={onChangeQuantity} 
+                        quantity={productActive?.quantity ?? 0} 
+                        title={errorChangeQuantity ? errorChangeQuantity : 'שנה כמות'} />
+                    <IconAddButton action={onIncrease} title={errorIncrease ? errorIncrease : 'הוסף כמות'} />
+                </Box>
+            </Grid>
+        </Grid>
     )
 }

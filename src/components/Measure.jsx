@@ -1,16 +1,26 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from 'react-redux';
-import { getMeasures, createNewMeasure, removeMeasure } from "../dl/slices/measures";
 import { handleFormHook } from './HandleFormHook';
+import { useGetMeasuresQuery,
+    useCreateNewMeasureMutation,
+    useRemoveMeasureMutation } from '../dl/api/measuresApi';
 import trash_icon from '../assetes/trash_icon.svg';
 
 export const Measure = () => {
-    const dispatch = useDispatch();
+    const [message, setMessage] = useState('')
     const [newMeasure, setNewMeasure] = useState({measureName: ''});
+    const [createNewMeasure, { error, isLoading }] = useCreateNewMeasureMutation();
+
+    useEffect(() => {
+        if (error) {
+            setMessage(error.data?.message || 'An error occurred');
+        }
+    }, [error]);
 
     const handleSaveNewMeasure  = async () => {
-        dispatch( createNewMeasure(newMeasure));
-        setNewMeasure({measureName: ''})
+        try {
+            await createNewMeasure(newMeasure).unwrap();
+            setNewMeasure({measureName: ''})
+        }catch (err) { return }
     }
     return (
         <div className="measure">
@@ -19,28 +29,29 @@ export const Measure = () => {
                     <input type="text" name="measureName" value={newMeasure.measureName} 
                     onChange={ e => handleFormHook(e.target, setNewMeasure)}/> 
                 <button onClick={handleSaveNewMeasure}>שמור יחידת מידה חדשה</button>
+                <span>{message}</span>
+                {isLoading && <span>🌀</span>}
             </div>
-            <ShowMeasures  dispatch={dispatch} />
+            <ShowMeasures />
         </div>
         
     )
 };
 
-const ShowMeasures = props => {
-    const { dispatch } = props;
-    const {allMeasures, isLoading} = useSelector( state => state.measures);
+const ShowMeasures = () => {
+    const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
+    const [removeMeasure, { error: errorRemoveMeasure }] = useRemoveMeasureMutation();
 
-    useEffect(() => {
-        if (allMeasures.length === 0) {
-            dispatch(getMeasures());
+    const deleteMeasure = async _id => {
+        try {
+            await removeMeasure(_id).unwrap();
+        }catch (err) {
+            console.log(err);
+            console.log(errorRemoveMeasure);
         }
-    }, [dispatch]);
-
-    const deleteMeasure = (_id) => {
-        dispatch(removeMeasure(_id))
     }
-
-    if (isLoading) return <h1>🌀 Loading...</h1>;
+    if (errorGetMeasures) return <h3>ERROR: {errorGetMeasures.error}</h3>
+    if (isLoadingGetMeasures) return <h1>🌀 Loading...</h1>;
     return (
         <div className="show-items measure-items">
                 <h1 className="title">יחידות מידה קיימות:</h1>
