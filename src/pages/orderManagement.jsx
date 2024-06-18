@@ -1,16 +1,14 @@
 import React from 'react';
 import { useState, useEffect } from "react";
 import { NewOrderToDeliver, SelectFactoryHook, SelectSuppliersHook,
-  BoxPrice, findBestPrice, 
-  StackChips} from '../components/indexComponents';
+  BoxPrice, findBestPrice} from '../components/indexComponents';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '../dl/slices/orders';
-import { useGetActiveOrdersQuery,
-  useRemoveProductMutation,
+import { useGetActiveOrdersQuery, useRemoveProductMutation,
   useDeleteInvtationMutation } from './../dl/api/ordersApi';
 import { defineAbilitiesFor } from '../auth/abilities';
 import { AccordionComponent, InputNumberPrice,
-    InputNumberQuantity, IconDeleteButton, IconEditButton } from '../components/indexComponents';
+    InputNumberQuantity, IconDeleteButton, IconEditButton, StackChips } from '../components/indexComponents';
 import moment from 'moment';
 import { Typography, Grid, Checkbox, Divider, ListItemText } from '@mui/material';
 import '../css/orderManagement.css';

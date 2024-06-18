@@ -24,7 +24,7 @@ const defineAccountantAbilities = (can, cannot) => {
   can('enter', 'IssuingReport');
   cannot('enter', ['Order', 'PendingOrders', 'OldOrder', 'NavPrivet', 'CreateUser',
   'Product', 'Supplier', 'Measure', 'Category', 'Log', 'Settings']);
-  cannot(['create', 'delete'], 'PendingOrders')
+  cannot(['create', 'delete'], ['PendingOrders', 'Order'])
 
 }
 

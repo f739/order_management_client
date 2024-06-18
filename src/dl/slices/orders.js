@@ -112,14 +112,14 @@ export const slice = createSlice({
       const productIndex = state.cartToBookingManager.findIndex(pr => pr._id === _id);
       
       if (productIndex === -1) { 
-        state.cartToBookingManager.push({factory, _id, quantity: Number(quantity) });
+        state.cartToBookingManager.push({...action.payload, quantity: Number(quantity) });
          return }
       
       if (quantity === '0') { 
         state.cartToBookingManager = removeItemFromCart(state.cartToBookingManager, _id);
       }else {
         state.cartToBookingManager = state.cartToBookingManager.map( (pr, i) => {
-          return i === productIndex ? {factory, _id, quantity: Number(quantity)} : pr;
+          return i === productIndex ? {...action.payload, quantity: Number(quantity)} : pr;
         })
       }
       state.errorCartToBookingManager.errorChangeQuantity = '';
@@ -133,6 +133,7 @@ export const slice = createSlice({
     builder.addMatcher(
       ordersApi.endpoints.sendAnInvitation.matchFulfilled, (state, action) => {
         state.allActiveOrders.push(action.payload.newActiveOrder);
+        state.cartToBookingManager = [];
     });
     builder.addMatcher(
       ordersApi.endpoints.sendOrderFromCart.matchFulfilled, (state, action) => {

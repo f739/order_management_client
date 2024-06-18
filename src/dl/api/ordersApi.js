@@ -20,11 +20,19 @@ export const ordersApi = createApi({
         [{ type: 'activeOrder', id: 'LIST' }],
     }),
     sendAnInvitation: builder.mutation({
-      query: ({ user, whichFactoryToSend, note }) => ({
-        url: '/orders/sendAnInvitation',
-        method: 'POST',
-        body: { user, whichFactoryToSend, note },
-      }),
+      queryFn: async ({ user, whichFactoryToSend, noteToOrder }, {getState}, ex, baseQuery ) => {
+        const state = getState();
+        const cart = state.orders.cartToBookingManager;
+        const ability = getAbilityForUser(state.users.user);
+
+        if (!ability.can('create', 'Order')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
+        if (cart.length === 0){ return { error: {message: 'אין מוצרים לשליחה'}}};
+        return await baseQuery({
+          url: '/orders/sendAnInvitation',
+          method: 'POST',
+          body: { user, whichFactoryToSend, note: noteToOrder, cart},
+        })
+      },
       invalidatesTags: [{ type: 'activeOrder', id: 'LIST' }],
     }),
     sendOrderFromCart: builder.mutation({

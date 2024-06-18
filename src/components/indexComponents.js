@@ -15,4 +15,4 @@ export { IconAddButton } from './cssComponents/icons/IconAddButton'
 export { LoudingPage } from './cssComponents/LoudingPage';
 export { StackChips } from './cssComponents/StackChips';
 export { TooltipComponent } from './cssComponents/TooltipComponent';
-
+export { MyAppBar } from './cssComponents/AppBar';

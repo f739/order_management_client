@@ -3,14 +3,11 @@ import { handleFormHook } from "./HandleFormHook";
 import { useSelector } from "react-redux";
 import { useGetSuppliersQuery } from "../dl/api/suppliersApi";
 import { useSendOrderFromCartMutation } from "../dl/api/ordersApi";
-import { TextField, Button, Typography, Box, DialogActions, ToggleButton, ToggleButtonGroup,
-    Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, CircularProgress
- } from '@mui/material';
-import EmailIcon from '@mui/icons-material/Email';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import GetAppIcon from '@mui/icons-material/GetApp';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { TextField, Typography, Box, ToggleButton, ToggleButtonGroup,
+    Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton} from '@mui/material';
+import {Email as EmailIcon, WhatsApp as WhatsAppIcon, GetApp as GetAppIcon,
+     } from '@mui/icons-material';
+
 import { DialogSendInvitation } from "./cssComponents/DialogSendInvitation";  
 import '../css/newOrderToDeliver.css';
 
@@ -22,7 +19,7 @@ export const NewOrderToDeliver = ({setShowSendEmail}) => {
         {supplier: [], titleMessage: '', messageContent: '', howToSend: []}
     )
     const [selectedMethods, setSelectedMethods] = useState([]);
-    const [showTable, setShowTable] = useState(false);
+    const [showTable, setShowTable] = useState(true);
 
     useEffect( () => {
         if (cartToDeliver && cartToDeliver.length !== 0) {
@@ -51,51 +48,40 @@ export const NewOrderToDeliver = ({setShowSendEmail}) => {
         }catch (err) { }
     }
 
-    const toggleTable = () => {
-        setShowTable(prev => !prev);
-    };
-
     return(
-        <DialogSendInvitation setOpenDialog={setShowSendEmail} title="שליחת הזמנה">
-            <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle1">אל</Typography>
-                {emailForm.supplier.nameSupplier && (
-                <Typography>{`${emailForm.supplier.nameSupplier} (${emailForm.supplier.email})`}</Typography>
-                ) }
-            </Box>
-            { cartToDeliver.length !== 0  ? (
-            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="h6">מוצרים בהזמנה</Typography>
-                <IconButton onClick={toggleTable}>
-                {showTable ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                </IconButton>
-            </Box>
-            ) : (
-                <Typography color="error">לא נבחרו מוצרים!</Typography>
-            )}
-            { showTable && (
-            <TableContainer component={Paper} sx={{ mt: 2 }}>
-                <Table aria-label="cart items table">
-                <TableHead>
-                    <TableRow>
-                    <TableCell align="right">שם מוצר</TableCell>
-                    <TableCell align="right">כמות</TableCell>
-                    <TableCell align="right">מחיר</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {cartToDeliver.map( item => (
-                    <TableRow key={item._id}>
-                        <TableCell align="right">{item.nameProduct}</TableCell>
-                        <TableCell align="right">{item.temporaryQuantity}</TableCell>
-                        <TableCell align="right">{item.price}</TableCell>
-                    </TableRow>
-                    ))}
-                </TableBody>
-                </Table>
-            </TableContainer>
-            )}
-            <Box sx={{ mb: 2 }}>
+        <DialogSendInvitation setOpenDialog={setShowSendEmail} 
+        sendOrder={sendOrder}
+        isLoudingSendOrder={isLoudingSendOrder}
+        showTable={showTable}
+        setShowTable={setShowTable}
+        cart={cartToDeliver}
+        errorMessage={errorSendOrderFromCart}
+        to={ emailForm.supplier.nameSupplier ? 
+            `${emailForm.supplier.nameSupplier} (${emailForm.supplier.email})` : null
+        }
+        tableHead={
+            <TableHead>
+                <TableRow>
+                <TableCell align="right">שם מוצר</TableCell>
+                <TableCell align="right">כמות</TableCell>
+                <TableCell align="right">מחיר</TableCell>
+                </TableRow>
+            </TableHead>
+        }
+        tableBody={
+            <TableBody>
+                {cartToDeliver.map( item => (
+                <TableRow key={item._id}>
+                    <TableCell align="right">{item.nameProduct}</TableCell>
+                    <TableCell align="right">{item.temporaryQuantity}</TableCell>
+                    <TableCell align="right">{item.price}</TableCell>
+                </TableRow>
+                ))}
+            </TableBody> 
+        }
+        fields={
+            <>
+                <Box sx={{ mb: 2 }}>
                 <TextField
                 fullWidth
                 label="כותרת"
@@ -104,20 +90,23 @@ export const NewOrderToDeliver = ({setShowSendEmail}) => {
                 onChange={e => handleFormHook(e.target, setEmailForm)}
                 inputProps={{ dir: 'rtl' }}
                 />
-            </Box>
-            <Box sx={{ mb: 2 }}>
-                <TextField
-                fullWidth
-                label="תוכן"
-                name="messageContent"
-                variant="outlined"
-                multiline
-                rows={4}
-                onChange={e => handleFormHook(e.target, setEmailForm)}
-                inputProps={{ dir: 'rtl' }}
-                />
-            </Box>
-            <Box sx={{ mb: 2 }}>
+                </Box>
+                <Box sx={{ mb: 2 }}>
+                    <TextField
+                    fullWidth
+                    label="תוכן"
+                    name="messageContent"
+                    variant="outlined"
+                    multiline
+                    rows={4}
+                    onChange={e => handleFormHook(e.target, setEmailForm)}
+                    inputProps={{ dir: 'rtl' }}
+                    />
+                </Box>
+            </>
+        }
+        moreActions={
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                 <ToggleButtonGroup
                 value={selectedMethods}
                 onChange={handleMethodChange}
@@ -137,20 +126,8 @@ export const NewOrderToDeliver = ({setShowSendEmail}) => {
                 </ToggleButton>
                 </ToggleButtonGroup>
             </Box>
-            {errorSendOrderFromCart && (
-                <Typography color="error" sx={{ mb: 2 }}>
-                {errorSendOrderFromCart.message}
-                </Typography>
-            )}
-            <DialogActions>
-                <Button onClick={sendOrder} color="primary" variant="contained" disabled={isLoudingSendOrder}>
-                {isLoudingSendOrder ? <CircularProgress size={24} /> : 'שלח הזמנה'}
-                </Button>
-                <Button onClick={() => setShowSendEmail(false)} color="secondary" variant="outlined">
-                בטל הזמנה
-                </Button>
-            </DialogActions>
+        }
+        >     
         </DialogSendInvitation>       
-
     )
 } 
