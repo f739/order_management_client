@@ -11,6 +11,7 @@ import { Button, Box, Stack, Paper, Divider, Grid, ListItemText, Typography,
 import { styled } from '@mui/material/styles';
 import { DialogSendInvitation } from "../components/cssComponents/DialogSendInvitation";
 import '../css/orders.css';
+import FilterDrawer from "../components/cssComponents/FilterDrawer";
 
 export const Orders = () => {
     const { data: allProducts, error: errorGetProducts, isLoading: isLoadingGetProducts } = useGetProductsQuery();
@@ -62,74 +63,78 @@ export const Orders = () => {
    
     return(
         <div >
-            <SelectCatgoryHook set={setCategorySelected} form={catgorySelected} ifFunc={true} />
-            <Stack
-                direction="column"
-                justifyContent="flex-start"
-                alignItems="stretch"
-                spacing={1}
-            >
-            { allProductsFiltred && allProductsFiltred.map( (item, i) => (
-                    <Item key={item._id}>
-                        {ability.can('read', 'Order', item.factory) ? (
-                            <div>
-                                <ItemsBox item={item} />
-                            {i < allProductsFiltred.length - 1 && <Divider />}
-                            </div>
-                        ) : null}
-                    </Item>
+            <Box sx={{p: 1}}>
+                <FilterDrawer />
+            {/* <SelectCatgoryHook set={setCategorySelected} form={catgorySelected} ifFunc={true} /> */}
+                <Stack
+                    direction="column"
+                    justifyContent="flex-start"
+                    alignItems="stretch"
+                    spacing={1}
+                >
+                    { allProductsFiltred && allProductsFiltred.map( (item, i) => (
+                        <Item key={item._id}>
+                            {ability.can('read', 'Order', item.factory) ? (
+                                <div>
+                                    <ItemsBox item={item} />
+                                {i < allProductsFiltred.length - 1 && <Divider />}
+                                </div>
+                            ) : null}
+                        </Item>
                     ))}
                 </Stack>
 
-            <Box sx={{ position: 'fixed', bottom: 16, right: 16}}>
-                <Button variant="contained" className="send-an-invitation" onClick={() => setOpenDialog(true)} >
-                שלח הזמנה
-                </Button>
-            </Box>
-            { openDialog && <DialogSendInvitation 
-                setOpenDialog={setOpenDialog} 
-                isLoudingSendOrder={isLoadingSendInvitaion}
-                showTable={showTable}
-                setShowTable={setShowTable}
-                errorMessage={errorSendAnInvitation}
-                cart={cartToBookingManager}
-                sendOrder={SendAnInvitation}
-                user={user} 
-                to={ cartToBookingManager.length > 0 ? cartToBookingManager[0].factory : null }
-                tableHead={
-                    <TableHead>
-                        <TableRow>
-                            <TableCell align="right">קטגוריה</TableCell>
-                            <TableCell align="right">שם מוצר</TableCell>
-                            <TableCell align="right">יחידת מידה</TableCell>
-                            <TableCell align="right">כמות</TableCell>
-                        </TableRow>
-                    </TableHead>
-                }
-                tableBody={
-                    <TableBody>
-                        {cartToBookingManager.map( item => (
-                            <TableRow key={item._id}>
-                                <TableCell align="right">{item.category}</TableCell>
-                                <TableCell align="right">{item.nameProduct}</TableCell>
-                                <TableCell align="right">{item.unitOfMeasure}</TableCell>
-                                <TableCell align="right">{item.quantity}</TableCell>
+                <Box sx={{ position: 'fixed', bottom: 16, right: 16}}>
+                    <Button variant="contained" className="send-an-invitation" onClick={() => setOpenDialog(true)} >
+                    שלח הזמנה
+                    </Button>
+                </Box>
+                { openDialog && <DialogSendInvitation 
+                    setOpenDialog={setOpenDialog} 
+                    isLoudingSendOrder={isLoadingSendInvitaion}
+                    showTable={showTable}
+                    setShowTable={setShowTable}
+                    errorMessage={errorSendAnInvitation}
+                    cart={cartToBookingManager}
+                    sendOrder={SendAnInvitation}
+                    user={user} 
+                    to={ cartToBookingManager.length > 0 ? cartToBookingManager[0].factory : null }
+                    tableHead={
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align="right">קטגוריה</TableCell>
+                                <TableCell align="right">שם מוצר</TableCell>
+                                <TableCell align="right">יחידת מידה</TableCell>
+                                <TableCell align="right">כמות</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody> 
-                }
-                fields={
-                    <TextField
-                        id="outlined-multiline-static"
-                        label="הוסף הערה"
-                        multiline
-                        rows={4}
-                        placeholder="שים לב ל..."
-                        sx={{ mt: 2, width: '100%', minWidth: '300px' }}
-                        onChange={ e => setNoteToOrder(e.target.value)}
-                    />
-                }
-            />}
+                        </TableHead>
+                    }
+                    tableBody={
+                        <TableBody>
+                            {cartToBookingManager.map( item => (
+                                <TableRow key={item._id}>
+                                    <TableCell align="right">{item.category}</TableCell>
+                                    <TableCell align="right">{item.nameProduct}</TableCell>
+                                    <TableCell align="right">{item.unitOfMeasure}</TableCell>
+                                    <TableCell align="right">{item.quantity}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody> 
+                    }
+                    fields={
+                        <TextField
+                            id="outlined-multiline-static"
+                            label="הוסף הערה"
+                            multiline
+                            rows={4}
+                            placeholder="שים לב ל..."
+                            sx={{ mt: 2, width: '100%', minWidth: '300px' }}
+                            onChange={ e => setNoteToOrder(e.target.value)}
+                        />
+                    }
+                />}
+
+            </Box>
         </div>
     )
 }

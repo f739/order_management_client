@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import bic_logo from './assetes/bic_logo.png';
 import { useTestTokenQuery } from "./dl/api/usersApi";
 import './css/main.css';
-import { MyAppBar } from "./components/indexComponents";
+import { MyAppBar, BottomNav } from "./components/indexComponents";
 
 export function Layout () {
   const  { data: user, isLoading } = useTestTokenQuery();
@@ -16,20 +16,11 @@ export function Layout () {
   // else if (!ifLicense && !user) return <NoEntry setIfLicense={setIfLicense} />;
   else return (
     <>
-    {/* <div className="logo-container">
-      <img src={bic_logo} alt="Logo" className="logo" />
-    </div> */}
-    <MyAppBar />
-        {/* <nav>
-          <NavLink to='/orders'>הזמנות חדשות</NavLink>
-          <NavLink to='./orderManagement'>הזמנות בתהליך</NavLink>
-          <NavLink to='./oldOrders'>קליטת הזמנות</NavLink>
-          <NavLink to='./issuingReports'>הנפקת דוחות</NavLink>
-          <NavLink to='/privateArea'>אזור אישי</NavLink>
-        </nav> */}
-        <ToastContainer />
-        <Outlet />
-      </>
+      <MyAppBar />
+      <ToastContainer />
+      <Outlet /> 
+      <BottomNav />
+    </>
   )
 }
 
