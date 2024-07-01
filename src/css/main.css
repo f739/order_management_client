@@ -7,7 +7,7 @@ body {
   color: #333;
 }
 
-h1 {
+/* h1 {
   color: #333;
   font-size: 18px;
   display: inline;
@@ -65,11 +65,11 @@ select {
 }
 .measure-items .show-item span, .categories-items .show-item span {
   max-width: 80%;
-}
+} */
 
 
 
-.show-item:hover {
+/* .show-item:hover {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 ::-webkit-scrollbar {
@@ -86,7 +86,7 @@ select {
 ::-webkit-scrollbar-thumb {
   background:#007bff;
   border-radius: 2px; 
-}
+} */
 
 
 /* @media (max-width: 600px) {
@@ -96,7 +96,7 @@ select {
   }
 } */
 
-nav {
+/* nav {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -193,4 +193,4 @@ button {
 
 .icon.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
-}
+} */

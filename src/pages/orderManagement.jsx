@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from "react";
-import { NewOrderToDeliver, SelectFactoryHook, SelectSuppliersHook,
+import { NewOrderToDeliver, CustomSelect, SelectSuppliersHook,
   BoxPrice, findBestPrice} from '../components/indexComponents';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '../dl/slices/orders';
@@ -48,7 +48,7 @@ export const OrderManagement = () => {
 
   return (
     <div>
-      <SelectFactoryHook set={setValueFactory} form={valueFactory} showAllFactoryLine={true} ifFunc={true} />
+      <CustomSelect set={setValueFactory} form={valueFactory} showAllFactoryLine={true} ifFunc={true} />
       { errorAddOrRemoveToCart && <div style={{color: 'red'}}>{errorAddOrRemoveToCart}</div>}
       {!showSendEmail && <button onClick={() => setShowSendEmail(old => !old)} className='send-order'>שלח הזמנה לספק</button>}
       {showSendEmail && <NewOrderToDeliver setShowSendEmail={setShowSendEmail} />}

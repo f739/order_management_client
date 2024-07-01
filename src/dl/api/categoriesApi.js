@@ -1,6 +1,10 @@
 import { createApi, fetchBaseQuery  } from '@reduxjs/toolkit/query/react';
-
+import { defineAbilitiesFor } from '../../auth/abilities';
 const URL = import.meta.env.VITE_API_URL;
+
+const getAbilityForUser = user => {
+  return defineAbilitiesFor(user);
+};
 
 export const categoriesApi = createApi({
   reducerPath: 'categoriesApi',
@@ -16,12 +20,20 @@ export const categoriesApi = createApi({
         [{ type: 'category', _id: 'LIST' }],
     }),
     createNewCategory: builder.mutation({
-      query: newCategory => ({
-        url: '/newCategory',
-        method: 'POST',
-        body: newCategory,
-      }),
-      transformResponse: res => res.newCategory,
+      queryFn: async ({newCategory}, {getState}, ex, baseQuery) => {
+        const state = getState();
+        const ability = getAbilityForUser(state.users.user);
+        
+        if (newCategory.nameCategory === '') { return {error: {message: 'חסר פרטים בטופס'}}} 
+        if (!ability.can('create', 'Category')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
+
+        return await baseQuery({
+          url: '/newCategory',
+          method: 'POST',
+          body: newCategory,
+        })
+      },
+      transformResponse: res => res,
       invalidatesTags: [{ type: 'category', _id: 'LIST' }],
     }),
     removeCategory: builder.mutation({

@@ -20,7 +20,7 @@ export const slice = createSlice({
           });
           builder.addMatcher(
             suppliersApi.endpoints.createNewSupplier.matchFulfilled, (state, action) => {
-            state.allSuppliers.push(action.payload) 
+            state.allSuppliers.push(action.payload.newSupplier) 
           });
           builder.addMatcher(
             suppliersApi.endpoints.removeSupplier.matchFulfilled, (state, action) => {

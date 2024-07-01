@@ -19,7 +19,7 @@ export const slice = createSlice({
           });
           builder.addMatcher(
             measuresApi.endpoints.createNewMeasure.matchFulfilled, (state, action) => {
-            state.allMeasures.push(action.payload) 
+            state.allMeasures.push(action.payload.newMeasure) 
           });
           builder.addMatcher(
             measuresApi.endpoints.removeMeasure.matchFulfilled, (state, action) => {

@@ -19,7 +19,7 @@ export const slice = createSlice({
         });
         builder.addMatcher(
           categoriesApi.endpoints.createNewCategory.matchFulfilled, (state, action) => {
-          state.allCategories.push(action.payload) 
+          state.allCategories.push(action.payload.newCategory) 
         });
         builder.addMatcher(
           categoriesApi.endpoints.removeCategory.matchFulfilled, (state, action) => {

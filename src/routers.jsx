@@ -2,14 +2,14 @@ import { createBrowserRouter } from 'react-router-dom';
 import { Layout } from './App';
 import { Home } from './pages/home'; 
 import { Orders } from './pages/orders';
-import { PrivateArea } from './pages/privateArea'; 
-import { OrderManagement } from './pages/orderManagement.jsx';
-import { CreateUsers } from './pages/createUsers.jsx';
 import { OldOrders } from './pages/oldOrders.jsx';
-import { Products } from './components/Products.jsx';
-import { Supplier } from './components/Supplier.jsx';
-import { Measure } from './components/Measure.jsx';
-import { Categories } from './components/Categories.jsx';
+import { OrderManagement } from './pages/orderManagement.jsx';
+import { PrivateArea } from './pages/privateArea'; 
+import { Users } from './components/pages/Users.jsx';
+import { Products } from './components/pages/Products.jsx';
+import { Supplier } from './components/pages/Supplier.jsx';
+import { Measure } from './components/pages/Measure.jsx';
+import { Categories } from './components/pages/Categories.jsx';
 import { EmailSettings } from './pages/EmailSettings.jsx';
 import { IssuingReports } from './pages/IssuingReports.jsx';
 import { Logger } from './pages/logger.jsx';
@@ -44,16 +44,19 @@ export const routers = createBrowserRouter([{
             element: <ProtectedRoute element={IssuingReports} action="enter" subject="IssuingReport" />
         },
         {
-            path: "/privateArea",
+            path: "emailSettings",
+            element: <ProtectedRoute element={EmailSettings} action="enter" subject="Settings" /> 
+        },
+        {
+            path: "/systemManagement",
             element: <ProtectedRoute element={PrivateArea} action="enter" subject="NavPrivet" />,
             children: [
-                {path: "createUsers", element: <ProtectedRoute element={CreateUsers} action="enter" subject="CreateUser" /> },
+                {path: "Users", element: <ProtectedRoute element={Users} action="enter" subject="CreateUser" /> },
                 {path: "products", element: <ProtectedRoute element={Products} action="enter" subject="Product" /> },
                 {path: "supplier", element: <ProtectedRoute element={Supplier} action="enter" subject="Supplier" /> },
                 {path: "measure", element: <ProtectedRoute element={Measure} action="enter" subject="Measure" /> },
                 {path: "categories", element: <ProtectedRoute element={Categories} action="enter" subject="Category" /> },
                 {path: "logger", element: <ProtectedRoute element={Logger} action="enter" subject="Log" /> },
-                {path: "emailSettings", element: <ProtectedRoute element={EmailSettings} action="enter" subject="Settings" /> },
             ]
         },
   

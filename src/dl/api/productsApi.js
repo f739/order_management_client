@@ -1,6 +1,11 @@
 import { createApi, fetchBaseQuery  } from '@reduxjs/toolkit/query/react';
-
+import { fieldsAreNotEmpty } from '../../components/hooks/fanksHook';
+import { defineAbilitiesFor } from '../../auth/abilities';
 const URL = import.meta.env.VITE_API_URL;
+
+const getAbilityForUser = user => {
+  return defineAbilitiesFor(user);
+};
 
 export const productsApi = createApi({
   reducerPath: 'productsApi',
@@ -16,12 +21,23 @@ export const productsApi = createApi({
         [{ type: 'product', id: 'LIST' }],
     }),
     createNewProduct: builder.mutation({
-      query: newProduct => ({
-        url: '/newProduct',
-        method: 'POST',
-        body: newProduct,
-      }),
-      transformResponse: res => res.newProduct,
+      queryFn: async ( newProduct, {getState}, ex, baseQuery) => {
+        const state = getState();
+        const ability = getAbilityForUser(state.users.user);
+        console.log(newProduct);
+        if (!ability.can('create', 'Product')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
+        if (!fieldsAreNotEmpty(newProduct) ||
+          newProduct.price.length === 0 ||
+          newProduct.factories.length === 0) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}
+        };
+
+        return await baseQuery({
+          url: '/newProduct',
+          method: 'POST',
+          body: newProduct,
+        })
+      },
+      transformResponse: res => res.newProduct, // savedProducts
       invalidatesTags: [{ type: 'product', id: 'LIST' }],
     }),
     editProduct: builder.mutation({

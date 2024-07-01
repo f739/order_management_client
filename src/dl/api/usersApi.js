@@ -1,7 +1,11 @@
-
 import { createApi, fetchBaseQuery  } from '@reduxjs/toolkit/query/react';
-
+import { validEmail, fieldsAreNotEmpty } from '../../components/hooks/fanksHook';
+import { defineAbilitiesFor } from '../../auth/abilities';
 const URL = import.meta.env.VITE_API_URL;
+
+const getAbilityForUser = user => {
+  return defineAbilitiesFor(user);
+};
 
 const tokenFromLocalStorage = () => {
   return localStorage.getItem('token');
@@ -38,11 +42,20 @@ export const usersApi = createApi({
       transformResponse: res => res?.user ?? null,
     }),
     createNewUser: builder.mutation({
-      query: formCreateUser => ({
-        url: '/users/createNewUser',
-        method: 'POST',
-        body: formCreateUser,
-      }),
+      queryFn: async (formCreateUser, {getState}, ex, baseQuery)  => {
+        const state = getState();
+        const ability = getAbilityForUser(state.users.user);
+
+        if (!ability.can('create', 'User')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
+        if (!fieldsAreNotEmpty(formCreateUser)) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
+        if (!validEmail(formCreateUser.email)) { return { error: {message: 'האימייל אינו תקני'}}} 
+
+        return await baseQuery({
+          url: '/users/createNewUser',
+          method: 'POST',
+          body: formCreateUser,
+        })
+      },
       invalidatesTags: [{ type: 'User', _id: 'LIST' }],
     }),
     removeUser: builder.mutation({

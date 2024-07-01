@@ -19,7 +19,7 @@ export function Layout () {
       <MyAppBar />
       <ToastContainer />
       <Outlet /> 
-      <BottomNav />
+      {/* <BottomNav /> */}
     </>
   )
 }

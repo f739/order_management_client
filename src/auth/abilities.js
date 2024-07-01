@@ -15,6 +15,7 @@ const defineEmployeeAbilities = (can, cannot, user) => {
   cannot('delete', 'PendingOrders');
   cannot('delete', 'OldOrder');
   cannot('create', 'PendingOrders')
+  cannot('create', ['Supplier', 'Category', 'User', 'Measure', 'Product']);
   can('create', 'Order');
   can('update', 'Order');
   cannot('delete', 'all'); 

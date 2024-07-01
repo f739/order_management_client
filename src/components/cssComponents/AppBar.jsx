@@ -16,11 +16,11 @@ const pages = [
   {
     name: 'ניהול מערכת',
     subPages: [
-      { name: 'משתמשים', path: './createUsers' },
-      { name: 'מוצרים', path: './products' },
-      { name: 'קטגוריות', path: './categories' },
-      { name: 'ספקים', path: './supplier' },
-      { name: 'יחידות מידה', path: './measure' },
+      { name: 'משתמשים', path: './systemManagement/users' },
+      { name: 'מוצרים', path: './systemManagement/products' },
+      { name: 'קטגוריות', path: './systemManagement/categories' },
+      { name: 'ספקים', path: './systemManagement/supplier' },
+      { name: 'יחידות מידה', path: './systemManagement/measure' },
     ],
   },
   { name: 'הגדרות חברה', path: './emailSettings' },

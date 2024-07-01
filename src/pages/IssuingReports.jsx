@@ -5,7 +5,7 @@ import { NoEntry } from "./noEntry";
 import { sendProductReport, sendBookkeepingReport } from "../dl/slices/issuingReports";
 import { SelectSuppliersHook } from "../components/SelectSuppliersHook";
 import { SelectProductsHook } from "../components/selectProductsHook";
-import { SelectFactoryHook } from "../components/SelectFactoryHook";
+import { CustomSelect } from "../components/CustomSelect";
 import { handleFormHook } from "../components/HandleFormHook";
 import '../css/issuingReports.css';
 
@@ -44,7 +44,7 @@ export const IssuingReports = () => {
                     <div className="line"></div>
                     <SelectProductsHook set={setFormToDeliver} form={formToDeliver} />
                     <SelectSuppliersHook set={setFormToDeliver} form={formToDeliver} />
-                    <SelectFactoryHook set={setFormToDeliver} form={formToDeliver} showAllFactoryLine={true} />
+                    <CustomSelect set={setFormToDeliver} form={formToDeliver} showAllFactoryLine={true} />
                     <div className="choose-date">
                         <input type="date" name="dateStart" onChange={ e => handleFormHook( e.target, setFormToDeliver)} />
                         <input type="date" name="dateEnd" onChange={ e => handleFormHook( e.target, setFormToDeliver)} />
