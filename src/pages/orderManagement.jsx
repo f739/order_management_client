@@ -1,16 +1,21 @@
 import React from 'react';
 import { useState, useEffect } from "react";
 import { NewOrderToDeliver, CustomSelect, SelectSuppliersHook,
-  BoxPrice, findBestPrice} from '../components/indexComponents';
+  BoxPrice, findBestPrice,
+  LoudingPage,
+  TooltipComponent} from '../components/indexComponents';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '../dl/slices/orders';
 import { useGetActiveOrdersQuery, useRemoveProductMutation,
   useDeleteInvtationMutation } from './../dl/api/ordersApi';
 import { defineAbilitiesFor } from '../auth/abilities';
 import { AccordionComponent, InputNumberPrice,
-    InputNumberQuantity, IconDeleteButton, IconEditButton, StackChips } from '../components/indexComponents';
+    InputNumberQuantity, IconDeleteButton, IconEditButton, StackChips, AppBarSystemManagement } from '../components/indexComponents';
 import moment from 'moment';
-import { Typography, Grid, Checkbox, Divider, ListItemText } from '@mui/material';
+import { Typography, Grid, Checkbox, Divider, ListItemText, Box, Fab } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import { useFilters } from '../components/hooks/useFilters';
+import { FilterRow } from '../components/cssComponents/FilterRow';
 import '../css/orderManagement.css';
 
 export const OrderManagement = () => {
@@ -20,47 +25,68 @@ export const OrderManagement = () => {
   const ability = defineAbilitiesFor(user);
 
   const [showSendEmail, setShowSendEmail] = useState(false);
-  const [activeOrdersFiltered, setActiveOrdersFiltered] = useState([]);
-  const [valueFactory ,setValueFactory] = useState('allFactories')
+
+  const filterFields = ['category', 'factory', 'unitOfMeasure'];
+  const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
   const sortedByCategory = list => {
-    return list.sort((a, b) => a._idProduct.category.localeCompare(b._idProduct.category));
+    return list.sort((a, b) => a.product.category.localeCompare(b.product.category));
   }
 
-  useEffect(() => {
-    if (allActiveOrders && allActiveOrders.length > 0) {
-      let filteredOrders = [];
-        filteredOrders = allActiveOrders.map(order => ({
-          ...order,
-          listProducts: sortedByCategory([...order.listProducts])
-        }));
-
-      if (valueFactory !== 'allFactories') {
-        filteredOrders = filteredOrders.filter(order => order.factory === valueFactory)
-      }
-
-      setActiveOrdersFiltered(filteredOrders.filter(order => order.listProducts.length > 0));
+  useEffect( () => {
+    if (allActiveOrders) {
+        const sortedProducts = allActiveOrders.map( order => ({
+          ...order, listProducts: sortedByCategory([...order.listProducts])
+        }))
+        setData(sortedProducts)
     }
-  }, [allActiveOrders, user.factory, valueFactory]);
+  },[allActiveOrders]);
 
+  //     setActiveOrdersFiltered(filteredOrders.filter(order => order.listProducts.length > 0));
+
+  const [valueTab, setValueTab] = useState(1);
+
+  const changeTab = (e, newValue) => {
+      setValueTab(newValue)
+  }
   if (errorGetActiveOrders ) return <h3>ERROR{errorGetActiveOrders.error}</h3>
-  if (isLoadingGetActiveOrders ) return <h1>🌀 Loading...</h1>;
+  if (isLoadingGetActiveOrders ) return <LoudingPage />;
 
   return (
-    <div>
-      <CustomSelect set={setValueFactory} form={valueFactory} showAllFactoryLine={true} ifFunc={true} />
-      { errorAddOrRemoveToCart && <div style={{color: 'red'}}>{errorAddOrRemoveToCart}</div>}
-      {!showSendEmail && <button onClick={() => setShowSendEmail(old => !old)} className='send-order'>שלח הזמנה לספק</button>}
-      {showSendEmail && <NewOrderToDeliver setShowSendEmail={setShowSendEmail} />}
-      {activeOrdersFiltered && activeOrdersFiltered.length > 0 ? activeOrdersFiltered.map(invitation => (
-        ability.can('read', 'PendingOrders', invitation.factory) ? (
-          <Invitation
-            key={`${invitation._id}-${invitation.listProducts.length}`} 
-            invitation={invitation}
-            allActiveOrders={allActiveOrders} />
-          ) : null
-        )) : <p>אין הזמנות לטיפול</p>}         
-    </div>
+    <>
+      <AppBarSystemManagement secondaryTabValue={valueTab} onSecondaryTabChange={changeTab} />
+      <Box sx={{display: 'flex', p: 1}}>
+          <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allActiveOrders}>
+            { errorAddOrRemoveToCart && <div style={{color: 'red'}}>{errorAddOrRemoveToCart}</div>}
+            <Box sx={{p: 1}} >
+              {filteredData && filteredData.length > 0 ? filteredData.map(invitation => (
+                ability.can('read', 'PendingOrders', invitation.factory) ? (
+                  <Invitation
+                    key={`${invitation._id}-${invitation.listProducts.length}`} 
+                    invitation={invitation}
+                    filteredData={filteredData} />
+                  ) : null
+                )) : <p>אין הזמנות לטיפול</p>}    
+                {!showSendEmail && 
+                <TooltipComponent title='שלח הזמנה'>
+                  <Fab 
+                    color="primary" 
+                    onClick={() => setShowSendEmail(old => !old)}
+                    sx={{
+                      position: 'fixed',
+                      bottom: 16,
+                      right: 16,
+                    }}
+                  >
+                    <SendIcon />
+                  </Fab>
+                </TooltipComponent>
+                }
+                {showSendEmail && <NewOrderToDeliver setShowSendEmail={setShowSendEmail} />}     
+            </Box>
+          </FilterRow>
+      </Box>
+    </>
   )
 }
 
@@ -68,6 +94,7 @@ const Invitation = ({invitation, allActiveOrders }) => {
   const { listProducts, date, time, _id, userName, factory, note } = invitation;
   const { license } = useSelector(state => state.users.user);
   const [deleteInvitation, {error: errorDeleteInvtation}] = useDeleteInvtationMutation();
+  
   const handleDeleteInvitation = async () => {
     try {
       await deleteInvitation({idInvitation: _id, license}).unwrap();
@@ -100,12 +127,12 @@ const Invitation = ({invitation, allActiveOrders }) => {
       }
       details={
         <div >
-          {listProducts && listProducts.filter( pr => pr._idProduct)
+          {listProducts && listProducts.filter( pr => pr.product)
           .map(product => (
             <React.Fragment key={product._id}>
               <Divider sx={{paddingBottom: '1px'}}/>
               <Product
-              product={product._idProduct}
+              product={product.product}
               temporaryQuantity={product.temporaryQuantity}
               idInvitation={_id}
               allActiveOrders={allActiveOrders}

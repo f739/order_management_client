@@ -2,69 +2,91 @@ import { useEffect, useState } from "react";
 import { Box, AppBar, Tabs, Tab } from '@mui/material'
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const a11yProps = index => {
-    return {
-      id: `action-tab-${index}`,
-      'aria-controls': `action-tabpanel-${index}`,
-    };
-}
+const getTabProps = (index) => ({
+  id: `tab-${index}`,
+  'aria-controls': `tabpanel-${index}`,
+});
 
-export const AppBarSystemManagement = ({tabs, valueTab, changeTab}) => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    
-    const tabPaths = ['../products', '../supplier', '../categories', '../measure', '../users'];
+export const AppBarSystemManagement = ({ secondaryTabs = [], secondaryTabValue, onSecondaryTabChange }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   
-    const getCurrentTab = pathname => {
-        const index = tabPaths.findIndex(path => pathname.includes(path.replace('..', '')));
-        return index === -1 ? 0 : index;
-    };
+  const mainTabPaths = ['/systemManagement/products', '/systemManagement/supplier', '/systemManagement/categories', '/systemManagement/measure', '/systemManagement/Users'];
+  const orderTabPaths = ['/orders', '/orderManagement', '/oldOrders'];
+  
+  const isOrderPage = orderTabPaths.some(path => location.pathname === path);
+  const activePaths = isOrderPage ? orderTabPaths : mainTabPaths;
 
-    const [value, setValue] = useState(getCurrentTab(location.pathname));
-  
-    const handleChange = (event, newValue) => {
-      setValue(newValue);
-      console.log(getCurrentTab(location.pathname));
-      navigate(tabPaths[newValue]);
-    };
-  
-    useEffect(() => {
-      setValue(getCurrentTab(location.pathname));
-    }, [location.pathname]);
+  const getCurrentTab = (pathname) => {
+    const index = activePaths.findIndex(path => pathname === path);
+    return index === -1 ? 0 : index;
+  };
 
-    return (
-        <>
-        
-        <AppBar position="static" color="default">
-                <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="fullWidth"
-                    aria-label="action tabs example"
-                >
-                    <Tab label="מוצרים" {...a11yProps(0)} />
-                    <Tab label="ספקים" {...a11yProps(1)} />
-                    <Tab label="קטגוריות" {...a11yProps(2)} />
-                    <Tab label="יחידות מידה" {...a11yProps(3)} />
-                    <Tab label="משתמשים" {...a11yProps(4)} />
-                </Tabs>
-            </AppBar> 
-            <AppBar position="static" color="default">
-                <Tabs
-                    value={valueTab}
-                    onChange={changeTab}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="fullWidth"
-                    aria-label="action tabs example"
-                >
-                    {tabs && tabs.map( (nameEl, i) => (
-                        <Tab key={i} label={nameEl} {...a11yProps(i)} />
-                    ))}
-                </Tabs>
-            </AppBar>
-        </>
+  const [mainTabValue, setMainTabValue] = useState(getCurrentTab(location.pathname));
+  
+  const handleMainTabChange = (event, newValue) => {
+    setMainTabValue(newValue);
+    navigate(activePaths[newValue]);
+  };
+  
+  useEffect(() => {
+    setMainTabValue(getCurrentTab(location.pathname));
+  }, [location.pathname]);
+
+  const mainTabs = isOrderPage
+    ? [
+        { label: "הזמנות", path: "/orders" },
+        { label: "הזמנות בתהליך", path: "/orderManagement" },
+        { label: "קבלת הזמנות", path: "/oldOrders" },
+      ]
+    : [
+        { label: "מוצרים", path: "/systemManagement/products" },
+        { label: "ספקים", path: "/systemManagement/supplier" },
+        { label: "קטגוריות", path: "/systemManagement/categories" },
+        { label: "יחידות מידה", path: "/systemManagement/measure" },
+        { label: "משתמשים", path: "/systemManagement/Users" },
+      ];
+
+  const renderMainTabs = () => (
+    <AppBar position="static" color="default">
+      <Tabs
+        value={mainTabValue}
+        onChange={handleMainTabChange}
+        indicatorColor="primary"
+        textColor="primary"
+        variant="fullWidth"
+        aria-label="main navigation tabs"
+      >
+        {mainTabs.map((tab, index) => (
+          <Tab key={tab.path} label={tab.label} {...getTabProps(index)} />
+        ))}
+      </Tabs>
+    </AppBar>
+  );
+
+  const renderSecondaryTabs = () => (
+    !isOrderPage && secondaryTabs.length > 0 && (
+      <AppBar position="static" color="default">
+        <Tabs
+          value={secondaryTabValue}
+          onChange={onSecondaryTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="fullWidth"
+          aria-label="secondary navigation tabs"
+        >
+          {secondaryTabs.map((tabName, index) => (
+            <Tab key={index} label={tabName} {...getTabProps(index)} />
+          ))}
+        </Tabs>
+      </AppBar>
     )
-}
+  );
+
+  return (
+    <>
+      {renderMainTabs()}
+      {renderSecondaryTabs()}
+    </>
+  );
+};

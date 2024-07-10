@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react"; 
 import { useSelector, useDispatch } from 'react-redux';
-import { SelectCatgoryHook } from "../components/SelectCatgoryHook";
 import { useGetProductsQuery } from '../dl/api/productsApi';
 import { useSendAnInvitationMutation } from "../dl/api/ordersApi";
 import { defineAbilitiesFor } from '../auth/abilities';
 import { actions } from "../dl/slices/orders";
-import { StackChips, IconRemoveButton, IconAddButton, ChangeQuantity, LoudingPage } from "../components/indexComponents";
-import { Button, Box, Stack, Paper, Divider, Grid, ListItemText, Typography,
+import { StackChips, IconRemoveButton, IconAddButton, ChangeQuantity, LoudingPage, AppBarSystemManagement, TooltipComponent } from "../components/indexComponents";
+import { Fab, Box, Stack, Paper, Divider, Grid, ListItemText, Typography, 
     TextField, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import SendIcon from '@mui/icons-material/Send';
 import { DialogSendInvitation } from "../components/cssComponents/DialogSendInvitation";
+import { FilterRow } from "../components/cssComponents/FilterRow";
+import { useFilters } from "../components/hooks/useFilters";
 import '../css/orders.css';
-import FilterDrawer from "../components/cssComponents/FilterDrawer";
 
 export const Orders = () => {
     const { data: allProducts, error: errorGetProducts, isLoading: isLoadingGetProducts } = useGetProductsQuery();
@@ -21,22 +22,19 @@ export const Orders = () => {
 
     const ability = defineAbilitiesFor(user);
 
-    const [allProductsFiltred, setAllProductsFiltred] = useState([]);
-    const [catgorySelected, setCategorySelected] = useState('allCategories')
     const [openDialog, setOpenDialog] = useState(false);
     const [showTable, setShowTable] = useState(true);
     const [noteToOrder, setNoteToOrder] = useState('');
+    const filterFields = ['category', 'factory', 'unitOfMeasure'];
+    const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
-    useEffect(() => {
-        if (!allProducts) return;
-        let sortedProducts = [...allProducts].sort((a, b) => a.category.localeCompare(b.category));
-
-        if (catgorySelected !== 'allCategories') {
-            sortedProducts = sortedProducts.filter(order => order.category === catgorySelected)
+    useEffect( () => {
+        if (allProducts) {
+            const sortedProducts = [...allProducts]
+            .sort((a, b) => a.category.localeCompare(b.category));
+            setData(sortedProducts)
         }
-        setAllProductsFiltred(sortedProducts);
-       
-    }, [allProducts, catgorySelected]);
+    },[allProducts]);
 
     const SendAnInvitation = async () => {
         try {
@@ -58,37 +56,54 @@ export const Orders = () => {
         padding: '20px 20px 0px 0px'
       }));
 
+    const [valueTab, setValueTab] = useState(1);
+
+    const changeTab = (e, newValue) => {
+        setValueTab(newValue)
+    }
+    
     if (errorGetProducts) return <h3>ERROR: {errorGetProducts.error}</h3>
     if (isLoadingGetProducts) return <LoudingPage />;
    
     return(
-        <div >
-            <Box sx={{p: 1}}>
-                <FilterDrawer />
-            {/* <SelectCatgoryHook set={setCategorySelected} form={catgorySelected} ifFunc={true} /> */}
-                <Stack
-                    direction="column"
-                    justifyContent="flex-start"
-                    alignItems="stretch"
-                    spacing={1}
-                >
-                    { allProductsFiltred && allProductsFiltred.map( (item, i) => (
-                        <Item key={item._id}>
-                            {ability.can('read', 'Order', item.factory) ? (
-                                <div>
-                                    <ItemsBox item={item} />
-                                {i < allProductsFiltred.length - 1 && <Divider />}
-                                </div>
-                            ) : null}
-                        </Item>
-                    ))}
-                </Stack>
-
-                <Box sx={{ position: 'fixed', bottom: 16, right: 16}}>
-                    <Button variant="contained" className="send-an-invitation" onClick={() => setOpenDialog(true)} >
-                    שלח הזמנה
-                    </Button>
-                </Box>
+        <>
+            <AppBarSystemManagement secondaryTabValue={valueTab} onSecondaryTabChange={changeTab} />
+            <Box sx={{display: 'flex', p: 1}}>
+                <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allProducts}>
+                    <Stack
+                    sx={{p: 1}}
+                        direction="column"
+                        justifyContent="flex-start"
+                        alignItems="stretch"
+                        spacing={1}
+                    >
+                        { filteredData.length > 0 ? (
+                            filteredData.map( (item, i) => (
+                                <Item key={item._id}>
+                                    {ability.can('read', 'Order', item.factory) ? (
+                                        <div>
+                                            <ItemsBox item={item} />
+                                            {i < filteredData.length - 1 && <Divider />}
+                                        </div>
+                                    ) : null}
+                                </Item>
+                            ))) : <Typography>אין מוצרים להצגה</Typography>
+                        }
+                    </Stack>
+                    <TooltipComponent title='שלח הזמנה'>
+                        <Fab 
+                            color="primary" 
+                            onClick={() => setOpenDialog(true)}
+                            sx={{
+                            position: 'fixed',
+                            bottom: 16,
+                            right: 16,
+                            }}
+                        >
+                            <SendIcon />
+                        </Fab>
+                    </TooltipComponent>
+                </FilterRow>
                 { openDialog && <DialogSendInvitation 
                     setOpenDialog={setOpenDialog} 
                     isLoudingSendOrder={isLoadingSendInvitaion}
@@ -133,9 +148,8 @@ export const Orders = () => {
                         />
                     }
                 />}
-
             </Box>
-        </div>
+        </>
     )
 }
 

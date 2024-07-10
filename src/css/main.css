@@ -6,7 +6,9 @@ body {
   background-color: #f4f4f4;
   color: #333;
 }
-
+body::-webkit-scrollbar {
+  display: none;
+}
 /* h1 {
   color: #333;
   font-size: 18px;

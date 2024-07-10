@@ -7,15 +7,17 @@ import {
     useRemoveSupplierMutation,
     useEditSupplierMutation
 } from '../../dl/api/suppliersApi';
-import { AppBarSystemManagement, LoudingPage } from '../indexComponents'
-import { Box, TextField, Button, Stack, ListItemText, IconButton, Grid, Divider, CircularProgress, Typography } from '@mui/material'
+import { AppBarSystemManagement, LoudingPage, CustomField } from '../indexComponents'
+import { Box, Button, Stack, ListItemText, IconButton, Grid, Divider, CircularProgress, Chip, Typography, useMediaQuery } from '@mui/material'
+import { useFilters } from '../hooks/useFilters';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import { FilterRow } from "../cssComponents/FilterRow";
 
 export const Supplier = () => {
     const [newSupplier, setNewSupplier] = useState({ nameSupplier: '', tel: '', email: '', supplierNumber: '' });
     const [createNewSupplier, { error, isLoading, data }] = useCreateNewSupplierMutation();
-    const [valueTab, setValueTab] = useState(1);
-    const tabs = ['צור חדש', 'ספקים פעילים', 'ספקים שאינם פעילים'];
+    const [secondaryTabValue, setSecondaryTabValue] = useState(1);
+    const secondaryTabs = ['צור חדש', 'ספקים פעילים', 'ספקים שאינם פעילים'];
 
     const handleSaveNewSupplier = async () => {
         try {
@@ -25,7 +27,7 @@ export const Supplier = () => {
     }
 
     const changeTab = (e, newValue) => {
-        setValueTab(newValue)
+        setSecondaryTabValue(newValue)
     }
 
     return (
@@ -36,71 +38,38 @@ export const Supplier = () => {
             boxShadow: '1px 1px 4px',
             margin: '0px 5px'
         }}>
-            <AppBarSystemManagement tabs={tabs} valueTab={valueTab} changeTab={changeTab} />
-            {valueTab === 0 ?
+            <AppBarSystemManagement 
+                secondaryTabs={secondaryTabs} 
+                secondaryTabValue={secondaryTabValue} 
+                onSecondaryTabChange={changeTab} 
+            />
+            {secondaryTabValue === 0 ?
                 (<Stack sx={{ p: '20px' }} spacing={1}>
-                    <TextField
-                        id="filled-textarea"
+                    <CustomField
                         name="nameSupplier"
                         value={newSupplier.nameSupplier}
                         label="שם ספק"
                         onChange={e => handleFormHook(e.target, setNewSupplier)}
-                        multiline
-                        fullWidth
-                        variant="filled"
-                        sx={{
-                            '& label': {
-                                right: 25,
-                                transformOrigin: 'top right',
-                            },
-                        }}
                     />
-                    <TextField
-                        variant="filled"
-                        value={newSupplier.supplierNumber}
+                    <CustomField
                         name="supplierNumber"
-                        onChange={e => handleFormHook(e.target, setNewSupplier)}
+                        value={newSupplier.supplierNumber}
                         label="מספר ספק"
-                        multiline
-                        fullWidth
-                        sx={{
-                            '& label': {
-                                right: 25,
-                                transformOrigin: 'top right',
-                            },
-                        }}
+                        onChange={e => handleFormHook(e.target, setNewSupplier)}
                     />
-                    <TextField
-                        value={newSupplier.tel}
+                    <CustomField
                         name="tel"
-                        onChange={e => handleFormHook(e.target, setNewSupplier)}
+                        value={newSupplier.tel}
                         label="פלאפון"
-                        multiline
-                        fullWidth
-                        sx={{
-                            '& label': {
-                                right: 25,
-                                transformOrigin: 'top right',
-                            },
-                        }}
-                        variant="filled"
-                    />
-                    <TextField
-                        variant="filled"
-                        value={newSupplier.email}
-                        name="email"
-                        type="email"
                         onChange={e => handleFormHook(e.target, setNewSupplier)}
-                        label="אמייל"
-                        multiline
-                        fullWidth
-                        sx={{
-                            '& label': {
-                                right: 25,
-                                transformOrigin: 'top right',
-                            },
-                        }}
                     />
+                    <CustomField
+                        name="email"
+                        value={newSupplier.email}
+                        label="אמייל"
+                        onChange={e => handleFormHook(e.target, setNewSupplier)}
+                    />
+                   
                     {error && <Typography variant="button" color="error" >{error.message}</Typography>}
                     {data && <Typography variant="button" color="success">{data.message}</Typography>}
                     <Button onClick={handleSaveNewSupplier} color="primary" variant="contained" disabled={isLoading}>
@@ -108,18 +77,28 @@ export const Supplier = () => {
                     </Button>
                 </Stack>) :
                 (
-                    <ShowSuppliers valueTab={valueTab} />
+                    <ShowSuppliers secondaryTabValue={secondaryTabValue} />
                 )
             }
         </Box>
     )
 };
 
-const ShowSuppliers = ({ valueTab }) => {
+const ShowSuppliers = ({ secondaryTabValue }) => {
+
     const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
     const [removeSupplier, { error: errorRemoveSupplier }] = useRemoveSupplierMutation();
     const [editSupplier, { error: errorEditSupplier }] = useEditSupplierMutation();
     const [showEditSupplier, setShowEditSupplier] = useState(false);
+    
+    const filterFields = [];
+    const { filteredData, filters, updateFilter, setData, data } = useFilters(filterFields);
+
+    useEffect( () => {
+        if (allSuppliers) {
+            setData(allSuppliers)
+        }
+    },[allSuppliers]);
 
     const fields = [
         { name: 'nameSupplier', label: 'שם ספק', typeInput: 'text', type: 'input' },
@@ -138,46 +117,51 @@ const ShowSuppliers = ({ valueTab }) => {
         await editSupplier(supplierUpdated);
         setShowEditSupplier(false);
     }
+
     if (errorGetsuppliers) return <h3>ERROR: {errorGetsuppliers.error}</h3>
     if (isLoadingGetsuppliers) return <LoudingPage />;
 
     return (
-        <Box sx={{ p: 2 }}>
-            {allSuppliers && allSuppliers.length > 0 ? (
-                allSuppliers.map(supplier => (
-                    <div key={supplier._id}>
-                        <Grid container alignItems="center" spacing={1}>
-                            <Grid item xs={5} sx={{ minWidth: '100px' }}>
-                                <ListItemText
-                                    primary={supplier.nameSupplier}
-                                    secondary={supplier.supplierNumber}
-                                />
+        <Box sx={{ display: 'flex', p: 1 }}>
+            <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={data}>
+                <Box sx={{ p: 2}}>
+                {filteredData.length > 0 ? (
+                    filteredData.map(supplier => (
+                        <div key={supplier._id}>
+                            <Grid container alignItems="center" spacing={1}>
+                                <Grid item xs={5} sx={{ minWidth: '100px' }}>
+                                    <ListItemText
+                                        primary={supplier.nameSupplier}
+                                        secondary={supplier.supplierNumber}
+                                    />
+                                </Grid>
+                                <Grid item xs={6} sx={{ minWidth: '100px' }}>
+                                    <ListItemText
+                                        primary={supplier.email}
+                                        secondary={supplier.tel}
+                                    />
+                                </Grid>
+                                <Grid item xs={1} >
+                                    <IconButton onClick={() => setShowEditSupplier(supplier)}>
+                                        <MoreVertOutlinedIcon />
+                                    </IconButton>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={6} sx={{ minWidth: '100px' }}>
-                                <ListItemText
-                                    primary={supplier.email}
-                                    secondary={supplier.tel}
-                                />
-                            </Grid>
-                            <Grid item xs={1} >
-                                <IconButton onClick={() => setShowEditSupplier(supplier)}>
-                                    <MoreVertOutlinedIcon />
-                                </IconButton>
-                            </Grid>
-                        </Grid>
-                        <Divider />
+                            <Divider />
 
-                        {showEditSupplier._id === supplier._id &&
-                            <EditItemHook initialData={showEditSupplier}
-                                onSubmit={handleEditItem}
-                                fields={fields}
-                                setShowEdit={setShowEditSupplier}
-                                deleteItem={deleteSupplier}
-                            />
-                        }
-                    </div>
-                ))) : (<div>אין ספקים להצגה</div>)
-            }
-        </Box>
+                            {showEditSupplier._id === supplier._id &&
+                                <EditItemHook initialData={showEditSupplier}
+                                    onSubmit={handleEditItem}
+                                    fields={fields}
+                                    setShowEdit={setShowEditSupplier}
+                                    deleteItem={deleteSupplier}
+                                />
+                            }
+                        </div>
+                    ))) : (<div>אין ספקים להצגה</div>)
+                }
+            </Box>
+        </FilterRow>
+    </Box>
     )
 }

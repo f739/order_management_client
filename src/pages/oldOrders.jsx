@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState ,useEffect } from "react";
+import React, { useState ,useEffect } from "react";
 import { useSelector } from 'react-redux';
 import { useGetOldOrdersQuery,
     useRemoveProductInOldOrderMutation,
@@ -10,56 +9,82 @@ import { Camera } from "../components/Camera";
 import { defineAbilitiesFor } from '../auth/abilities';
 import { IconDeleteButton, IconCameraButton, IconCheckButton,
     IconReturnButton, LoudingPage, AccordionComponent,
-    InputNumberQuantity, StackChips } from '../components/indexComponents';
+    InputNumberQuantity, StackChips, AppBarSystemManagement } from '../components/indexComponents';
 import moment from 'moment';
-import { Grid, Typography, Link, ListItemText, Divider} from "@mui/material";
+import { Grid, Typography, Link, ListItemText, Divider, Box} from "@mui/material";
+import { FilterRow } from "../components/cssComponents/FilterRow";
+import { useFilters } from "../components/hooks/useFilters";
 import '../css/oldOrders.css';
 
 export const OldOrders = () => {
     const { data: allOldOrders, error: errorGetOldOrders, isLoading: isLoadingGetOldOrders } = useGetOldOrdersQuery();
-    const [groupedOrders, setGroupedOrders] = useState([]);
 
     const { user } = useSelector( state => state.users);
     const ability = defineAbilitiesFor(user);
 
-    useEffect(() => {
-        if (!allOldOrders) return;
-            let oldOrdersFiltered = [...allOldOrders];
-            oldOrdersFiltered = oldOrdersFiltered.sort((a, b) => a.date > b.date);
-            const groupBySupplier = oldOrdersFiltered.reduce((acc, order) => {
-                const nameSupplier = order.supplier.nameSupplier; 
-                acc[nameSupplier] = acc[nameSupplier] || [];
-                acc[nameSupplier].push(order);
-                return acc;
-            }, {});
-            setGroupedOrders(groupBySupplier);
-    }, [allOldOrders]);
+    const filterFields = ['category', 'factory', 'unitOfMeasure', 'supplier'];
+    const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
+
+    const sortedByCategory = list => {
+        return list.sort((a, b) => a.product.category.localeCompare(b.product.category));
+    }
+
+    useEffect( () => {
+        if (allOldOrders) {
+            console.log(allOldOrders);
+            const sortedProducts = allOldOrders.map( order => ({
+            ...order, listProducts: sortedByCategory([...order.listProducts])
+            }))
+            setData(sortedProducts)
+        }
+    },[allOldOrders]);
+
+    const [valueTab, setValueTab] = useState(1);
+    const changeTab = (e, newValue) => {
+        setValueTab(newValue)
+    }
+
+    // useEffect(() => {
+    //     if (!allOldOrders) return;
+    //         let oldOrdersFiltered = [...allOldOrders];
+    //         oldOrdersFiltered = oldOrdersFiltered.sort((a, b) => a.date > b.date);
+    //         const groupBySupplier = oldOrdersFiltered.reduce((acc, order) => {
+    //             const nameSupplier = order.supplier.nameSupplier; 
+    //             acc[nameSupplier] = acc[nameSupplier] || [];
+    //             acc[nameSupplier].push(order);
+    //             return acc;
+    //         }, {});
+    //         setGroupedOrders(groupBySupplier);
+    // }, [allOldOrders]);
+
     if (errorGetOldOrders) return <h3>ERROR: בעיה בטעינה</h3>
     if (isLoadingGetOldOrders) return <LoudingPage />;
     
     return (
-        <div className="container-old-orders">
-            {Object.entries(groupedOrders).length > 0 && Object.entries(groupedOrders).map(([supplierName, orders]) => (
-                <div key={supplierName}>   
-                    {orders.map(order => (
-                        ability.can('read', 'OldOrder', order.factory) ? (
-                            <OldVendorOrders 
-                                key={`${order._id}-${order.orderList.length}`}
-                                invitation={order}
-                                supplierName={supplierName}
-                            />
-                        ) : null
-                    ))}
-                </div>
-            ))}
+        <div>
+        <AppBarSystemManagement secondaryTabValue={valueTab} onSecondaryTabChange={changeTab} />
+        <Box sx={{display: 'flex', p: 1}}>
+          <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allOldOrders}>
+            <Box sx={{p: 1}}>
+            {filteredData && filteredData.length > 0 ? filteredData.map(invitation => (
+                ability.can('read', 'PendingOrders', invitation.factory) ? (
+                  <Invitation
+                    key={`${invitation._id}-${invitation.listProducts.length}`} 
+                    invitation={invitation}
+                    supplierName={invitation.supplier.nameSupplier} />
+                  ) : null
+                )) : <p>אין הזמנות לטיפול</p>}   
+            </Box>
+          </FilterRow>
+      </Box>
         </div>
     );
 };
 
 
-const OldVendorOrders = ({invitation, supplierName}) => {
-    const { orderList, factory, date, time, _id, _idSupplier } = invitation;
-    const orderListSorted = [...orderList].sort((a, b) => a.category.localeCompare(b.category));
+const Invitation = ({invitation, supplierName}) => {
+    const { listProducts, factory, date, time, _id, _idSupplier } = invitation;
+    // const listProductsSorted = [...listProducts].sort((a, b) => a.category.localeCompare(b.category));
     const [showCamera, setShowCamera] = useState(false);
     const [imageSrc, setImageSrc] = useState('');
     return (
@@ -95,10 +120,10 @@ const OldVendorOrders = ({invitation, supplierName}) => {
                 </Grid>
             } 
             details={
-                orderListSorted.map(order => (
+                listProducts.map(order => (
                     <React.Fragment key={order._id}>
                         <Divider sx={{paddingBottom: '1px'}}/>
-                        <ShowOldOrder key={`${order._id}-${order.temporaryQuantity}`}
+                        <ShowOldOrder key={`${order._id}-${order.quantity}`}
                         time={time}
                         date={date}
                         factory={factory}
@@ -116,14 +141,15 @@ const OldVendorOrders = ({invitation, supplierName}) => {
 
 const ShowOldOrder = props => {
     const { idOrderList, factory, order, time, date, _idSupplier } = props;
-    const { _id, nameProduct, temporaryQuantity, unitOfMeasure, price, category } = order;
+    const { quantity, price, product } = order;
+    const { _id, nameProduct, unitOfMeasure, category } = product;
 
     const [productReceived, { error: errorProductReceived }] = useProductReceivedMutation();
     const [returnProduct, { error: errorReturnProduct }] = useReturnProductMutation();
     const [removeProductInOldOrder, { error: errorRemoveProductInOldOrder }] = useRemoveProductInOldOrderMutation();
 
     const {user} = useSelector( state => state.users);
-    const [valueTemporaryQuantity, setValueTemporaryQuantity] = useState(temporaryQuantity)
+    const [valueTemporaryQuantity, setValueTemporaryQuantity] = useState(quantity)
 
     const ProductReceived = async () => {
         try {
@@ -133,7 +159,7 @@ const ShowOldOrder = props => {
     }
     const returnToOrderManagement = () => {
         try {
-            returnProduct({nameProduct, factory, temporaryQuantity,
+            returnProduct({nameProduct, factory, quantity,
                 unitOfMeasure, category, _id, idOrderList, userName: user.userName,
             }).unwrap();
         }catch (err) { }

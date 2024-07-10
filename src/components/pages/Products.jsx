@@ -13,6 +13,8 @@ import { useGetSuppliersQuery } from "../../dl/api/suppliersApi";
 import { AppBarSystemManagement, LoudingPage, CustomField, CustomSelect, SelectFactoryMultipleHook } from "../indexComponents";
 import { Box, Typography, CircularProgress, Button, Stack, Grid, Chip, Divider, IconButton, ListItemText } from "@mui/material";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import { FilterRow } from "../cssComponents/FilterRow";
+import { useFilters } from '../hooks/useFilters';
 
 export const Products = () => {
     const [newProduct, setNewProduct] = useState({ nameProduct: '', factories: [], category: '', unitOfMeasure: '', sku: '', price: [] });
@@ -23,8 +25,8 @@ export const Products = () => {
     const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
 
     const [createNewProduct, { error, isLoading: isLoadingCreateProdact, data: dataCreateProduct }] = useCreateNewProductMutation();
-    const [valueTab, setValueTab] = useState(1);
-    const tabs = ['צור מוצר חדש', 'מוצרים פעילים', 'מוצרים שאינם פעילים'];
+    const [secondaryTabValue, setSecondaryTabValue] = useState(1);
+    const secondaryTabs = ['צור מוצר חדש', 'מוצרים פעילים', 'מוצרים שאינם פעילים'];
 
     const handleSaveNewPrice = () => {
         if (newPrice._idSupplier === '' || newPrice.price === '' || !/^\d*\.?\d+$/.test(newPrice.price)) return;
@@ -69,7 +71,7 @@ export const Products = () => {
     }
 
     const changeTab = (e, newValue) => {
-        setValueTab(newValue)
+        setSecondaryTabValue(newValue)
     }
     if (isLoadingGetCategories || isLoadingGetMeasures || isLoadingGetsuppliers) return <LoudingPage />;
 
@@ -81,8 +83,12 @@ export const Products = () => {
         boxShadow: '1px 1px 4px',
         margin: '0px 5px'
     }}>
-        <AppBarSystemManagement tabs={tabs} valueTab={valueTab} changeTab={changeTab} />
-        {valueTab === 0 ?
+        <AppBarSystemManagement 
+            secondaryTabs={secondaryTabs} 
+            secondaryTabValue={secondaryTabValue} 
+            onSecondaryTabChange={changeTab} 
+        />
+        {secondaryTabValue === 0 ?
             (<Stack sx={{ p: '20px' }} spacing={1}>
                 <CustomField
                     id="filled-area"
@@ -183,6 +189,15 @@ const ShowProducts = () => {
         { label: 'יחידות מידה', type: 'select', name: 'unitOfMeasure' }
     ];
 
+    const filterFields = ['category', 'factory', 'unitOfMeasure'];
+    const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
+
+    useEffect( () => {
+        if (allProducts) {
+            setData(allProducts)
+        }
+    },[allProducts]);
+
     const deleteProduct = async _id => {
         try {
             await removeProduct(_id).unwrap();
@@ -198,53 +213,45 @@ const ShowProducts = () => {
     if (isLoadingGetProducts) return <LoudingPage />;
 
     return (
-        <Box sx={{ p: 2 }}>
-            {allProducts && allProducts.length > 0 ? (
-                allProducts.map(product => (
-                    <div key={product._id}>
-                        <Grid container alignItems="center" spacing={1}>
-                            <Grid item xs={5} sx={{ minWidth: '100px' }}>
-                                <ListItemText
-                                    primary={product.nameProduct}
-                                    secondary={product.factory}
-                                />
-                            </Grid>
-                            <Grid item xs={6} sx={{ minWidth: '100px' }}>
-                                <ListItemText
-                                    primary={product.category}
-                                    secondary={product.unitOfMeasure}
-                                />
-                            </Grid>
-                            <Grid item xs={1} >
-                                <IconButton onClick={() => setShowEditProduct(product)}>
-                                    <MoreVertOutlinedIcon />
-                                </IconButton>
-                            </Grid>
-                        </Grid>
-                        <Divider />
-                        {showEditProduct._id === product._id &&
-                            <EditItemHook initialData={showEditProduct}
-                                onSubmit={handleEditItem}
-                                fields={fields}
-                                setShowEdit={setShowEditProduct}
-                                deleteItem={deleteProduct}
-                            />
-                        }
-                    </div>
-                ))) : (<Typography>אין מוצרים להצגה</Typography>)
-            }
+        <Box sx={{ display: 'flex', p: 1 }}>
+            <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} >
+                <Box sx={{ p: 2 }}>
+                    { filteredData.length > 0 ? (
+                        filteredData.map(product => (
+                            <div key={product._id}>
+                                <Grid container alignItems="center" spacing={1}>
+                                    <Grid item xs={5} sx={{ minWidth: '100px' }}>
+                                        <ListItemText
+                                            primary={product.nameProduct}
+                                            secondary={product.factory}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6} sx={{ minWidth: '100px' }}>
+                                        <ListItemText
+                                            primary={product.category}
+                                            secondary={product.unitOfMeasure}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={1} >
+                                        <IconButton onClick={() => setShowEditProduct(product)}>
+                                            <MoreVertOutlinedIcon />
+                                        </IconButton>
+                                    </Grid>
+                                </Grid>
+                                <Divider />
+                                {showEditProduct._id === product._id &&
+                                    <EditItemHook initialData={showEditProduct}
+                                        onSubmit={handleEditItem}
+                                        fields={fields}
+                                        setShowEdit={setShowEditProduct}
+                                        deleteItem={deleteProduct}
+                                    />
+                                }
+                            </div>
+                        ))) : (<Typography>אין מוצרים להצגה</Typography>)
+                    }
+                </Box>
+            </FilterRow>
         </Box>
     )
 }
-
-
-{/* <label>מפעל:</label>
-    <Select
-        value={newProduct.factories}
-        options={[{ value: "catering", label: 'קייטרינג' }, { value: 'hazor', label: 'קייטרינג חצור' }, { value: 'bakery', label: 'מאפיה' }]}
-        isMulti
-        onChange={handleSelectFactory}
-        placeholder='בחר מפעלים'
-        className="basic-multi-select"
-        classNamePrefix="select"
-    /> */}

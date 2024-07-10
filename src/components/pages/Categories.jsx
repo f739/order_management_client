@@ -3,14 +3,16 @@ import { handleFormHook } from '../HandleFormHook';
 import { useGetCategoriesQuery,
     useCreateNewCategoryMutation,
     useRemoveCategoryMutation } from '../../dl/api/categoriesApi';
-import { AppBarSystemManagement, IconDeleteButton, LoudingPage } from "../indexComponents";
-import { Box, Typography, CircularProgress, Button, TextField, Stack, Grid, Divider } from "@mui/material";
+import { AppBarSystemManagement, IconDeleteButton, LoudingPage, CustomField } from "../indexComponents";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider } from "@mui/material";
+import { useFilters } from '../hooks/useFilters';
+import { FilterRow } from "../cssComponents/FilterRow";
 
 export const Categories = () => {
     const [newCategory, setNewCategory] = useState({nameCategory: ''});
     const [createNewCategory, { error, isLoading, data }] = useCreateNewCategoryMutation();
-    const [valueTab, setValueTab] = useState(1);
-    const tabs = ['צור קטגוריה חדשה', 'קטגוריות'];
+    const [secondaryTabValue, setSecondaryTabValue] = useState(1);
+    const secondaryTabs = ['צור קטגוריה חדשה', 'קטגוריות'];
 
     const handleSaveNewCategory = async () => {
         try {
@@ -20,7 +22,7 @@ export const Categories = () => {
     }
 
     const changeTab = (e, newValue) => {
-        setValueTab(newValue)
+        setSecondaryTabValue(newValue)
     }
     
     return (
@@ -31,25 +33,20 @@ export const Categories = () => {
             boxShadow: '1px 1px 4px',
             margin: '0px 5px'
           }}>
-            <AppBarSystemManagement tabs={tabs} valueTab={valueTab} changeTab={changeTab}/>
-            { valueTab === 0 ? 
+            <AppBarSystemManagement 
+                secondaryTabs={secondaryTabs} 
+                secondaryTabValue={secondaryTabValue} 
+                onSecondaryTabChange={changeTab} 
+            />
+            { secondaryTabValue === 0 ? 
                 (<Stack sx={{p: '20px'}} spacing={1}>
-                    <TextField
-                    id="filled-textarea"
-                    name="nameCategory"
-                    value={newCategory.nameCategory}
-                    label="שם קטגוריה"
-                    onChange={e => handleFormHook(e.target, setNewCategory)}
-                    multiline
-                    fullWidth
-                    variant="filled"
-                    sx={{
-                        '& label': {
-                        right: 25,
-                        transformOrigin: 'top right',
-                        },
-                    }}
+                    <CustomField
+                        name="nameCategory"
+                        value={newCategory.nameCategory}
+                        label="שם קטגוריה"
+                        onChange={e => handleFormHook(e.target, setNewCategory)}
                     />
+                  
                     {error && <Typography variant="button" color="error" >{error.message}</Typography>}
                     { data && <Typography variant="button" color="success">{data.message}</Typography>}
                     <Button onClick={handleSaveNewCategory} color="primary" variant="contained" disabled={isLoading}>
@@ -64,9 +61,18 @@ export const Categories = () => {
     )
 };
 
-const ShowCategories = () => {
+const ShowCategories = () => {    
     const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
     const [removeCategory, { error: errorRemoveCategory }] = useRemoveCategoryMutation();
+
+    const filterFields = [];
+    const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
+
+    useEffect( () => {
+        if (allCategories) {
+            setData(allCategories)
+        }
+    },[allCategories]);
 
     const deleteCategory = async _id => {
         try {
@@ -78,25 +84,29 @@ const ShowCategories = () => {
     if (isLoadingGetCategories) return <LoudingPage />;
 
     return (
-        <Box sx={{ p: 2 }}>
-            {allCategories && allCategories.length > 0 ? 
-                allCategories.map( category => (
-                    <div key={category._id}>
-                    <Grid container alignItems="center" justifyContent="space-between" >
-                        <Grid item>
-                            <Typography>
-                                {category.nameCategory}
-                            </Typography>
-                        </Grid>
-                        <Grid item sx={{p: 1}}>
-                            <IconDeleteButton action={() => deleteCategory(category._id)} 
-                            title={errorRemoveCategory?.message ?? 'מחק'} />
-                        </Grid>
-                    </Grid>
-                    <Divider/>
-                    </div>
-                )) : <Typography>אין קטגוריות להצגה</Typography>
-            }
+        <Box sx={{ display: 'flex', p: 1 }}>
+            <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allCategories}>
+                <Box sx={{ p: 2}}>
+                    {filteredData.length > 0 ?
+                        filteredData.map( category => (
+                            <div key={category._id}>
+                            <Grid container alignItems="center" justifyContent="space-between" >
+                                <Grid item>
+                                    <Typography>
+                                        {category.nameCategory}
+                                    </Typography>
+                                </Grid>
+                                <Grid item sx={{p: 1}}>
+                                    <IconDeleteButton action={() => deleteCategory(category._id)} 
+                                    title={errorRemoveCategory?.message ?? 'מחק'} />
+                                </Grid>
+                            </Grid>
+                            <Divider/>
+                            </div>
+                        )) : <Typography>אין קטגוריות להצגה</Typography>
+                    }
+                </Box>
+            </FilterRow>
         </Box>
     )
 }

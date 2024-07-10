@@ -21,7 +21,6 @@ export const oldOrdersApi = createApi({
     }),
     returnProduct: builder.mutation({
       queryFn: async ( data, {getState}, ex, baseQuery) => {
-        console.log(data);
         const { user } = getState().users;
         const ability = getAbilityForUser(user);
         if (!ability.can('delete', 'OldOrder')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
