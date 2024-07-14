@@ -1,23 +1,20 @@
-import { createApi, fetchBaseQuery  } from '@reduxjs/toolkit/query/react';
-const URL = import.meta.env.VITE_API_URL;
+import { mainApi } from './mainApi';
 import { defineAbilitiesFor } from '../../auth/abilities';
 
 const getAbilityForUser = user => {
   return defineAbilitiesFor(user);
 };
 
-export const oldOrdersApi = createApi({
+export const oldOrdersApi = mainApi.injectEndpoints({
   reducerPath: 'oldOrdersApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `${URL}` }),
-  tagTypes: ['oldOrder', 'activeOrder'],
   endpoints: builder => ({
     getOldOrders: builder.query({
       query: () => '/oldOrders/getOldOrders',
       transformResponse: res => res.oldOrders,
       providesTags: result =>
         result ? 
-        [...result.map(({ _id }) => ({ type: 'oldOrder', _id })), { type: 'oldOrder', _id: 'LIST' }] :
-        [{ type: 'oldOrder', _id: 'LIST' }],
+        [...result.map(({ _id }) => ({ type: 'OldOrder', _id })), { type: 'OldOrder', _id: 'LIST' }] :
+        [{ type: 'OldOrder', _id: 'LIST' }],
     }),
     returnProduct: builder.mutation({
       queryFn: async ( data, {getState}, ex, baseQuery) => {
@@ -31,7 +28,7 @@ export const oldOrdersApi = createApi({
             body: data,
           })
       },
-      invalidatesTags: [{ type: 'activeOrder', _id: 'LIST' }, { type: 'oldOrder', _id: 'LIST' }],
+      invalidatesTags: [{ type: 'ActiveOrder', _id: 'LIST' }, { type: 'OldOrder', _id: 'LIST' }],
     }),
     removeProductInOldOrder: builder.mutation({
       queryFn: async ({ _id, idOrderList }, {getState}, ex, baseQuery) => {
@@ -45,7 +42,7 @@ export const oldOrdersApi = createApi({
         })
       },
       transformResponse: res => res.doc,
-      invalidatesTags: [{ type: 'oldOrder', _id: 'LIST' }],
+      invalidatesTags: [{ type: 'OldOrder', _id: 'LIST' }],
     }),
     productReceived: builder.mutation({
       query: productData => ({
@@ -54,7 +51,7 @@ export const oldOrdersApi = createApi({
         body: productData
       }),
       transformResponse: res => res.orderUpdated,
-      invalidatesTags: [{ type: 'oldOrder', _id: 'LIST' }],
+      invalidatesTags: [{ type: 'OldOrder', _id: 'LIST' }],
     }),
   }),
 });

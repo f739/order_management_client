@@ -1,4 +1,4 @@
-.invitation-container {
+/* .invitation-container {
   margin-top: 5px;
   direction: rtl;
   margin-bottom: 15px;
@@ -64,7 +64,7 @@
     "up"
     "center"
     "end";
-  grid-template-rows: repeat(3, 1fr); /* שינוי כאשר יש note */
+  grid-template-rows: repeat(3, 1fr); 
 }
 
 .up {
@@ -115,4 +115,4 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   z-index: 100;
-}
+} */

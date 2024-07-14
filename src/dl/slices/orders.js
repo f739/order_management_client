@@ -40,7 +40,7 @@ export const slice = createSlice({
         state.errorAddOrRemoveToCart = 'ניסית לשים מוצרים מכמה ספקים שונים';
       } else {
         let totalQuantity = state.allActiveOrders.flatMap(order => order.listProducts)
-          .filter(product => product._idProduct._id === newProduct._id)
+          .filter(product => product.product._id === newProduct._id)
           .reduce((acc, product) => acc + product.temporaryQuantity, 0);
 
         editQuantity !== temporaryQuantity ? totalQuantity = editQuantity : null;

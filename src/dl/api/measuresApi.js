@@ -1,23 +1,20 @@
-import { createApi, fetchBaseQuery  } from '@reduxjs/toolkit/query/react';
 import { defineAbilitiesFor } from '../../auth/abilities';
-const URL = import.meta.env.VITE_API_URL;
+import { mainApi } from './mainApi';
 
 const getAbilityForUser = user => {
   return defineAbilitiesFor(user);
 };
 
-export const measuresApi = createApi({
+export const measuresApi = mainApi.injectEndpoints({
   reducerPath: 'measuresApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `${URL}/measures` }),
-  tagTypes: ['measure'],
   endpoints: (builder) => ({
     getMeasures: builder.query({
-      query: () => '/getAllMeasures',
+      query: () => '/measures/getAllMeasures',
       transformResponse: res => res.allMeasures,
       providesTags: res =>
         res ? 
-        [...res.map(({ _id }) => ({ type: 'measure', _id })), { type: 'measure', _id: 'LIST' }] :
-        [{ type: 'measure', _id: 'LIST' }],
+        [...res.map(({ _id }) => ({ type: 'Measure', _id })), { type: 'Measure', _id: 'LIST' }] :
+        [{ type: 'Measure', _id: 'LIST' }],
     }),
     createNewMeasure: builder.mutation({
       queryFn: async ({newMeasure}, {getState}, ex, baseQuery) => {
@@ -28,20 +25,20 @@ export const measuresApi = createApi({
         if (!ability.can('create', 'Category')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
 
         return await baseQuery({
-          url: '/newMeasure',
+          url: '/measures/newMeasure',
           method: 'POST',
           body: newMeasure,
         })
       },
       transformResponse: res => res,
-      invalidatesTags: [{ type: 'measure', _id: 'LIST' }],
+      invalidatesTags: [{ type: 'Measure', _id: 'LIST' }],
     }),
     removeMeasure: builder.mutation({
       query: _id => ({
-        url: `/${_id}/deleteMeasure`,
+        url: `/measures/${_id}/deleteMeasure`,
         method: 'DELETE',
       }),
-      invalidatesTags: [{ type: 'measure', _id: 'LIST' }],
+      invalidatesTags: [{ type: 'Measure', _id: 'LIST' }],
     }),
   }),
 });

@@ -1,24 +1,21 @@
-import { createApi, fetchBaseQuery  } from '@reduxjs/toolkit/query/react';
+import { mainApi } from './mainApi';
 import { fieldsAreNotEmpty } from '../../components/hooks/fanksHook';
 import { defineAbilitiesFor } from '../../auth/abilities';
-const URL = import.meta.env.VITE_API_URL;
 
 const getAbilityForUser = user => {
   return defineAbilitiesFor(user);
 };
 
-export const productsApi = createApi({
+export const productsApi = mainApi.injectEndpoints({
   reducerPath: 'productsApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `${URL}/products` }),
-  tagTypes: ['product', 'activeOrder'],
   endpoints: builder => ({
     getProducts: builder.query({
-      query: () => '/getAllProducts',
+      query: () => '/products/getAllProducts',
       transformResponse: res => res.allProducts,
       providesTags: res =>
         res ? 
-        [...res.map(({ _id }) => ({ type: 'product', id: _id })), { type: 'product', id: 'LIST' }] :
-        [{ type: 'product', id: 'LIST' }],
+        [...res.map(({ _id }) => ({ type: 'Product', id: _id })), { type: 'Product', id: 'LIST' }] :
+        [{ type: 'Product', id: 'LIST' }],
     }),
     createNewProduct: builder.mutation({
       queryFn: async ( newProduct, {getState}, ex, baseQuery) => {
@@ -32,41 +29,75 @@ export const productsApi = createApi({
         };
 
         return await baseQuery({
-          url: '/newProduct',
+          url: '/products/newProduct',
           method: 'POST',
           body: newProduct,
         })
       },
       transformResponse: res => res.newProduct, // savedProducts
-      invalidatesTags: [{ type: 'product', id: 'LIST' }],
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
     editProduct: builder.mutation({
-      query: productUpdated => ({
-        url: `/editProduct`,
-        method: 'PUT',
-        body: productUpdated,
-      }),
+      queryFn: async (productUpdated, {getState}, ex, baseQuery) => {
+          const state = getState();
+          const ability = getAbilityForUser(state.users.user);
+  
+          if (!ability.can('update', 'Product')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
+          if (!fieldsAreNotEmpty(productUpdated)) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
+  
+          return await baseQuery({
+            url: `/products/editProduct`,
+            method: 'PUT',
+            body: productUpdated,
+          })
+      },
       transformResponse: res => res.newProduct,
-      invalidatesTags: [{ type: 'product', id: 'LIST' }],
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
     addPrice: builder.mutation({
-      query: ({ price, _idSupplier, _idProduct, license}) => {
-        if (license === 'purchasingManager' && price !== '' && _idSupplier !== ''  ) {
-          return {
-            url: `/${_idSupplier}/${price}/${_idProduct}/addPrice`,
-            method: 'PUT',
-          }
-        }else { return {}}
+      queryFn: async (updatedPrices, {getState}, ex, baseQuery) => {
+        const state = getState();
+        const ability = getAbilityForUser(state.users.user);
+
+        if (!ability.can('update', 'Product')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
+        if (!fieldsAreNotEmpty(updatedPrices)) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
+
+        return await baseQuery({
+          url: '/products/addPrice',
+          method: 'PUT',
+          body: updatedPrices
+        })
       },
       transformResponse: res => res.updateProduct,
-      invalidatesTags: [{ type: 'product', id: 'LIST' }, { type: 'activeOrder', id: 'LIST' }],
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }, { type: 'ActiveOrder', id: 'LIST' }],
+    }),
+    deletePrice: builder.mutation({
+      queryFn: async (priceId, {getState}, ex, baseQuery) => {
+        const state = getState();
+        const ability = getAbilityForUser(state.users.user);
+
+        if (!ability.can('update', 'Product')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
+        if (!priceId) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
+
+        return await baseQuery({
+          url: `/products/deletePrice/${priceId}`,
+          method: 'PUT'
+        })
+      },
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }, { type: 'ActiveOrder', id: 'LIST' }],
     }),
     removeProduct: builder.mutation({
-      query: _id => ({
-        url: `/${_id}/deleteProduct`,
-        method: 'DELETE',
-      }),
-      invalidatesTags: [{ type: 'product', id: 'LIST' }],
+      queryFn: async (_id, {getState}, ex, baseQuery) => {
+        const state = getState();
+        const ability = getAbilityForUser(state.users.user);
+
+        if (!ability.can('delete', 'Product')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
+        return await baseQuery({
+          url: `/products/${_id}/deleteProduct`,
+          method: 'DELETE',
+        })
+      },
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
   }),
 });
@@ -78,4 +109,5 @@ export const {
     useRemoveProductMutation,
     useEditProductMutation,
     useAddPriceMutation,
+    useDeletePriceMutation,
   } = productsApi;

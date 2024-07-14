@@ -1,6 +1,6 @@
 import { TextField } from "@mui/material";
 
-export const CustomField = ({ id, name, value, label, onChange, type = "text", children }) => (
+export const CustomField = ({ id, name, value, label, onChange, type = "text", disabled=false, children }) => (
   <TextField
     id={id}
     type={type}
@@ -8,6 +8,7 @@ export const CustomField = ({ id, name, value, label, onChange, type = "text", c
     value={value}
     label={label}
     onChange={onChange}
+    disabled={disabled}
     multiline
     fullWidth
     variant="filled"

@@ -9,28 +9,7 @@ import orders from "./slices/orders";
 import users from "./slices/users";
 import logger from "./slices/logger";
 import issuingReports from "./slices/issuingReports";
-import { ordersApi } from './api/ordersApi';
-import { usersApi } from './api/usersApi';
-import { categoriesApi } from './api/categoriesApi'
-import { productsApi } from './api/productsApi'
-import { measuresApi } from './api/measuresApi'
-import { suppliersApi } from './api/suppliersApi'
-import { oldOrdersApi } from './api/oldOrdersApi'
-
-
-const listenerMiddleware = createListenerMiddleware();
-
-listenerMiddleware.startListening({
-  matcher: productsApi.endpoints.addPrice.matchFulfilled,
-  effect: async (action, { dispatch }) => {
-    try {
-      await dispatch(ordersApi.endpoints.getActiveOrders.initiate());
-      console.log('Triggered ordersApi.getActiveOrders');
-    } catch (err) {
-      console.log(err, 'Error triggering ordersApi.getActiveOrders');
-    }
-  }
-});
+import { mainApi } from "./api/mainApi";
 
 
 const consoleMid = store => next => action => {
@@ -40,13 +19,7 @@ const consoleMid = store => next => action => {
 
 export const store = configureStore({
   reducer: {
-    [ordersApi.reducerPath]: ordersApi.reducer,
-    [oldOrdersApi.reducerPath]: oldOrdersApi.reducer,
-    [usersApi.reducerPath]: usersApi.reducer,
-    [categoriesApi.reducerPath]: categoriesApi.reducer,
-    [productsApi.reducerPath]: productsApi.reducer,
-    [measuresApi.reducerPath]: measuresApi.reducer,
-    [suppliersApi.reducerPath]: suppliersApi.reducer,
+    [mainApi.reducerPath]: mainApi.reducer,
     general,
     categories,
     suppliers,
@@ -58,13 +31,7 @@ export const store = configureStore({
     issuingReports,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(
-    ordersApi.middleware,
-    oldOrdersApi.middleware,
-    usersApi.middleware,
-    categoriesApi.middleware,
-    productsApi.middleware,
-    measuresApi.middleware,
-    suppliersApi.middleware,
+    mainApi.middleware,
     consoleMid,
 ),
 });

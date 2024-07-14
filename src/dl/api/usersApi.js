@@ -1,7 +1,6 @@
-import { createApi, fetchBaseQuery  } from '@reduxjs/toolkit/query/react';
+import { mainApi } from './mainApi';
 import { validEmail, fieldsAreNotEmpty } from '../../components/hooks/fanksHook';
 import { defineAbilitiesFor } from '../../auth/abilities';
-const URL = import.meta.env.VITE_API_URL;
 
 const getAbilityForUser = user => {
   return defineAbilitiesFor(user);
@@ -11,10 +10,8 @@ const tokenFromLocalStorage = () => {
   return localStorage.getItem('token');
 };
 
-export const usersApi = createApi({
+export const usersApi = mainApi.injectEndpoints({
   reducerPath: 'usersApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `${URL}` }),
-  tagTypes: ['User'],
   endpoints: (builder) => ({
     getUsers: builder.query({
       query: () => '/users/getUsers',

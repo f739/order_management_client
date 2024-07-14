@@ -68,7 +68,7 @@ export const OrderManagement = () => {
                   ) : null
                 )) : <p>אין הזמנות לטיפול</p>}    
                 {!showSendEmail && 
-                <TooltipComponent title='שלח הזמנה'>
+                // <TooltipComponent title='שלח הזמנה'>
                   <Fab 
                     color="primary" 
                     onClick={() => setShowSendEmail(old => !old)}
@@ -80,7 +80,7 @@ export const OrderManagement = () => {
                   >
                     <SendIcon />
                   </Fab>
-                </TooltipComponent>
+                // </TooltipComponent>
                 }
                 {showSendEmail && <NewOrderToDeliver setShowSendEmail={setShowSendEmail} />}     
             </Box>

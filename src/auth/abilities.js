@@ -12,10 +12,9 @@ const defineEmployeeAbilities = (can, cannot, user) => {
   can('read', 'PendingOrders', [user.factory] );
   can('read', 'OldOrder', [user.factory] );
   // can('delete', 'PendingOrders', [user._id]) להוסיף לכל הזמנה ID של מי שיצר אותה ולתת לו למחוק את ההזמנה שלו
-  cannot('delete', 'PendingOrders');
-  cannot('delete', 'OldOrder');
-  cannot('create', 'PendingOrders')
-  cannot('create', ['Supplier', 'Category', 'User', 'Measure', 'Product']);
+  cannot('delete', ['PendingOrders', 'OldOrder']);
+  cannot('create', ['PendingOrders', 'Supplier', 'Category', 'User', 'Measure', 'Product']);
+  cannot('update', ['Supplier', 'Product']);
   can('create', 'Order');
   can('update', 'Order');
   cannot('delete', 'all'); 

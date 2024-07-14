@@ -1,23 +1,21 @@
 import { createApi, fetchBaseQuery  } from '@reduxjs/toolkit/query/react';
-const URL = import.meta.env.VITE_API_URL;
+import { mainApi } from './mainApi';
 import { defineAbilitiesFor } from '../../auth/abilities';
 
 const getAbilityForUser = user => {
   return defineAbilitiesFor(user);
 };
 
-export const ordersApi = createApi({
+export const ordersApi = mainApi.injectEndpoints({
   reducerPath: 'ordersApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `${URL}` }),
-  tagTypes: ['activeOrder', 'oldOrder'],
   endpoints: builder => ({
     getActiveOrders: builder.query({
       query: () => '/orderManagement/getAllActiveOrders',
       transformResponse: res => res.allActiveOrders,
       providesTags: result =>
         result ? 
-        [...result.map(({ _id }) => ({ type: 'activeOrder', id: _id })), { type: 'activeOrder', id: 'LIST' }] :
-        [{ type: 'activeOrder', id: 'LIST' }],
+        [...result.map(({ _id }) => ({ type: 'ActiveOrder', id: _id })), { type: 'ActiveOrder', id: 'LIST' }] :
+        [{ type: 'ActiveOrder', id: 'LIST' }],
     }),
     sendAnInvitation: builder.mutation({
       queryFn: async ({ user, whichFactoryToSend, noteToOrder }, {getState}, ex, baseQuery ) => {
@@ -33,7 +31,7 @@ export const ordersApi = createApi({
           body: { user, whichFactoryToSend, note: noteToOrder, cart},
         })
       },
-      invalidatesTags: [{ type: 'activeOrder', id: 'LIST' }],
+      invalidatesTags: [{ type: 'ActiveOrder', id: 'LIST' }],
     }),
     sendOrderFromCart: builder.mutation({
       queryFn: async ({supplier, titleMessage, messageContent, howToSend}, {getState}, ex, baseQuery) => {
@@ -49,7 +47,7 @@ export const ordersApi = createApi({
             body: {cartToDeliver, supplier, titleMessage, messageContent, howToSend},
           },{getState});
       },
-      invalidatesTags: [{ type: 'activeOrder', id: 'LIST' }, { type: 'oldOrder', id: 'LIST' }],
+      invalidatesTags: [{ type: 'ActiveOrder', id: 'LIST' }, { type: 'OldOrder', id: 'LIST' }],
     }),
     deleteInvtation: builder.mutation({
       queryFn: async  ({idInvitation}, {getState}, ex, baseQuery) => {
@@ -61,7 +59,7 @@ export const ordersApi = createApi({
           method: 'PUT',
         },{getState});
       },
-      invalidatesTags: [{ type: 'activeOrder', id: 'LIST' }],
+      invalidatesTags: [{ type: 'ActiveOrder', id: 'LIST' }],
     }),
     removeProduct: builder.mutation({
       queryFn: async ({ _id, idInvitation }, {getState}, ex, baseQuery) => {
@@ -74,7 +72,7 @@ export const ordersApi = createApi({
         },{getState});
       },
       transformResponse: res => res.doc,
-      invalidatesTags: [{ type: 'activeOrder', id: 'LIST' }],
+      invalidatesTags: [{ type: 'ActiveOrder', id: 'LIST' }],
     }),
   }),
 });

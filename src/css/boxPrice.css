@@ -1,4 +1,4 @@
-.backdrop {
+/* .backdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -52,7 +52,7 @@
 }
 
 .supplier-name {
-  /* margin-right: 10px; */
+  margin-right: 10px; 
   font-weight: bold;
 }
 
@@ -86,4 +86,4 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   margin-bottom: 5px;
-}
+} */

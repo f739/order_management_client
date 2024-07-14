@@ -1,20 +1,22 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { handleFormHook } from '../HandleFormHook';
-import { EditItemHook } from '../EditItemHook';
+import { DialogSendInvitation } from "../cssComponents/DialogSendInvitation";
 import {
     useGetProductsQuery,
     useCreateNewProductMutation,
     useRemoveProductMutation,
     useEditProductMutation
 } from '../../dl/api/productsApi';
+import { factories } from "../../data/roles";
 import { useGetCategoriesQuery } from "../../dl/api/categoriesApi";
 import { useGetMeasuresQuery } from "../../dl/api/measuresApi";
 import { useGetSuppliersQuery } from "../../dl/api/suppliersApi";
 import { AppBarSystemManagement, LoudingPage, CustomField, CustomSelect, SelectFactoryMultipleHook } from "../indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Chip, Divider, IconButton, ListItemText } from "@mui/material";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Chip, Divider, IconButton, ListItemText, FormControlLabel, Switch } from "@mui/material";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { FilterRow } from "../cssComponents/FilterRow";
 import { useFilters } from '../hooks/useFilters';
+import { BoxEditPrices } from "../BoxEditPrices";
 
 export const Products = () => {
     const [newProduct, setNewProduct] = useState({ nameProduct: '', factories: [], category: '', unitOfMeasure: '', sku: '', price: [] });
@@ -27,6 +29,15 @@ export const Products = () => {
     const [createNewProduct, { error, isLoading: isLoadingCreateProdact, data: dataCreateProduct }] = useCreateNewProductMutation();
     const [secondaryTabValue, setSecondaryTabValue] = useState(1);
     const secondaryTabs = ['צור מוצר חדש', 'מוצרים פעילים', 'מוצרים שאינם פעילים'];
+
+    const fields = [
+        { label: 'שם מוצר', type: 'input', typeInput: 'text', name: 'nameProduct' },
+        { label: 'מק"ט', type: 'input', typeInput: 'text', name: 'sku' },
+        { label: 'קטגוריה', type: 'select', name: 'category', options: allCategories, optionValue: 'nameCategory' },
+        { label: 'יחידות מידה', type: 'select', name: 'unitOfMeasure', options: allMeasures, optionValue: 'measureName' },
+        // { label: 'מפעל', type: 'select', name: 'factory', options: factories, optionValue: 'name' },
+        // { label: 'מחירים', type: 'button', name: 'price', element: <BoxEditPrices /> },
+    ];
 
     const handleSaveNewPrice = () => {
         if (newPrice._idSupplier === '' || newPrice.price === '' || !/^\d*\.?\d+$/.test(newPrice.price)) return;
@@ -90,36 +101,27 @@ export const Products = () => {
         />
         {secondaryTabValue === 0 ?
             (<Stack sx={{ p: '20px' }} spacing={1}>
-                <CustomField
-                    id="filled-area"
-                    name="nameProduct"
-                    value={newProduct.nameProduct}
-                    label="שם מוצר"
-                    onChange={e => handleFormHook(e.target, setNewProduct)}
-                />
-                <CustomField
-                    id="filled-area"
-                    name="sku"
-                    value={newProduct.sku}
-                    label='מק"ט'
-                    onChange={e => handleFormHook(e.target, setNewProduct)}
-                />
-                <CustomSelect 
-                    set={setNewProduct} 
-                    nameField='unitOfMeasure'
-                    value={newProduct.unitOfMeasure} 
-                    label='יחידת מידה'
-                    options={allMeasures} 
-                    optionsValue='measureName'
-                />
-                <CustomSelect 
-                    set={setNewProduct} 
-                    nameField='category'
-                    value={newProduct.category} 
-                    label='קטגוריה'
-                    options={allCategories} 
-                    optionsValue='nameCategory'
-                />
+                { fields.map( field => (
+                     <React.Fragment key={field.name}>
+                        {field.type === 'input' ? 
+                            <CustomField 
+                                name={field.name}
+                                value={newProduct[field.name] || ''}
+                                label={field.label}
+                                onChange={e => handleFormHook(e.target, setNewProduct)}
+                            /> : field.type === 'select' ?
+                            <CustomSelect 
+                                set={setNewProduct} 
+                                nameField={field.name}
+                                value={newProduct[field.name] || ''} 
+                                label={field.label}
+                                options={field.options} 
+                                optionsValue={field.optionValue}
+                            /> :
+                            null
+                        }
+                     </React.Fragment>
+                ))}
                 <Box>
                     <Grid container spacing={2} alignItems="center">
                         <Grid item xs={12} >
@@ -168,27 +170,17 @@ export const Products = () => {
                 <Button onClick={handleSaveNewProduct} color="primary" variant="contained" disabled={isLoadingCreateProdact}>
                     {isLoadingCreateProdact ? <CircularProgress size={24} /> : 'שמור'}
                 </Button>
-            </Stack>) : <ShowProducts />
+            </Stack>) : 
+            <ShowProducts secondaryTabValue={secondaryTabValue} />
         }
     </Box>
     )
 }
 
-const ShowProducts = () => {
+const ShowProducts = ({secondaryTabValue}) => {
     const { data: allProducts, error: errorGetProducts, isLoading: isLoadingGetProducts } = useGetProductsQuery();
-    const [removeProduct, { error: errorRemoveProduct }] = useRemoveProductMutation();
-    const [editProduct, { error: errorEditProduct }] = useEditProductMutation();
-
     const [showEditProduct, setShowEditProduct] = useState('');
-    const fields = [
-        { label: 'שם מוצר', type: 'input', typeInput: 'text', name: 'nameProduct' },
-        { label: 'מק"ט', type: 'input', typeInput: 'text', name: 'sku' },
-        { label: 'מחיר', type: 'price', name: 'price' },
-        { label: 'מפעל', type: 'select', name: 'factory' },
-        { label: 'קטגוריה', type: 'select', name: 'category' },
-        { label: 'יחידות מידה', type: 'select', name: 'unitOfMeasure' }
-    ];
-
+    console.log(allProducts);
     const filterFields = ['category', 'factory', 'unitOfMeasure'];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
@@ -198,16 +190,14 @@ const ShowProducts = () => {
         }
     },[allProducts]);
 
-    const deleteProduct = async _id => {
-        try {
-            await removeProduct(_id).unwrap();
-            setShowEditProduct('');
-        } catch (err) { }
-    }
-    const handleEditItem = async productUpdated => {
-        await editProduct(productUpdated)
-        setShowEditProduct('');
-    }
+    const [productsActive, productsOff] = filteredData.reduce((result, product) => {
+        if (product.active) {
+            result[0].push(product);
+        } else {
+            result[1].push(product);
+        }
+        return result;
+    }, [[], []]);
 
     if (errorGetProducts) return <h3>ERROR: {errorGetProducts.error}</h3>
     if (isLoadingGetProducts) return <LoudingPage />;
@@ -216,8 +206,8 @@ const ShowProducts = () => {
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} >
                 <Box sx={{ p: 2 }}>
-                    { filteredData.length > 0 ? (
-                        filteredData.map(product => (
+                {(secondaryTabValue === 1 ? productsActive : productsOff).length > 0 ? (
+                    (secondaryTabValue === 1 ? productsActive : productsOff).map(product => (
                             <div key={product._id}>
                                 <Grid container alignItems="center" spacing={1}>
                                     <Grid item xs={5} sx={{ minWidth: '100px' }}>
@@ -240,11 +230,9 @@ const ShowProducts = () => {
                                 </Grid>
                                 <Divider />
                                 {showEditProduct._id === product._id &&
-                                    <EditItemHook initialData={showEditProduct}
-                                        onSubmit={handleEditItem}
-                                        fields={fields}
-                                        setShowEdit={setShowEditProduct}
-                                        deleteItem={deleteProduct}
+                                    <EditProduct 
+                                        product={product}
+                                        setShowEditProduct={setShowEditProduct}
                                     />
                                 }
                             </div>
@@ -253,5 +241,109 @@ const ShowProducts = () => {
                 </Box>
             </FilterRow>
         </Box>
+    )
+}
+
+const EditProduct = props => {
+    const { product, setShowEditProduct } = props;
+
+    const [removeProduct, { error: errorRemoveProduct, isLoading: isLoudingDelete }] = useRemoveProductMutation();
+    const [editProduct, { error: errorEdit, isLoading: isLoadingEdit }] = useEditProductMutation();
+    const [formEdit, setFormEdit] = useState(product);
+    const [showEditPrices, setShowEditPrices] = useState(false);
+    const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
+    const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
+    
+    const fields = [
+        { label: 'שם מוצר', type: 'input', typeInput: 'text', name: 'nameProduct' },
+        { label: 'מק"ט', type: 'input', typeInput: 'text', name: 'sku' },
+        { label: 'מפעל', type: 'select', name: 'factory', options: factories, optionValue: 'name' },
+        { label: 'קטגוריה', type: 'select', name: 'category', options: allCategories, optionValue: 'nameCategory' },
+        { label: 'יחידות מידה', type: 'select', name: 'unitOfMeasure', options: allMeasures, optionValue: 'measureName' },
+        { label: 'מחירים', type: 'button', name: 'price', 
+            element: <BoxEditPrices product={product} setShowEditPrices={setShowEditPrices} /> },
+    ];
+
+    const handleEditItem = async productUpdated => {
+        try {
+            await editProduct(productUpdated).unwrap();
+            setShowEditProduct('');
+        }catch (err) {}
+    }
+
+    const deleteProduct = async _id => {
+        try {
+            await removeProduct(_id).unwrap();
+            setShowEditProduct('');
+        } catch (err) { }
+    }
+
+    return (
+        <DialogSendInvitation 
+            title='ערוך מוצר'
+            cart={false}
+            setOpenDialog={setShowEditProduct}
+            sendOrder={() => handleEditItem(formEdit)}
+            isLoudingSendOrder={isLoadingEdit}
+            errorMessage={errorEdit || errorRemoveProduct}
+            labelDelete="מחק לצמיתות"
+            actionDelete={() => deleteProduct(product._id)}
+            isLoadingDelete={isLoudingDelete}
+            // actions={
+            //     <Button 
+            //         onClick={() => deleteProduct(product._id)} 
+            //         color="error" 
+            //         variant="outlined">
+            //         מחק לצמיתות 
+            //     </Button>
+            // }
+            fields={
+                <>
+                    <FormControlLabel 
+                        label={formEdit.active ? 'פעיל' : 'לא פעיל'}
+                        control={
+                        <Switch 
+                            name="active" 
+                            checked={formEdit.active || false} 
+                            onChange={e => setFormEdit(old => ({...old, active: e.target.checked}))}
+                        />
+                    }/>
+                    
+                    {fields.map( field => (
+                        <React.Fragment key={field.name}>
+                            {field.type === 'input' ? 
+                                <CustomField
+                                    name={field.name}
+                                    value={formEdit[field.name] || ''}
+                                    label={field.label}
+                                    onChange={e => handleFormHook(e.target, setFormEdit)}
+                                    type={field.typeInput}
+                                    disabled={!formEdit.active || false}
+                                /> : field.type === 'select' ?
+                                <CustomSelect 
+                                    set={setFormEdit} 
+                                    nameField={field.name}
+                                    value={formEdit[field.name] || ''} 
+                                    label={field.label}
+                                    options={field.options} 
+                                    optionsValue={field.optionValue}
+                                /> : (
+                                <>
+                                    <Button 
+                                        variant="contained" 
+                                        sx={{width: '100%'}} 
+                                        onClick={() => setShowEditPrices( old => !old)}
+                                    >
+                                        {field.label}
+                                    </Button>
+                                    {showEditPrices && field.element}
+                                </>
+                                )
+                            }
+                        </React.Fragment>
+                    ))}
+                </>
+            }
+        />
     )
 }

@@ -1,12 +1,13 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton,
-  Box, CircularProgress, Button, Typography, Table, TableContainer, Paper 
+  Box, CircularProgress, Button, Typography, Table, TableContainer, Paper, 
+  Stack
  } from '@mui/material';
 import {Close as CloseIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon} from '@mui/icons-material';
 
 export const DialogSendInvitation = props => {
-  const { setOpenDialog, sendOrder, isLoudingSendOrder, to, cart, showTable=false, setShowTable,
-    tableHead, tableBody, fields, errorMessage, actions=false, moreActions=false } = props;
+  const {title, setOpenDialog, labelConfirm='אשר', sendOrder, isLoudingSendOrder, to=false, cart=[], showTable=false, setShowTable,
+    tableHead, tableBody, fields, errorMessage, labelDelete, actionDelete, isLoadingDelete, moreActions=false, sxBox={} } = props;
 
   return (
     <Dialog
@@ -15,7 +16,7 @@ export const DialogSendInvitation = props => {
       aria-labelledby="dialog-title"
     >
       <DialogTitle id="dialog-title">
-        <Typography>הזמנה חדשה</Typography>
+        <Typography>{title ?? 'הזמנה חדשה'}</Typography>
         <IconButton
           aria-label="close"
           onClick={() => setOpenDialog(false)}
@@ -24,7 +25,7 @@ export const DialogSendInvitation = props => {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers sx={sxBox}>
         { to && 
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1">אל</Typography>
@@ -38,9 +39,9 @@ export const DialogSendInvitation = props => {
                   {showTable ? <VisibilityOffIcon /> : <VisibilityIcon />}
                 </IconButton>
             </Box>
-            ) : (
+            ) : cart.length === 0 ? (
               <Typography color="error">לא נבחרו מוצרים!</Typography>
-            )
+            ) : null
         }
         { showTable && tableHead && tableBody && (
           <TableContainer component={Paper} sx={{ mt: 2 }}>
@@ -62,15 +63,19 @@ export const DialogSendInvitation = props => {
         </Box>
       }
       <DialogActions>
-        <Box sx={{ display: 'flex', justifyContent: 'end' ,width: '100%' }}>
-            {actions && actions}
+        <Stack direction="row" sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, m: 1 }}>
             <Button onClick={() => setOpenDialog(false)} color="secondary" variant="outlined">
             בטל 
             </Button>
+            { labelDelete && 
+              <Button onClick={actionDelete} color="error"  variant="outlined" >
+                {isLoadingDelete ? <CircularProgress size={24} /> : labelDelete}
+              </Button> 
+            }
             <Button onClick={sendOrder} color="primary" variant="contained" disabled={isLoudingSendOrder}>
-                {isLoudingSendOrder ? <CircularProgress size={24} /> : 'שלח'}
+                {isLoudingSendOrder ? <CircularProgress size={24} /> : labelConfirm}
             </Button>
-        </Box>
+        </Stack>
       </DialogActions>
     </Dialog>
   );

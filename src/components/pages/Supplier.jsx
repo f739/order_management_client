@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { handleFormHook } from "../HandleFormHook";
-import { EditItemHook } from "../EditItemHook";
 import {
     useGetSuppliersQuery,
     useCreateNewSupplierMutation,
@@ -8,10 +7,11 @@ import {
     useEditSupplierMutation
 } from '../../dl/api/suppliersApi';
 import { AppBarSystemManagement, LoudingPage, CustomField } from '../indexComponents'
-import { Box, Button, Stack, ListItemText, IconButton, Grid, Divider, CircularProgress, Chip, Typography, useMediaQuery } from '@mui/material'
+import { Box, Button, Stack, ListItemText, IconButton, Grid, Divider, CircularProgress, Chip, Typography, useMediaQuery, Switch, FormControlLabel } from '@mui/material'
 import { useFilters } from '../hooks/useFilters';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { FilterRow } from "../cssComponents/FilterRow";
+import { DialogSendInvitation } from "../cssComponents/DialogSendInvitation";
 
 export const Supplier = () => {
     const [newSupplier, setNewSupplier] = useState({ nameSupplier: '', tel: '', email: '', supplierNumber: '' });
@@ -85,12 +85,9 @@ export const Supplier = () => {
 };
 
 const ShowSuppliers = ({ secondaryTabValue }) => {
-
     const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
-    const [removeSupplier, { error: errorRemoveSupplier }] = useRemoveSupplierMutation();
-    const [editSupplier, { error: errorEditSupplier }] = useEditSupplierMutation();
     const [showEditSupplier, setShowEditSupplier] = useState(false);
-    
+
     const filterFields = [];
     const { filteredData, filters, updateFilter, setData, data } = useFilters(filterFields);
 
@@ -100,24 +97,15 @@ const ShowSuppliers = ({ secondaryTabValue }) => {
         }
     },[allSuppliers]);
 
-    const fields = [
-        { name: 'nameSupplier', label: 'שם ספק', typeInput: 'text', type: 'input' },
-        { name: 'tel', label: 'פלאפון ספק', typeInput: 'tel', type: 'input' },
-        { name: 'email', label: 'אימייל ספק', typeInput: 'email', type: 'input' },
-        { name: 'supplierNumber', label: 'מספר ספק', typeInput: 'text', type: 'input' }
-    ];
-
-    const deleteSupplier = async _id => {
-        try {
-            await removeSupplier(_id).unwrap();
-            setShowEditSupplier(false);
-        } catch (err) { }
-    }
-    const handleEditItem = async supplierUpdated => {
-        await editSupplier(supplierUpdated);
-        setShowEditSupplier(false);
-    }
-
+    const [suppliersActive, suppliersOff] = filteredData.reduce((result, supplier) => {
+        if (supplier.active) {
+            result[0].push(supplier);
+        } else {
+            result[1].push(supplier);
+        }
+        return result;
+    }, [[], []]);
+    
     if (errorGetsuppliers) return <h3>ERROR: {errorGetsuppliers.error}</h3>
     if (isLoadingGetsuppliers) return <LoudingPage />;
 
@@ -125,8 +113,8 @@ const ShowSuppliers = ({ secondaryTabValue }) => {
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={data}>
                 <Box sx={{ p: 2}}>
-                {filteredData.length > 0 ? (
-                    filteredData.map(supplier => (
+                {(secondaryTabValue === 1 ? suppliersActive : suppliersOff).length > 0 ? (
+                    (secondaryTabValue === 1 ? suppliersActive : suppliersOff).map(supplier => (
                         <div key={supplier._id}>
                             <Grid container alignItems="center" spacing={1}>
                                 <Grid item xs={5} sx={{ minWidth: '100px' }}>
@@ -150,11 +138,9 @@ const ShowSuppliers = ({ secondaryTabValue }) => {
                             <Divider />
 
                             {showEditSupplier._id === supplier._id &&
-                                <EditItemHook initialData={showEditSupplier}
-                                    onSubmit={handleEditItem}
-                                    fields={fields}
-                                    setShowEdit={setShowEditSupplier}
-                                    deleteItem={deleteSupplier}
+                                <EditSupplier 
+                                    setShowEditSupplier={setShowEditSupplier}
+                                    supplier={supplier}
                                 />
                             }
                         </div>
@@ -163,5 +149,76 @@ const ShowSuppliers = ({ secondaryTabValue }) => {
             </Box>
         </FilterRow>
     </Box>
+    )
+}
+
+const EditSupplier = props => {
+    const { setShowEditSupplier, supplier } = props;
+    const [removeSupplier, { error: errorRemoveSupplier, isLoading: isLoadingDelete }] = useRemoveSupplierMutation();
+    const [editSupplier, { error: errorEdit, isLoading: isLoadingEdit }] = useEditSupplierMutation();
+    const [formEdit, setFormEdit] = useState(supplier);
+    
+    const fields = [
+        { name: 'nameSupplier', label: 'שם ספק', typeInput: 'text', type: 'input' },
+        { name: 'tel', label: 'פלאפון ספק', typeInput: 'tel', type: 'input' },
+        { name: 'email', label: 'אימייל ספק', typeInput: 'email', type: 'input' },
+        { name: 'supplierNumber', label: 'מספר ספק', typeInput: 'text', type: 'input' }
+    ];
+    
+    const handleEditItem = async supplierUpdated => {
+        try {
+            await editSupplier(supplierUpdated).unwrap();
+            setShowEditSupplier(false);
+        }catch (err) {}
+    }
+
+    const deleteSupplier = async _id => {
+        try {
+            await removeSupplier(_id).unwrap();
+            setShowEditSupplier(false);
+        } catch (err) { }
+    }
+
+    return (
+        <DialogSendInvitation 
+            title='ערוך ספק'
+            cart={false}
+            setOpenDialog={setShowEditSupplier}
+            sendOrder={() => handleEditItem(formEdit)}
+            isLoudingSendOrder={isLoadingEdit}
+            errorMessage={errorEdit || errorRemoveSupplier}
+            labelDelete='מחק לצמיתות'
+            labelConfirm="שמור"
+            isLoadingDelete={isLoadingDelete}
+            actionDelete={() => deleteSupplier(supplier._id)}
+            fields={
+                <>
+                    <FormControlLabel 
+                        label={formEdit.active ? 'פעיל' : 'לא פעיל'}
+                        control={
+                        <Switch 
+                            name="active" 
+                            checked={formEdit.active || false} 
+                            onChange={e => setFormEdit(old => ({...old, active: e.target.checked}))}
+                        />
+                    }/>
+                    
+                    {fields.map( field => (
+                        <React.Fragment key={field.name}>
+                            <CustomField 
+                                name={field.name}
+                                value={formEdit[field.name] || ''}
+                                label={field.label}
+                                onChange={e => handleFormHook(e.target, setFormEdit)}
+                                type={field.typeInput}
+                                disabled={!formEdit.active || false}
+                            />
+                        </React.Fragment>
+                    ))}
+                </>
+            }
+        >
+
+        </DialogSendInvitation>
     )
 }

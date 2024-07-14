@@ -90,7 +90,7 @@ export const Orders = () => {
                             ))) : <Typography>אין מוצרים להצגה</Typography>
                         }
                     </Stack>
-                    <TooltipComponent title='שלח הזמנה'>
+                    {/* <TooltipComponent title='שלח הזמנה'> */}
                         <Fab 
                             color="primary" 
                             onClick={() => setOpenDialog(true)}
@@ -102,7 +102,7 @@ export const Orders = () => {
                         >
                             <SendIcon />
                         </Fab>
-                    </TooltipComponent>
+                    {/* </TooltipComponent> */}
                 </FilterRow>
                 { openDialog && <DialogSendInvitation 
                     setOpenDialog={setOpenDialog} 

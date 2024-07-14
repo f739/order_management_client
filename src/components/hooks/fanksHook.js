@@ -1,6 +1,11 @@
 
-export const fieldsAreNotEmpty = obj => {
-    return Object.values(obj).every(value => value !== '')
+export const fieldsAreNotEmpty = input => {
+    if (Array.isArray(input)) {
+        return input.every(obj => Object.values(obj).every(value => value !== '' && value != null));
+    } else if (typeof input === 'object' && input !== null) {
+        return Object.values(input).every(value => value !== '' && value != undefined);
+    }
+    return false;
 }
 
 export const validEmail = email => {
