@@ -10,6 +10,7 @@ import { Products } from './components/pages/Products.jsx';
 import { Supplier } from './components/pages/Supplier.jsx';
 import { Measure } from './components/pages/Measure.jsx';
 import { Categories } from './components/pages/Categories.jsx';
+import { Branches } from './components/pages/Branches.jsx';
 import { EmailSettings } from './pages/EmailSettings.jsx';
 import { IssuingReports } from './pages/IssuingReports.jsx';
 import { Logger } from './pages/logger.jsx';
@@ -56,6 +57,7 @@ export const routers = createBrowserRouter([{
                 {path: "supplier", element: <ProtectedRoute element={Supplier} action="enter" subject="Supplier" /> },
                 {path: "measure", element: <ProtectedRoute element={Measure} action="enter" subject="Measure" /> },
                 {path: "categories", element: <ProtectedRoute element={Categories} action="enter" subject="Category" /> },
+                {path: "Branches", element: <ProtectedRoute element={Branches} action="enter" subject="Branches" /> },
                 {path: "logger", element: <ProtectedRoute element={Logger} action="enter" subject="Log" /> },
             ]
         },

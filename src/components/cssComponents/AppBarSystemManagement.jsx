@@ -11,7 +11,11 @@ export const AppBarSystemManagement = ({ secondaryTabs = [], secondaryTabValue, 
   const navigate = useNavigate();
   const location = useLocation();
   
-  const mainTabPaths = ['/systemManagement/products', '/systemManagement/supplier', '/systemManagement/categories', '/systemManagement/measure', '/systemManagement/Users'];
+  const mainTabPaths = [
+    '/systemManagement/products', '/systemManagement/supplier',
+     '/systemManagement/categories', '/systemManagement/measure',
+     '/systemManagement/Users', '/systemManagement/branches'
+  ];
   const orderTabPaths = ['/orders', '/orderManagement', '/oldOrders'];
   
   const isOrderPage = orderTabPaths.some(path => location.pathname === path);
@@ -45,6 +49,7 @@ export const AppBarSystemManagement = ({ secondaryTabs = [], secondaryTabValue, 
         { label: "קטגוריות", path: "/systemManagement/categories" },
         { label: "יחידות מידה", path: "/systemManagement/measure" },
         { label: "משתמשים", path: "/systemManagement/Users" },
+        { label: "סניפים", path: "/systemManagement/Branches" },
       ];
 
   const renderMainTabs = () => (
