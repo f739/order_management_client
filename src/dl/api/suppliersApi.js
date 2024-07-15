@@ -53,11 +53,17 @@ export const suppliersApi = mainApi.injectEndpoints({
       invalidatesTags: [{ type: 'Supplier', _id: 'LIST' }],
     }),
     removeSupplier: builder.mutation({
-      query: _id => ({
-        url: `/suppliers/${_id}/deleteSupplier`,
-        method: 'DELETE',
-      }),
-      invalidatesTags: [{ type: 'Supplier', _id: 'LIST' }],
+      queryFn: async (_id, {getState}, ex, baseQuery) => {
+        const state = getState();
+        const ability = getAbilityForUser(state.users.user);
+
+        if (!ability.can('delete', 'Supplier')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
+        return await baseQuery({
+          url: `/suppliers/${_id}/deleteSupplier`,
+          method: 'DELETE',
+        })
+      },
+      invalidatesTags: [{ type: 'Supplier', _id: 'LIST' }, { type: 'Product', _id: 'LIST'}],
     }),
   }),
 });

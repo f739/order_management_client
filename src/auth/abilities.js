@@ -12,7 +12,7 @@ const defineEmployeeAbilities = (can, cannot, user) => {
   can('read', 'PendingOrders', [user.factory] );
   can('read', 'OldOrder', [user.factory] );
   // can('delete', 'PendingOrders', [user._id]) להוסיף לכל הזמנה ID של מי שיצר אותה ולתת לו למחוק את ההזמנה שלו
-  cannot('delete', ['PendingOrders', 'OldOrder', 'Branch']);
+  cannot('delete', ['PendingOrders', 'OldOrder', 'Branch', 'Supplier']);
   cannot('create', ['PendingOrders', 'Supplier', 'Category', 'User', 'Measure', 'Product', 'Branch']);
   cannot('update', ['Supplier', 'Product', 'Branch']);
   can('create', 'Order');
@@ -25,7 +25,6 @@ const defineAccountantAbilities = (can, cannot) => {
   cannot('enter', ['Order', 'PendingOrders', 'OldOrder', 'NavPrivet', 'CreateUser',
   'Product', 'Supplier', 'Measure', 'Category', 'Log', 'Settings']);
   cannot(['create', 'delete'], ['PendingOrders', 'Order'])
-
 }
 
 const defineGuestAbilities = (can, cannot) => {

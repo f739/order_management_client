@@ -69,16 +69,16 @@ export const BoxEditPrices = props => {
                     </AppBar>
                     <Box sx={{ p: 2, flexGrow: 1, overflow: 'auto'}}>
                         {valueTab === 0 ? (
-                            product.price.length > 0 && product.price.map( price => (
-                                <FieldPrice 
+                            product.price.length > 0 ? product.price.map( price => (
+                                <ShowCurrentPrices 
                                     key={price._id}
                                     price={price} 
                                     _idProduct={product._id} 
                                     handleEditPrices={handleEditPrices} 
                                 />  
-                            ))
+                            )) : <Typography>אין מחירים להצגה</Typography>
                         ) : (
-                            <ShowNewPrices  
+                            <CreateNewPrices  
                                 product={product}
                                 handleEditPrices={handleEditPrices}
                                 handleUpdatePrices={handleUpdatePrices}
@@ -92,7 +92,7 @@ export const BoxEditPrices = props => {
     )
 }
 
-const FieldPrice = props => {
+const ShowCurrentPrices = props => {
     const { price, _idProduct, handleEditPrices } = props;
     const [deletePrice, {error: errorDeletePrice, isLoading: isLoadingDeletePrice}] = useDeletePriceMutation();
     const [formEditPrice, setFormEditPrice] = useState(
@@ -128,18 +128,18 @@ const FieldPrice = props => {
                 </IconButton>
             </Box>
             <CustomField 
-            name='price'
-            value={formEditPrice.price}
-            label='מחיר'
-            onChange={e => handleChangePrice(e.target)}
-            type='text'
-            disabled={!price._idSupplier.active}
+                name='price'
+                value={formEditPrice.price}
+                label='מחיר'
+                onChange={e => handleChangePrice(e.target)}
+                type='text'
+                disabled={!price._idSupplier.active}
             />
       </Box>
     )
 }
 
-const ShowNewPrices = props => {
+const CreateNewPrices = props => {
     const { product, handleEditPrices } = props;
     const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
     const [formNewPrice, setFormNewPrice] = useState(

@@ -186,7 +186,7 @@ const EditSupplier = props => {
             setOpenDialog={setShowEditSupplier}
             sendOrder={() => handleEditItem(formEdit)}
             isLoudingSendOrder={isLoadingEdit}
-            errorMessage={errorEdit || errorRemoveSupplier}
+            errorMessage={errorEdit || errorRemoveSupplier?.data || errorRemoveSupplier}
             labelDelete='מחק לצמיתות'
             labelConfirm="שמור"
             isLoadingDelete={isLoadingDelete}

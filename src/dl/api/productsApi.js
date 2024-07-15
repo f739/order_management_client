@@ -97,6 +97,7 @@ export const productsApi = mainApi.injectEndpoints({
           method: 'DELETE',
         })
       },
+      // transformErrorResponse: err => err.data.message,
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
   }),

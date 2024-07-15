@@ -285,18 +285,10 @@ const EditProduct = props => {
             setOpenDialog={setShowEditProduct}
             sendOrder={() => handleEditItem(formEdit)}
             isLoudingSendOrder={isLoadingEdit}
-            errorMessage={errorEdit || errorRemoveProduct}
+            errorMessage={errorEdit || errorRemoveProduct?.data || errorRemoveProduct}
             labelDelete="מחק לצמיתות"
             actionDelete={() => deleteProduct(product._id)}
             isLoadingDelete={isLoudingDelete}
-            // actions={
-            //     <Button 
-            //         onClick={() => deleteProduct(product._id)} 
-            //         color="error" 
-            //         variant="outlined">
-            //         מחק לצמיתות 
-            //     </Button>
-            // }
             fields={
                 <>
                     <FormControlLabel 
