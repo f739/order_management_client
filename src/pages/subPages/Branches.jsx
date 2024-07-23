@@ -6,12 +6,12 @@ import {
     useRemoveBranchMutation
 } from '../../dl/api/branchesApi';
 import { AppBarSystemManagement, IconDeleteButton, LoudingPage, CustomField } from "../../components/indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider } from "@mui/material";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText } from "@mui/material";
 import { useFilters } from '../../hooks/useFilters';
 import { FilterRow } from "../../components/filters/FilterRow";
 
 export const Branches = () => {
-    const [newBranch, setNewBranch] = useState({ nameBranch: '' });
+    const [newBranch, setNewBranch] = useState({ nameBranch: '', address: '' });
     const [createNewBranch, { error, isLoading, data }] = useCreateNewBranchMutation();
     const [secondaryTabValue, setSecondaryTabValue] = useState(1);
     const secondaryTabs = ['צור סניף חדש', 'סניפים'];
@@ -19,7 +19,7 @@ export const Branches = () => {
     const handleSaveNewCategory = async () => {
         try {
             await createNewBranch({ newBranch }).unwrap();
-            setNewBranch({ nameBranch: '' })
+            setNewBranch({ nameBranch: '', address: '' })
         } catch (err) { return }
     }
 
@@ -48,6 +48,12 @@ export const Branches = () => {
                         label="שם סניף"
                         onChange={e => handleFormHook(e.target, setNewBranch)}
                     />
+                    <CustomField
+                        name="address"
+                        value={newBranch.address}
+                        label="כתובת מלאה של הסניף"
+                        onChange={e => handleFormHook(e.target, setNewBranch)}
+                    />
 
                     {error && <Typography variant="button" color="error" >{error.message}</Typography>}
                     {data && <Typography variant="button" color="success">{data.message}</Typography>}
@@ -66,7 +72,7 @@ export const Branches = () => {
 const ShowBranches = () => {
     const { data: allBranches, error: errorGetBranches, isLoading: isLoadingGetBranches } = useGetBranchesQuery();
     const [removeBranch, { error: errorRemoveBranch }] = useRemoveBranchMutation();
-    console.log(allBranches);
+
     const filterFields = [];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
@@ -94,9 +100,10 @@ const ShowBranches = () => {
                             <div key={branch._id}>
                                 <Grid container alignItems="center" justifyContent="space-between" >
                                     <Grid item>
-                                        <Typography>
-                                            {branch.nameBranch}
-                                        </Typography>
+                                        <ListItemText
+                                            primary={branch.nameBranch}
+                                            secondary={branch.address}
+                                        />
                                     </Grid>
                                     <Grid item sx={{ p: 1 }}>
                                         <IconDeleteButton action={() => deleteBranch(branch._id)}

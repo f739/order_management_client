@@ -1,5 +1,6 @@
 import { mainApi } from './mainApi';
 import { defineAbilitiesFor } from '../../auth/abilities';
+import { fieldsAreNotEmpty } from '../../hooks/fanksHook';
 
 const getAbilityForUser = user => {
   return defineAbilitiesFor(user);
@@ -21,7 +22,7 @@ export const branchesApi = mainApi.injectEndpoints({
         const state = getState();
         const ability = getAbilityForUser(state.users.user);
         
-        if (newBranch.nameBranch === '') { return {error: {message: 'חסר פרטים בטופס'}}} 
+        if (!fieldsAreNotEmpty(newBranch)) { return {error: {message: 'חסר פרטים בטופס'}}} 
         if (!ability.can('create', 'Branch')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
 
         return await baseQuery({
