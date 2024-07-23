@@ -1,5 +1,5 @@
 import { mainApi } from './mainApi';
-import { validEmail, fieldsAreNotEmpty } from '../../components/hooks/fanksHook';
+import { validEmail, fieldsAreNotEmpty } from '../../hooks/fanksHook';
 import { defineAbilitiesFor } from '../../auth/abilities';
 
 const getAbilityForUser = user => {

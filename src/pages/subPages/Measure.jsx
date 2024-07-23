@@ -1,22 +1,22 @@
 import { useState, useEffect } from "react";
-import { handleFormHook } from '../HandleFormHook';
+import { handleFormHook } from '../../hooks/HandleFormHook';
 import {
     useGetMeasuresQuery,
     useCreateNewMeasureMutation,
     useRemoveMeasureMutation,
     useChangeActiveMeasureMutation
 } from '../../dl/api/measuresApi';
-import { AppBarSystemManagement, IconDeleteButton, LoudingPage, CustomField } from "../indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, FormControlLabel, Switch} from "@mui/material";
-import { useFilters } from '../hooks/useFilters';
-import { FilterRow } from "../cssComponents/FilterRow";
-import { useActiveInactiveSort } from "../hooks/useActiveInactiveSort";
+import { AppBarSystemManagement, IconDeleteButton, LoudingPage, CustomField } from "../../components/indexComponents";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, FormControlLabel, Switch } from "@mui/material";
+import { useFilters } from '../../hooks/useFilters';
+import { FilterRow } from "../../components/filters/FilterRow";
+import { useActiveInactiveSort } from "../../hooks/useActiveInactiveSort";
 
 export const Measure = () => {
     const [newMeasure, setNewMeasure] = useState({ measureName: '' });
     const [createNewMeasure, { error, isLoading, data }] = useCreateNewMeasureMutation();
     const [secondaryTabValue, setSecondaryTabValue] = useState(1);
-    const secondaryTabs = ['צור יחידת מידה חדשה', 'יחידות מידה פעילות', 'יחידות מידה שאינן פעילות' ];
+    const secondaryTabs = ['צור יחידת מידה חדשה', 'יחידות מידה פעילות', 'יחידות מידה שאינן פעילות'];
 
     const handleSaveNewMeasure = async () => {
         try {
@@ -28,7 +28,7 @@ export const Measure = () => {
     const changeTab = (e, newValue) => {
         setSecondaryTabValue(newValue)
     }
-    
+
     return (
         <Box sx={{
             bgcolor: 'background.paper',
@@ -37,10 +37,10 @@ export const Measure = () => {
             boxShadow: '1px 1px 4px',
             margin: '0px 5px'
         }}>
-            <AppBarSystemManagement 
-                secondaryTabs={secondaryTabs} 
-                secondaryTabValue={secondaryTabValue} 
-                onSecondaryTabChange={changeTab} 
+            <AppBarSystemManagement
+                secondaryTabs={secondaryTabs}
+                secondaryTabValue={secondaryTabValue}
+                onSecondaryTabChange={changeTab}
             />
             {secondaryTabValue === 0 ?
                 (<Stack sx={{ p: '20px' }} spacing={1}>
@@ -50,20 +50,20 @@ export const Measure = () => {
                         label="שם יחידת מידה"
                         onChange={e => handleFormHook(e.target, setNewMeasure)}
                     />
-                    
+
                     {error && <Typography variant="button" color="error" >{error.message}</Typography>}
                     {data && <Typography variant="button" color="success">{data.message}</Typography>}
                     <Button onClick={handleSaveNewMeasure} color="primary" variant="contained" disabled={isLoading}>
                         {isLoading ? <CircularProgress size={24} /> : 'שמור'}
                     </Button>
-                </Stack>) : <ShowMeasures secondaryTabValue={secondaryTabValue} />   
+                </Stack>) : <ShowMeasures secondaryTabValue={secondaryTabValue} />
             }
         </Box>
     )
 };
 
-const ShowMeasures = ({secondaryTabValue}) => {
-    
+const ShowMeasures = ({ secondaryTabValue }) => {
+
     const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
     const [removeMeasure, { error: errorRemoveMeasure }] = useRemoveMeasureMutation();
     const [changeActiveMeasure, { error: errorChangeActivemeasure }] = useChangeActiveMeasureMutation();
@@ -72,11 +72,11 @@ const ShowMeasures = ({secondaryTabValue}) => {
     const filterFields = [];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
-    useEffect( () => {
+    useEffect(() => {
         if (allMeasures) {
             setData(allMeasures)
         }
-    },[allMeasures]);
+    }, [allMeasures]);
 
     const [measursActive, measursOff] = useActiveInactiveSort(filteredData);
 
@@ -88,8 +88,8 @@ const ShowMeasures = ({secondaryTabValue}) => {
 
     const handleChangeActive = async (checked, measureId) => {
         try {
-            await changeActiveMeasure({active: checked, measureId}).unwrap();
-        }catch (err){}
+            await changeActiveMeasure({ active: checked, measureId }).unwrap();
+        } catch (err) { }
     }
 
     if (errorGetMeasures) return <h3>ERROR: {errorGetMeasures.error}</h3>
@@ -98,7 +98,7 @@ const ShowMeasures = ({secondaryTabValue}) => {
     return (
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allMeasures}>
-                <Box sx={{ p: 2}}>
+                <Box sx={{ p: 2 }}>
                     {(secondaryTabValue === 1 ? measursActive : measursOff).length > 0 ? (
                         (secondaryTabValue === 1 ? measursActive : measursOff).map(measure => (
                             <div key={measure._id}>
@@ -110,14 +110,14 @@ const ShowMeasures = ({secondaryTabValue}) => {
                                     </Grid>
                                     <Grid item  >
                                         {errorChangeActivemeasure && '!'}
-                                        <FormControlLabel 
+                                        <FormControlLabel
                                             label={measure.active ? 'פעיל' : 'לא פעיל'}
                                             control={
-                                            <Switch 
-                                                name="active" 
-                                                checked={measure.active || false} 
-                                                onChange={e => handleChangeActive(e.target.checked, measure._id) }
-                                            />
+                                                <Switch
+                                                    name="active"
+                                                    checked={measure.active || false}
+                                                    onChange={e => handleChangeActive(e.target.checked, measure._id)}
+                                                />
                                             }
                                         />
                                     </Grid>

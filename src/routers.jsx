@@ -1,21 +1,20 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { Layout } from './App';
-import { Home } from './pages/home'; 
+import { Home } from './pages/home';
 import { Orders } from './pages/orders';
 import { OldOrders } from './pages/oldOrders.jsx';
 import { OrderManagement } from './pages/orderManagement.jsx';
-import { PrivateArea } from './pages/privateArea'; 
-import { Users } from './components/pages/Users.jsx';
-import { Products } from './components/pages/Products.jsx';
-import { Supplier } from './components/pages/Supplier.jsx';
-import { Measure } from './components/pages/Measure.jsx';
-import { Categories } from './components/pages/Categories.jsx';
-import { Branches } from './components/pages/Branches.jsx';
+import { Users } from './pages/subPages/Users.jsx';
+import { Products } from './pages/subPages/Products.jsx';
+import { Supplier } from './pages/subPages/Supplier.jsx';
+import { Measure } from './pages/subPages/Measure.jsx';
+import { Categories } from './pages/subPages/Categories.jsx';
+import { Branches } from './pages/subPages/Branches.jsx';
 import { EmailSettings } from './pages/EmailSettings.jsx';
 import { IssuingReports } from './pages/IssuingReports.jsx';
 import { Logger } from './pages/logger.jsx';
 import { NoEntry } from './pages/noEntry.jsx';
-import ProtectedRoute  from './ProtectedRoute.jsx';
+import ProtectedRoute from './ProtectedRoute.jsx';
 
 export const routers = createBrowserRouter([{
     element: <Layout />,
@@ -34,33 +33,32 @@ export const routers = createBrowserRouter([{
         },
         {
             path: "/orderManagement",
-            element:  <ProtectedRoute element={OrderManagement} action="enter" subject="PendingOrders" /> 
+            element: <ProtectedRoute element={OrderManagement} action="enter" subject="PendingOrders" />
         },
         {
-            path: "/oldOrders", 
+            path: "/oldOrders",
             element: <ProtectedRoute element={OldOrders} action="enter" subject="OldOrder" />
         },
         {
-            path: "/issuingReports", 
+            path: "/issuingReports",
             element: <ProtectedRoute element={IssuingReports} action="enter" subject="IssuingReport" />
         },
         {
             path: "emailSettings",
-            element: <ProtectedRoute element={EmailSettings} action="enter" subject="Settings" /> 
+            element: <ProtectedRoute element={EmailSettings} action="enter" subject="Settings" />
         },
         {
             path: "/systemManagement",
-            element: <ProtectedRoute element={PrivateArea} action="enter" subject="NavPrivet" />,
             children: [
-                {path: "Users", element: <ProtectedRoute element={Users} action="enter" subject="CreateUser" /> },
-                {path: "products", element: <ProtectedRoute element={Products} action="enter" subject="Product" /> },
-                {path: "supplier", element: <ProtectedRoute element={Supplier} action="enter" subject="Supplier" /> },
-                {path: "measure", element: <ProtectedRoute element={Measure} action="enter" subject="Measure" /> },
-                {path: "categories", element: <ProtectedRoute element={Categories} action="enter" subject="Category" /> },
-                {path: "Branches", element: <ProtectedRoute element={Branches} action="enter" subject="Branches" /> },
-                {path: "logger", element: <ProtectedRoute element={Logger} action="enter" subject="Log" /> },
+                { path: "Users", element: <ProtectedRoute element={Users} action="enter" subject="CreateUser" /> },
+                { path: "products", element: <ProtectedRoute element={Products} action="enter" subject="Product" /> },
+                { path: "supplier", element: <ProtectedRoute element={Supplier} action="enter" subject="Supplier" /> },
+                { path: "measure", element: <ProtectedRoute element={Measure} action="enter" subject="Measure" /> },
+                { path: "categories", element: <ProtectedRoute element={Categories} action="enter" subject="Category" /> },
+                { path: "Branches", element: <ProtectedRoute element={Branches} action="enter" subject="Branches" /> },
+                { path: "logger", element: <ProtectedRoute element={Logger} action="enter" subject="Log" /> },
             ]
         },
-  
+
     ]
 }])

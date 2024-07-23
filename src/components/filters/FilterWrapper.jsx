@@ -29,41 +29,41 @@ export const FilterWrapper = ({ filters, filterFields, updateFilter }) => {
                 return option.measureName;
             case 'branch':
                 return option.nameBranch;
-            case 'supplier': 
+            case 'supplier':
                 return option.nameSupplier
             default:
                 return '';
         }
     }
 
-  return (
-      <Box>
-          <TextField
-              fullWidth
-              label="חיפוש חופשי"
-              value={filters.searchText}
-              onChange={(e) => updateFilter('searchText', e.target.value)}
-              margin="normal"
-          />
-          {filterFields.map((filterType) => (
-              <FormControl fullWidth key={filterType} margin="normal">
-                  <InputLabel>{filterType}</InputLabel>
-                  <Select
-                      value={filters[filterType] || ''}
-                      onChange={(e) => updateFilter(filterType, e.target.value)}
-                      label={filterType}
-                  >
-                      <MenuItem value="">
-                          <em>נקה</em>
-                      </MenuItem>
-                      {filterOptions[filterType].map((option) => (
-                          <MenuItem key={option._id} value={getOptionLabel(filterType, option)}>
-                              {getOptionLabel(filterType, option)}
-                          </MenuItem>
-                      ))}
-                  </Select>
-              </FormControl>
-          ))}
-      </Box>
-  );
+    return (
+        <Box>
+            <TextField
+                fullWidth
+                label="חיפוש חופשי"
+                value={filters.searchText}
+                onChange={(e) => updateFilter('searchText', e.target.value)}
+                margin="normal"
+            />
+            {filterFields.map((filterType) => (
+                <FormControl fullWidth key={filterType} margin="normal">
+                    <InputLabel>{filterType}</InputLabel>
+                    <Select
+                        value={filters[filterType] || ''}
+                        onChange={(e) => updateFilter(filterType, e.target.value)}
+                        label={filterType}
+                    >
+                        <MenuItem value="">
+                            <em>נקה</em>
+                        </MenuItem>
+                        {filterOptions[filterType].map((option) => (
+                            <MenuItem key={option._id} value={getOptionLabel(filterType, option)}>
+                                {getOptionLabel(filterType, option)}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            ))}
+        </Box>
+    );
 };

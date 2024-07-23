@@ -1,23 +1,25 @@
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { useGetProductsQuery } from '../dl/api/productsApi';
 import { useSendAnInvitationMutation } from "../dl/api/ordersApi";
 import { defineAbilitiesFor } from '../auth/abilities';
 import { actions } from "../dl/slices/orders";
 import { StackChips, IconRemoveButton, IconAddButton, ChangeQuantity, LoudingPage, AppBarSystemManagement, TooltipComponent } from "../components/indexComponents";
-import { Fab, Box, Stack, Paper, Divider, Grid, ListItemText, Typography, 
-    TextField, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import {
+    Fab, Box, Stack, Paper, Divider, Grid, ListItemText, Typography,
+    TextField, TableBody, TableCell, TableHead, TableRow
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SendIcon from '@mui/icons-material/Send';
-import { DialogSendInvitation } from "../components/cssComponents/DialogSendInvitation";
-import { FilterRow } from "../components/cssComponents/FilterRow";
-import { useFilters } from "../components/hooks/useFilters";
+import { DialogSendInvitation } from "../components/DialogSendInvitation";
+import { FilterRow } from "../components/filters/FilterRow";
+import { useFilters } from "../hooks/useFilters";
 
 export const Orders = () => {
     const { data: allProducts, error: errorGetProducts, isLoading: isLoadingGetProducts } = useGetProductsQuery();
     const [sendAnInvitation, { error: errorSendAnInvitation, isLoading: isLoadingSendInvitaion }] = useSendAnInvitationMutation();
-    const { user } = useSelector( state => state.users);
-    const { cartToBookingManager, errorCartToBookingManager } = useSelector( state => state.orders);
+    const { user } = useSelector(state => state.users);
+    const { cartToBookingManager, errorCartToBookingManager } = useSelector(state => state.orders);
 
     const ability = defineAbilitiesFor(user);
 
@@ -27,21 +29,21 @@ export const Orders = () => {
     const filterFields = ['category', 'branch', 'unitOfMeasure'];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
-    useEffect( () => {
+    useEffect(() => {
         if (allProducts) {
             const sortedProducts = [...allProducts]
-            .sort((a, b) => a.category?.nameCategory.localeCompare(b.category?.nameCategory));
+                .sort((a, b) => a.category?.nameCategory.localeCompare(b.category?.nameCategory));
             setData(sortedProducts)
         }
-    },[allProducts]);
+    }, [allProducts]);
 
     const SendAnInvitation = async () => {
         try {
             await sendAnInvitation(
-                {user, whichBranchToSend: cartToBookingManager[0]?.branch._id, noteToOrder}
+                { user, whichBranchToSend: cartToBookingManager[0]?.branch._id, noteToOrder }
             ).unwrap();
             setOpenDialog(false);
-        }catch (err) {
+        } catch (err) {
             console.log(err, errorSendAnInvitation);
         }
     }
@@ -53,31 +55,31 @@ export const Orders = () => {
         textAlign: 'center',
         color: theme.palette.text.secondary,
         padding: '20px 20px 0px 0px'
-      }));
+    }));
 
     const [valueTab, setValueTab] = useState(1);
 
     const changeTab = (e, newValue) => {
         setValueTab(newValue)
     }
-    
+
     if (errorGetProducts) return <h3>ERROR: {errorGetProducts.error}</h3>
     if (isLoadingGetProducts) return <LoudingPage />;
-   
-    return(
+
+    return (
         <>
             <AppBarSystemManagement secondaryTabValue={valueTab} onSecondaryTabChange={changeTab} />
-            <Box sx={{display: 'flex', p: 1}}>
+            <Box sx={{ display: 'flex', p: 1 }}>
                 <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allProducts}>
                     <Stack
-                    sx={{p: 1}}
+                        sx={{ p: 1 }}
                         direction="column"
                         justifyContent="flex-start"
                         alignItems="stretch"
                         spacing={1}
                     >
-                        { filteredData.length > 0 ? (
-                            filteredData.map( (item, i) => (
+                        {filteredData.length > 0 ? (
+                            filteredData.map((item, i) => (
                                 <Item key={item._id}>
                                     {ability.can('read', 'Order', item.branch._id) ? (
                                         <div>
@@ -90,29 +92,29 @@ export const Orders = () => {
                         }
                     </Stack>
                     {/* <TooltipComponent title='שלח הזמנה'> */}
-                        <Fab 
-                            color="primary" 
-                            onClick={() => setOpenDialog(true)}
-                            sx={{
+                    <Fab
+                        color="primary"
+                        onClick={() => setOpenDialog(true)}
+                        sx={{
                             position: 'fixed',
                             bottom: 16,
                             right: 16,
-                            }}
-                        >
-                            <SendIcon />
-                        </Fab>
+                        }}
+                    >
+                        <SendIcon />
+                    </Fab>
                     {/* </TooltipComponent> */}
                 </FilterRow>
-                { openDialog && <DialogSendInvitation 
-                    setOpenDialog={setOpenDialog} 
+                {openDialog && <DialogSendInvitation
+                    setOpenDialog={setOpenDialog}
                     isLoudingSendOrder={isLoadingSendInvitaion}
                     showTable={showTable}
                     setShowTable={setShowTable}
                     errorMessage={errorSendAnInvitation}
                     cart={cartToBookingManager}
                     sendOrder={SendAnInvitation}
-                    user={user} 
-                    to={ cartToBookingManager.length > 0 ? cartToBookingManager[0].branch.nameBranch : null }
+                    user={user}
+                    to={cartToBookingManager.length > 0 ? cartToBookingManager[0].branch.nameBranch : null}
                     tableHead={
                         <TableHead>
                             <TableRow>
@@ -125,7 +127,7 @@ export const Orders = () => {
                     }
                     tableBody={
                         <TableBody>
-                            {cartToBookingManager.map( item => (
+                            {cartToBookingManager.map(item => (
                                 <TableRow key={item._id}>
                                     <TableCell align="right">{item.category.nameCategory}</TableCell>
                                     <TableCell align="right">{item.nameProduct}</TableCell>
@@ -133,7 +135,7 @@ export const Orders = () => {
                                     <TableCell align="right">{item.quantity}</TableCell>
                                 </TableRow>
                             ))}
-                        </TableBody> 
+                        </TableBody>
                     }
                     fields={
                         <TextField
@@ -143,7 +145,7 @@ export const Orders = () => {
                             rows={4}
                             placeholder="שים לב ל..."
                             sx={{ mt: 2, width: '100%', minWidth: '300px' }}
-                            onChange={ e => setNoteToOrder(e.target.value)}
+                            onChange={e => setNoteToOrder(e.target.value)}
                         />
                     }
                 />}
@@ -155,29 +157,29 @@ export const Orders = () => {
 const ItemsBox = ({ item }) => {
     const dispatch = useDispatch();
     const { nameProduct, branch, _id, category, unitOfMeasure } = item;
-    
-    const productActive = useSelector( state => {
-        return state.orders.cartToBookingManager.find( pr => pr._id === _id);
+
+    const productActive = useSelector(state => {
+        return state.orders.cartToBookingManager.find(pr => pr._id === _id);
     });
     const { errorIncrease, errorChangeQuantity } = useSelector(state => state.orders.errorCartToBookingManager);
-    
+
     const onIncrease = () => {
-        dispatch( actions.increaseOne({...item}))
+        dispatch(actions.increaseOne({ ...item }))
     }
     const onDecrease = () => {
-        dispatch( actions.decreaseOne(_id))
+        dispatch(actions.decreaseOne(_id))
     }
     const onChangeQuantity = e => {
-        const {value} = e.target;
-        dispatch( actions.changeQuantityToBookingManager(
-            {...item, quantity: value}
+        const { value } = e.target;
+        dispatch(actions.changeQuantityToBookingManager(
+            { ...item, quantity: value }
         ))
     }
-    
-    return (    
-        <Grid container spacing={1} alignItems="start" 
-        textAlign='start' justifyContent='space-between' sx={{paddingLeft: '20px'}}>
-            <Grid item xs={12}>   
+
+    return (
+        <Grid container spacing={1} alignItems="start"
+            textAlign='start' justifyContent='space-between' sx={{ paddingLeft: '20px' }}>
+            <Grid item xs={12}>
                 <StackChips branch={branch} catgory={category} />
             </Grid>
             <Grid item>
@@ -186,9 +188,9 @@ const ItemsBox = ({ item }) => {
             <Grid item>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <IconRemoveButton action={onDecrease} title={'הפחת כמות'} />
-                    <ChangeQuantity 
-                        action={onChangeQuantity} 
-                        quantity={productActive?.quantity ?? 0} 
+                    <ChangeQuantity
+                        action={onChangeQuantity}
+                        quantity={productActive?.quantity ?? 0}
                         title={errorChangeQuantity ? errorChangeQuantity : 'שנה כמות'} />
                     <IconAddButton action={onIncrease} title={errorIncrease ? errorIncrease : 'הוסף כמות'} />
                 </Box>

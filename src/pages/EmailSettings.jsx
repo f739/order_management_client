@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { handleFormHook } from '../components/HandleFormHook';
+import { handleFormHook } from '../hooks/HandleFormHook';
 import { toast } from "react-toastify";
 import { useGetAuthUrlQuery } from '../dl/api/settingsCompanyApi';
 import '../css/settings.css';
@@ -7,17 +7,17 @@ const URL = import.meta.env.VITE_API_URL
 import $ from 'axios';
 
 export const EmailSettings = () => {
-    const [editDetalseEmail, setEditDetalseEmail] = useState({email: '', code: ''});
+    const [editDetalseEmail, setEditDetalseEmail] = useState({ email: '', code: '' });
     // const [getAuthUrl, ] = useGetAuthUrlQuery;
     const sendForm = async () => {
         if (editDetalseEmail.code && editDetalseEmail.email) {
             try {
                 const res = await $.put(`${URL}/settings/email`, editDetalseEmail);
                 toast.success(res.data.message);
-            }catch (err) {
+            } catch (err) {
                 toast.error(err.response.data.message);
             }
-        }else {
+        } else {
             toast.error('חסר פרטים הכרחיים בטופס');
         }
     }
@@ -25,7 +25,7 @@ export const EmailSettings = () => {
         try {
             const res = await $.put(`${URL}/settings/deleteDbOrdersReceived`);
             toast.success(res.data.message);
-        }catch (err) {
+        } catch (err) {
             toast.error(err.response.data.message);
         }
     }
@@ -36,7 +36,7 @@ export const EmailSettings = () => {
             console.log(res);
             const { url } = res.data
             window.open(url, '_blank');
-        }catch (err) {
+        } catch (err) {
             console.log(err);
         }
 
@@ -46,20 +46,20 @@ export const EmailSettings = () => {
             <div className='form-edit-detales-email form'>
                 <div> <strong>שנה הגדרות אימייל לשליחה:</strong></div>
                 <label>אימייל:</label>
-                    <input type="email" name="email"
-                    onChange={ e => handleFormHook(e.target, setEditDetalseEmail)}/>
+                <input type="email" name="email"
+                    onChange={e => handleFormHook(e.target, setEditDetalseEmail)} />
                 <label>קוד בן 16 ספרות:</label>
-                    <input type="text" name="code"  
-                    onChange={ e => handleFormHook(e.target, setEditDetalseEmail)}/>
+                <input type="text" name="code"
+                    onChange={e => handleFormHook(e.target, setEditDetalseEmail)} />
                 <button onClick={sendForm}>שנה פרטים</button>
             </div>
             <div className='form-edit-detales-email form'>
-                <div style={{color: 'red'}}>זהירות...</div>
+                <div style={{ color: 'red' }}>זהירות...</div>
                 <button onClick={deleteDbOrdersReceived} className='delete-db'>מחק נתונים! מהזמנות שהתקבלו כבר</button>
             </div>
             <div className='form-edit-detales-email form'>
-               <button onClick={getAuthUrl}>קבל טוקן מגגוגל</button>
-               
+                <button onClick={getAuthUrl}>קבל טוקן מגגוגל</button>
+
             </div>
 
         </>

@@ -1,5 +1,5 @@
 import { mainApi } from './mainApi';
-import { fieldsAreNotEmpty } from '../../components/hooks/fanksHook';
+import { fieldsAreNotEmpty } from '../../hooks/fanksHook';
 import { defineAbilitiesFor } from '../../auth/abilities';
 import { actions } from '../slices/products';
 

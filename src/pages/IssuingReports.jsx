@@ -3,31 +3,31 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useState } from "react";
 import { NoEntry } from "./noEntry";
 import { sendProductReport, sendBookkeepingReport } from "../dl/slices/issuingReports";
-import { SelectSuppliersHook } from "../components/SelectSuppliersHook";
-import { SelectProductsHook } from "../components/selectProductsHook";
+// import { SelectSuppliersHook } from "../components/SelectSuppliersHook";
+// import { SelectProductsHook } from "../components/selectProductsHook";
 import { CustomSelect } from "../components/CustomSelect";
-import { handleFormHook } from "../components/HandleFormHook";
+import { handleFormHook } from "../hooks/HandleFormHook";
 import '../css/issuingReports.css';
 
 export const IssuingReports = () => {
     const dispatch = useDispatch()
     const [formToDeliver, setFormToDeliver] = useState(
-        {_idSupplier: '', skuProduct: '', dateStart: '', dateEnd: '', branch: '' });
-    const {license, email} = useSelector( state => state.users.user);
+        { _idSupplier: '', skuProduct: '', dateStart: '', dateEnd: '', branch: '' });
+    const { license, email } = useSelector(state => state.users.user);
     const [message, setMessage] = useState('');
     const [messageBookkeepingReport, setMessageBookkeepingReport] = useState('');
 
-    const SendProductReport = async() => {
+    const SendProductReport = async () => {
         if (formToDeliver.skuProduct === '') return setMessage('לא נבחר מוצר');
         try {
-            const actionResult = await dispatch( sendProductReport({...formToDeliver, email}));
+            const actionResult = await dispatch(sendProductReport({ ...formToDeliver, email }));
             const result = unwrapResult(actionResult);
             setMessage(result.message);
-        }catch (error) {
+        } catch (error) {
             setMessage(error)
         }
     }
-    const SendBookkeepingReport = async() => {
+    const SendBookkeepingReport = async () => {
         try {
             const actionResult = await dispatch(sendBookkeepingReport(email));
             const result = unwrapResult(actionResult);
@@ -46,8 +46,8 @@ export const IssuingReports = () => {
                     <SelectSuppliersHook set={setFormToDeliver} form={formToDeliver} />
                     <CustomSelect set={setFormToDeliver} form={formToDeliver} showAllFactoryLine={true} />
                     <div className="choose-date">
-                        <input type="date" name="dateStart" onChange={ e => handleFormHook( e.target, setFormToDeliver)} />
-                        <input type="date" name="dateEnd" onChange={ e => handleFormHook( e.target, setFormToDeliver)} />
+                        <input type="date" name="dateStart" onChange={e => handleFormHook(e.target, setFormToDeliver)} />
+                        <input type="date" name="dateEnd" onChange={e => handleFormHook(e.target, setFormToDeliver)} />
                     </div>
                     <button onClick={SendProductReport} className="send-report" >שלח</button>
                     {message !== '' && <span className="message">{message}</span>}
@@ -58,7 +58,7 @@ export const IssuingReports = () => {
                     <button onClick={SendBookkeepingReport} className="send-report">שלח</button>
                     {messageBookkeepingReport !== '' && <span className="message">{messageBookkeepingReport}</span>}
                 </div>
-                
+
             </div>
         </>
     )

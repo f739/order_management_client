@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { handleFormHook } from "../HandleFormHook";
+import { handleFormHook } from "../../hooks/HandleFormHook";
 import {
     useGetSuppliersQuery,
     useCreateNewSupplierMutation,
     useRemoveSupplierMutation,
     useEditSupplierMutation
 } from '../../dl/api/suppliersApi';
-import { AppBarSystemManagement, LoudingPage, CustomField } from '../indexComponents'
+import { AppBarSystemManagement, LoudingPage, CustomField } from '../../components/indexComponents'
 import { Box, Button, Stack, ListItemText, IconButton, Grid, Divider, CircularProgress, Chip, Typography, useMediaQuery, Switch, FormControlLabel } from '@mui/material'
-import { useFilters } from '../hooks/useFilters';
+import { useFilters } from '../../hooks/useFilters';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
-import { FilterRow } from "../cssComponents/FilterRow";
-import { DialogSendInvitation } from "../cssComponents/DialogSendInvitation";
-import { useActiveInactiveSort } from "../hooks/useActiveInactiveSort";
+import { FilterRow } from "../../components/filters/FilterRow";
+import { DialogSendInvitation } from "../../components/DialogSendInvitation";
+import { useActiveInactiveSort } from "../../hooks/useActiveInactiveSort";
 
 export const Supplier = () => {
     const [newSupplier, setNewSupplier] = useState({ nameSupplier: '', tel: '', email: '', supplierNumber: '' });
@@ -39,10 +39,10 @@ export const Supplier = () => {
             boxShadow: '1px 1px 4px',
             margin: '0px 5px'
         }}>
-            <AppBarSystemManagement 
-                secondaryTabs={secondaryTabs} 
-                secondaryTabValue={secondaryTabValue} 
-                onSecondaryTabChange={changeTab} 
+            <AppBarSystemManagement
+                secondaryTabs={secondaryTabs}
+                secondaryTabValue={secondaryTabValue}
+                onSecondaryTabChange={changeTab}
             />
             {secondaryTabValue === 0 ?
                 (<Stack sx={{ p: '20px' }} spacing={1}>
@@ -70,7 +70,7 @@ export const Supplier = () => {
                         label="אמייל"
                         onChange={e => handleFormHook(e.target, setNewSupplier)}
                     />
-                   
+
                     {error && <Typography variant="button" color="error" >{error.message}</Typography>}
                     {data && <Typography variant="button" color="success">{data.message}</Typography>}
                     <Button onClick={handleSaveNewSupplier} color="primary" variant="contained" disabled={isLoading}>
@@ -92,57 +92,57 @@ const ShowSuppliers = ({ secondaryTabValue }) => {
     const filterFields = [];
     const { filteredData, filters, updateFilter, setData, data } = useFilters(filterFields);
 
-    useEffect( () => {
+    useEffect(() => {
         if (allSuppliers) {
             setData(allSuppliers)
         }
-    },[allSuppliers]);
+    }, [allSuppliers]);
 
     const [suppliersActive, suppliersOff] = useActiveInactiveSort(filteredData);
-    
+
     if (errorGetsuppliers) return <h3>ERROR: {errorGetsuppliers.error}</h3>
     if (isLoadingGetsuppliers) return <LoudingPage />;
 
     return (
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={data}>
-                <Box sx={{ p: 2}}>
-                {(secondaryTabValue === 1 ? suppliersActive : suppliersOff).length > 0 ? (
-                    (secondaryTabValue === 1 ? suppliersActive : suppliersOff).map(supplier => (
-                        <div key={supplier._id}>
-                            <Grid container alignItems="center" spacing={1}>
-                                <Grid item xs={5} sx={{ minWidth: '100px' }}>
-                                    <ListItemText
-                                        primary={supplier.nameSupplier}
-                                        secondary={supplier.supplierNumber}
-                                    />
+                <Box sx={{ p: 2 }}>
+                    {(secondaryTabValue === 1 ? suppliersActive : suppliersOff).length > 0 ? (
+                        (secondaryTabValue === 1 ? suppliersActive : suppliersOff).map(supplier => (
+                            <div key={supplier._id}>
+                                <Grid container alignItems="center" spacing={1}>
+                                    <Grid item xs={5} sx={{ minWidth: '100px' }}>
+                                        <ListItemText
+                                            primary={supplier.nameSupplier}
+                                            secondary={supplier.supplierNumber}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6} sx={{ minWidth: '100px' }}>
+                                        <ListItemText
+                                            primary={supplier.email}
+                                            secondary={supplier.tel}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={1} >
+                                        <IconButton onClick={() => setShowEditSupplier(supplier)}>
+                                            <MoreVertOutlinedIcon />
+                                        </IconButton>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={6} sx={{ minWidth: '100px' }}>
-                                    <ListItemText
-                                        primary={supplier.email}
-                                        secondary={supplier.tel}
-                                    />
-                                </Grid>
-                                <Grid item xs={1} >
-                                    <IconButton onClick={() => setShowEditSupplier(supplier)}>
-                                        <MoreVertOutlinedIcon />
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
-                            <Divider />
+                                <Divider />
 
-                            {showEditSupplier._id === supplier._id &&
-                                <EditSupplier 
-                                    setShowEditSupplier={setShowEditSupplier}
-                                    supplier={supplier}
-                                />
-                            }
-                        </div>
-                    ))) : (<div>אין ספקים להצגה</div>)
-                }
-            </Box>
-        </FilterRow>
-    </Box>
+                                {showEditSupplier._id === supplier._id &&
+                                    <EditSupplier
+                                        setShowEditSupplier={setShowEditSupplier}
+                                        supplier={supplier}
+                                    />
+                                }
+                            </div>
+                        ))) : (<div>אין ספקים להצגה</div>)
+                    }
+                </Box>
+            </FilterRow>
+        </Box>
     )
 }
 
@@ -151,19 +151,19 @@ const EditSupplier = props => {
     const [removeSupplier, { error: errorRemoveSupplier, isLoading: isLoadingDelete }] = useRemoveSupplierMutation();
     const [editSupplier, { error: errorEdit, isLoading: isLoadingEdit }] = useEditSupplierMutation();
     const [formEdit, setFormEdit] = useState(supplier);
-    
+
     const fields = [
         { name: 'nameSupplier', label: 'שם ספק', typeInput: 'text', type: 'input' },
         { name: 'tel', label: 'פלאפון ספק', typeInput: 'tel', type: 'input' },
         { name: 'email', label: 'אימייל ספק', typeInput: 'email', type: 'input' },
         { name: 'supplierNumber', label: 'מספר ספק', typeInput: 'text', type: 'input' }
     ];
-    
+
     const handleEditItem = async supplierUpdated => {
         try {
             await editSupplier(supplierUpdated).unwrap();
             setShowEditSupplier(false);
-        }catch (err) {}
+        } catch (err) { }
     }
 
     const deleteSupplier = async _id => {
@@ -174,7 +174,7 @@ const EditSupplier = props => {
     }
 
     return (
-        <DialogSendInvitation 
+        <DialogSendInvitation
             title='ערוך ספק'
             cart={false}
             setOpenDialog={setShowEditSupplier}
@@ -187,19 +187,19 @@ const EditSupplier = props => {
             actionDelete={() => deleteSupplier(supplier._id)}
             fields={
                 <>
-                    <FormControlLabel 
+                    <FormControlLabel
                         label={formEdit.active ? 'פעיל' : 'לא פעיל'}
                         control={
-                        <Switch 
-                            name="active" 
-                            checked={formEdit.active || false} 
-                            onChange={e => setFormEdit(old => ({...old, active: e.target.checked}))}
-                        />
-                    }/>
-                    
-                    {fields.map( field => (
+                            <Switch
+                                name="active"
+                                checked={formEdit.active || false}
+                                onChange={e => setFormEdit(old => ({ ...old, active: e.target.checked }))}
+                            />
+                        } />
+
+                    {fields.map(field => (
                         <React.Fragment key={field.name}>
-                            <CustomField 
+                            <CustomField
                                 name={field.name}
                                 value={formEdit[field.name] || ''}
                                 label={field.label}
