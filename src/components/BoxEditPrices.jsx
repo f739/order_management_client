@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { handleFormHook } from './HandleFormHook';
 import { useGetSuppliersQuery } from '../dl/api/suppliersApi';
 import { useAddPriceMutation, useDeletePriceMutation } from '../dl/api/productsApi';
-import '../css/boxPrice.css';
 import { DialogSendInvitation } from './cssComponents/DialogSendInvitation';
 import { CustomField, CustomSelect, LoudingPage } from './indexComponents';
 import { AppBar, Tabs, Tab, Button, Typography, Box, IconButton } from '@mui/material';

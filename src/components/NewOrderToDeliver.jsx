@@ -9,7 +9,6 @@ import {Email as EmailIcon, WhatsApp as WhatsAppIcon, GetApp as GetAppIcon,
      } from '@mui/icons-material';
 
 import { DialogSendInvitation } from "./cssComponents/DialogSendInvitation";  
-import '../css/newOrderToDeliver.css';
 
 export const NewOrderToDeliver = ({setShowSendEmail}) => {
     const { cartToDeliver } = useSelector( state => state.orders);

@@ -14,7 +14,6 @@ import moment from 'moment';
 import { Grid, Typography, Link, ListItemText, Divider, Box} from "@mui/material";
 import { FilterRow } from "../components/cssComponents/FilterRow";
 import { useFilters } from "../components/hooks/useFilters";
-import '../css/oldOrders.css';
 
 export const OldOrders = () => {
     const { data: allOldOrders, error: errorGetOldOrders, isLoading: isLoadingGetOldOrders } = useGetOldOrdersQuery();

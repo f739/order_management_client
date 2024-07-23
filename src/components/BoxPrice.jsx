@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { handleFormHook } from './HandleFormHook';
 import { useGetSuppliersQuery } from '../dl/api/suppliersApi';
 import { useAddPriceMutation } from '../dl/api/productsApi';
-import '../css/boxPrice.css';
 
 export const BoxPrice = ({ productId, setShowPrices, prices, license }) => {
     const [newPrice, setNewPrice] = useState({price: '', _idSupplier: ''});

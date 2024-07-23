@@ -14,7 +14,6 @@ import SendIcon from '@mui/icons-material/Send';
 import { useFilters } from '../components/hooks/useFilters';
 import { FilterRow } from '../components/cssComponents/FilterRow';
 import { BoxEditPrices } from "../components/BoxEditPrices";
-import '../css/orderManagement.css';
 
 export const OrderManagement = () => {
   const { data: allActiveOrders, error: errorGetActiveOrders, isLoading: isLoadingGetActiveOrders } = useGetActiveOrdersQuery();
