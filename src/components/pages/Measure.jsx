@@ -3,18 +3,20 @@ import { handleFormHook } from '../HandleFormHook';
 import {
     useGetMeasuresQuery,
     useCreateNewMeasureMutation,
-    useRemoveMeasureMutation
+    useRemoveMeasureMutation,
+    useChangeActiveMeasureMutation
 } from '../../dl/api/measuresApi';
 import { AppBarSystemManagement, IconDeleteButton, LoudingPage, CustomField } from "../indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider} from "@mui/material";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, FormControlLabel, Switch} from "@mui/material";
 import { useFilters } from '../hooks/useFilters';
 import { FilterRow } from "../cssComponents/FilterRow";
+import { useActiveInactiveSort } from "../hooks/useActiveInactiveSort";
 
 export const Measure = () => {
     const [newMeasure, setNewMeasure] = useState({ measureName: '' });
     const [createNewMeasure, { error, isLoading, data }] = useCreateNewMeasureMutation();
     const [secondaryTabValue, setSecondaryTabValue] = useState(1);
-    const secondaryTabs = ['צור יחידת מידה חדשה', 'יחידות מידה'];
+    const secondaryTabs = ['צור יחידת מידה חדשה', 'יחידות מידה פעילות', 'יחידות מידה שאינן פעילות' ];
 
     const handleSaveNewMeasure = async () => {
         try {
@@ -54,16 +56,17 @@ export const Measure = () => {
                     <Button onClick={handleSaveNewMeasure} color="primary" variant="contained" disabled={isLoading}>
                         {isLoading ? <CircularProgress size={24} /> : 'שמור'}
                     </Button>
-                </Stack>) : <ShowMeasures />   
+                </Stack>) : <ShowMeasures secondaryTabValue={secondaryTabValue} />   
             }
         </Box>
     )
 };
 
-const ShowMeasures = () => {
+const ShowMeasures = ({secondaryTabValue}) => {
     
     const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
     const [removeMeasure, { error: errorRemoveMeasure }] = useRemoveMeasureMutation();
+    const [changeActiveMeasure, { error: errorChangeActivemeasure }] = useChangeActiveMeasureMutation();
 
 
     const filterFields = [];
@@ -75,10 +78,18 @@ const ShowMeasures = () => {
         }
     },[allMeasures]);
 
+    const [measursActive, measursOff] = useActiveInactiveSort(filteredData);
+
     const deleteMeasure = async _id => {
         try {
             await removeMeasure(_id).unwrap();
         } catch (err) { }
+    }
+
+    const handleChangeActive = async (checked, measureId) => {
+        try {
+            await changeActiveMeasure({active: checked, measureId}).unwrap();
+        }catch (err){}
     }
 
     if (errorGetMeasures) return <h3>ERROR: {errorGetMeasures.error}</h3>
@@ -88,14 +99,27 @@ const ShowMeasures = () => {
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allMeasures}>
                 <Box sx={{ p: 2}}>
-                    {filteredData.length > 0 ?
-                        filteredData.map(measure => (
+                    {(secondaryTabValue === 1 ? measursActive : measursOff).length > 0 ? (
+                        (secondaryTabValue === 1 ? measursActive : measursOff).map(measure => (
                             <div key={measure._id}>
                                 <Grid container alignItems="center" justifyContent="space-between" >
                                     <Grid item>
                                         <Typography>
                                             {measure.measureName}
                                         </Typography>
+                                    </Grid>
+                                    <Grid item  >
+                                        {errorChangeActivemeasure && '!'}
+                                        <FormControlLabel 
+                                            label={measure.active ? 'פעיל' : 'לא פעיל'}
+                                            control={
+                                            <Switch 
+                                                name="active" 
+                                                checked={measure.active || false} 
+                                                onChange={e => handleChangeActive(e.target.checked, measure._id) }
+                                            />
+                                            }
+                                        />
                                     </Grid>
                                     <Grid item sx={{ p: 1 }}>
                                         <IconDeleteButton action={() => deleteMeasure(measure._id)}
@@ -104,7 +128,7 @@ const ShowMeasures = () => {
                                 </Grid>
                                 <Divider />
                             </div>
-                        )) : <Typography>אין יחידות מידה להצגה</Typography>
+                        ))) : <Typography>אין יחידות מידה להצגה</Typography>
                     }
                 </Box>
             </FilterRow>

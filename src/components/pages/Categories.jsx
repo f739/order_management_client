@@ -2,17 +2,20 @@ import { useEffect, useState } from "react";
 import { handleFormHook } from '../HandleFormHook';
 import { useGetCategoriesQuery,
     useCreateNewCategoryMutation,
-    useRemoveCategoryMutation } from '../../dl/api/categoriesApi';
+    useRemoveCategoryMutation,
+    useChangeActiveCategoryMutation
+} from '../../dl/api/categoriesApi';
 import { AppBarSystemManagement, IconDeleteButton, LoudingPage, CustomField } from "../indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider } from "@mui/material";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, FormControlLabel, Switch } from "@mui/material";
 import { useFilters } from '../hooks/useFilters';
 import { FilterRow } from "../cssComponents/FilterRow";
+import { useActiveInactiveSort } from "../hooks/useActiveInactiveSort";
 
 export const Categories = () => {
     const [newCategory, setNewCategory] = useState({nameCategory: ''});
     const [createNewCategory, { error, isLoading, data }] = useCreateNewCategoryMutation();
     const [secondaryTabValue, setSecondaryTabValue] = useState(1);
-    const secondaryTabs = ['צור קטגוריה חדשה', 'קטגוריות'];
+    const secondaryTabs = ['צור קטגוריה חדשה', 'קטגוריות פעילות', 'קטגוריות שאינן פעילות'];
 
     const handleSaveNewCategory = async () => {
         try {
@@ -54,16 +57,17 @@ export const Categories = () => {
                     </Button>
                 </Stack>) :
                 (
-                    <ShowCategories />
+                    <ShowCategories secondaryTabValue={secondaryTabValue} />
                 )
             }
         </Box>  
     )
 };
 
-const ShowCategories = () => {    
+const ShowCategories = ({secondaryTabValue}) => {    
     const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
     const [removeCategory, { error: errorRemoveCategory }] = useRemoveCategoryMutation();
+    const [changeActiveCategory, { error: errorChangeActiveCategory }] = useChangeActiveCategoryMutation();
 
     const filterFields = [];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
@@ -73,6 +77,14 @@ const ShowCategories = () => {
             setData(allCategories)
         }
     },[allCategories]);
+
+    const [categoriesActive, categoriesOff] = useActiveInactiveSort(filteredData);
+
+    const handleChangeActive = async (checked, categoryId) => {
+        try {
+            await changeActiveCategory({active: checked, categoryId}).unwrap();
+        }catch (err){}
+    }
 
     const deleteCategory = async _id => {
         try {
@@ -87,8 +99,8 @@ const ShowCategories = () => {
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allCategories}>
                 <Box sx={{ p: 2}}>
-                    {filteredData.length > 0 ?
-                        filteredData.map( category => (
+                {(secondaryTabValue === 1 ? categoriesActive : categoriesOff).length > 0 ? (
+                        (secondaryTabValue === 1 ? categoriesActive : categoriesOff).map(category => (
                             <div key={category._id}>
                             <Grid container alignItems="center" justifyContent="space-between" >
                                 <Grid item>
@@ -96,6 +108,19 @@ const ShowCategories = () => {
                                         {category.nameCategory}
                                     </Typography>
                                 </Grid>
+                                <Grid item  >
+                                        {errorChangeActiveCategory && '!'}
+                                        <FormControlLabel 
+                                            label={category.active ? 'פעיל' : 'לא פעיל'}
+                                            control={
+                                            <Switch 
+                                                name="active" 
+                                                checked={category.active || false} 
+                                                onChange={e => handleChangeActive(e.target.checked, category._id) }
+                                            />
+                                            }
+                                        />
+                                    </Grid>
                                 <Grid item sx={{p: 1}}>
                                     <IconDeleteButton action={() => deleteCategory(category._id)} 
                                     title={errorRemoveCategory?.message ?? 'מחק'} />
@@ -103,7 +128,7 @@ const ShowCategories = () => {
                             </Grid>
                             <Divider/>
                             </div>
-                        )) : <Typography>אין קטגוריות להצגה</Typography>
+                        ))) : <Typography>אין קטגוריות להצגה</Typography>
                     }
                 </Box>
             </FilterRow>

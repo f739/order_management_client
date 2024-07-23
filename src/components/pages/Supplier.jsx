@@ -12,6 +12,7 @@ import { useFilters } from '../hooks/useFilters';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { FilterRow } from "../cssComponents/FilterRow";
 import { DialogSendInvitation } from "../cssComponents/DialogSendInvitation";
+import { useActiveInactiveSort } from "../hooks/useActiveInactiveSort";
 
 export const Supplier = () => {
     const [newSupplier, setNewSupplier] = useState({ nameSupplier: '', tel: '', email: '', supplierNumber: '' });
@@ -97,14 +98,7 @@ const ShowSuppliers = ({ secondaryTabValue }) => {
         }
     },[allSuppliers]);
 
-    const [suppliersActive, suppliersOff] = filteredData.reduce((result, supplier) => {
-        if (supplier.active) {
-            result[0].push(supplier);
-        } else {
-            result[1].push(supplier);
-        }
-        return result;
-    }, [[], []]);
+    const [suppliersActive, suppliersOff] = useActiveInactiveSort(filteredData);
     
     if (errorGetsuppliers) return <h3>ERROR: {errorGetsuppliers.error}</h3>
     if (isLoadingGetsuppliers) return <LoudingPage />;

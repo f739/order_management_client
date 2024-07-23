@@ -19,6 +19,7 @@ import { useFilters } from '../hooks/useFilters';
 import { BoxEditPrices } from "../BoxEditPrices";
 import { actions } from "../../dl/slices/products";
 import { useDispatch, useSelector } from "react-redux";
+import { useActiveInactiveSort } from "../hooks/useActiveInactiveSort";
 
 export const Products = () => {
     const dispatch = useDispatch();
@@ -178,14 +179,7 @@ const ShowProducts = ({secondaryTabValue}) => {
         }
     },[allProducts]);
 
-    const [productsActive, productsOff] = filteredData.reduce((result, product) => {
-        if (product.active) {
-            result[0].push(product);
-        } else {
-            result[1].push(product);
-        }
-        return result;
-    }, [[], []]);
+    const [productsActive, productsOff] = useActiveInactiveSort(filteredData);
 
     if (errorGetProducts) return <h3>ERROR: {errorGetProducts.error}</h3>
     if (isLoadingGetProducts) return <LoudingPage />;

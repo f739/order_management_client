@@ -5,13 +5,15 @@ import { roles } from "../../data/roles";
 import {
     useGetUsersQuery,
     useCreateNewUserMutation,
-    useRemoveUserMutation
+    useRemoveUserMutation,
+    useChangeActiveUserMutation
 } from '../../dl/api/usersApi';
 import { useGetBranchesQuery } from "../../dl/api/branchesApi"
 import { AppBarSystemManagement, IconDeleteButton, LoudingPage, CustomField } from "../indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText } from "@mui/material";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText, FormControlLabel, Switch } from "@mui/material";
 import { FilterRow } from "../cssComponents/FilterRow";
 import { useFilters } from '../hooks/useFilters';
+import { useActiveInactiveSort } from '../hooks/useActiveInactiveSort';
 
 export const Users = () => {
     const [formCreateUser, setFormCreateUser] = useState(
@@ -96,15 +98,16 @@ export const Users = () => {
                     <Button onClick={createUser} color="primary" variant="contained" disabled={isLoading}>
                         {isLoading ? <CircularProgress size={24} /> : 'שמור'}
                     </Button>
-                </Stack>) : <ShowUsers />
+                </Stack>) : <ShowUsers secondaryTabValue={secondaryTabValue} />
             }
         </Box>
     )
 }
 
-const ShowUsers = () => {
+const ShowUsers = ({secondaryTabValue}) => {
     const { data: allUsers, error: errorGetUsers, isLoading: isLoadingGetUsers } = useGetUsersQuery();
     const [removeUser, { error: errorRemoveUser }] = useRemoveUserMutation();
+    const [changeActiveUser, { error: errorChangeActiveUser }] = useChangeActiveUserMutation();
 
     const filterFields = [];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
@@ -115,11 +118,20 @@ const ShowUsers = () => {
         }
     },[allUsers]);
 
+    const [usersActive, usersOff] = useActiveInactiveSort(filteredData);
+
     const deleteUser = async _id => {
         try {
             await removeUser(_id).unwrap();
         } catch (err) { }
     }
+
+    const handleChangeActive = async (checked, userId) => {
+        try {
+            await changeActiveUser({active: checked, userId}).unwrap();
+        }catch (err){}
+    }
+
     if (isLoadingGetUsers) return <LoudingPage />;
     if (errorGetUsers) return <h1> {errorGetUsers} </h1>;
 
@@ -127,21 +139,34 @@ const ShowUsers = () => {
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allUsers}>
                 <Box sx={{ p: 2}}>
-                    {filteredData.length > 0 ? (
-                        filteredData.map(user => (
+                    {(secondaryTabValue === 1 ? usersActive : usersOff).length > 0 ? (
+                        (secondaryTabValue === 1 ? usersActive : usersOff).map(user => (
                             <div key={user._id}>
                                 <Grid container alignItems="center" spacing={1}>
-                                    <Grid item xs={5} sx={{ minWidth: '100px' }}>
+                                    <Grid item xs={3} sx={{ minWidth: '100px' }}>
                                         <ListItemText
                                             primary={user.userName}
                                             secondary={user.branch.nameBranch}
                                         />
                                     </Grid>
-                                    <Grid item xs={6} sx={{ minWidth: '100px' }}>
+                                    <Grid item xs={5} sx={{ minWidth: '100px' }}>
                                         <ListItemText
                                             primary={user.email}
                                             secondary={user.license}
                                         />
+                                    </Grid>
+                                    <Grid item xs={3} >
+                                        {errorChangeActiveUser && '!'}
+                                    <FormControlLabel 
+                                        label={user.active ? 'פעיל' : 'לא פעיל'}
+                                        control={
+                                        <Switch 
+                                            name="active" 
+                                            checked={user.active || false} 
+                                            onChange={e => handleChangeActive(e.target.checked, user._id) }
+                                        />
+                                        }
+                                    />
                                     </Grid>
                                     <Grid item xs={1} >
                                         <IconDeleteButton

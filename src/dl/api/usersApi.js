@@ -62,6 +62,17 @@ export const usersApi = mainApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'User', _id: 'LIST' }],
     }),
+    changeActiveUser: builder.mutation({
+      queryFn: async ({active, userId}, {getState}, ex, baseQuery) => {
+
+        return await baseQuery({
+          url: `/users/changeActiveUser`,
+          method: 'PUT',
+          body: {active, userId}
+        })
+      },
+      invalidatesTags: [{ type: 'User', _id: 'LIST' }],
+    }),
   }),
 });
 
@@ -71,5 +82,6 @@ export const {
     useTestTokenQuery, 
     useConnectUserMutation, 
     useCreateNewUserMutation, 
-    useRemoveUserMutation 
+    useRemoveUserMutation,
+    useChangeActiveUserMutation 
   } = usersApi;

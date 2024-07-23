@@ -22,7 +22,7 @@ export const measuresApi = mainApi.injectEndpoints({
         const ability = getAbilityForUser(state.users.user);
 
         if (newMeasure.measureName === '') { return {error: {message: 'חסר פרטים בטופס'}}} 
-        if (!ability.can('create', 'Category')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
+        if (!ability.can('create', 'Measure')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
 
         return await baseQuery({
           url: '/measures/newMeasure',
@@ -40,6 +40,20 @@ export const measuresApi = mainApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'Measure', _id: 'LIST' }],
     }),
+    changeActiveMeasure: builder.mutation({
+      queryFn: async ({active, measureId}, {getState}, ex, baseQuery) => {
+        const state = getState();
+        const ability = getAbilityForUser(state.users.user);
+        if (!ability.can('update', 'Measure')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
+
+        return await baseQuery({
+          url: `/measures/changeActiveMeasure`,
+          method: 'PUT',
+          body: {active, measureId}
+        })
+      },
+      invalidatesTags: [{ type: 'Measure', _id: 'LIST' }],
+    }),
   }),
 });
 
@@ -47,5 +61,6 @@ export const measuresApi = mainApi.injectEndpoints({
 export const { 
     useGetMeasuresQuery, 
     useCreateNewMeasureMutation,
-    useRemoveMeasureMutation
+    useRemoveMeasureMutation,
+    useChangeActiveMeasureMutation
   } = measuresApi;

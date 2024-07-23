@@ -40,6 +40,21 @@ export const categoriesApi = mainApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'Category', _id: 'LIST' }],
     }),
+    changeActiveCategory: builder.mutation({
+      queryFn: async ({active, categoryId}, {getState}, ex, baseQuery) => {
+        const state = getState();
+        const ability = getAbilityForUser(state.users.user);
+
+        if (!ability.can('update', 'Category')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
+
+        return await baseQuery({
+          url: `/categories/changeActiveCategory`,
+          method: 'PUT',
+          body: {active, categoryId}
+        })
+      },
+      invalidatesTags: [{ type: 'Category', _id: 'LIST' }],
+    }),
   }),
 });
 
@@ -47,5 +62,6 @@ export const categoriesApi = mainApi.injectEndpoints({
 export const { 
     useGetCategoriesQuery, 
     useCreateNewCategoryMutation,
-    useRemoveCategoryMutation
+    useRemoveCategoryMutation,
+    useChangeActiveCategoryMutation
   } = categoriesApi;
