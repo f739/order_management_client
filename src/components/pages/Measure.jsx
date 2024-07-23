@@ -65,7 +65,7 @@ const ShowMeasures = () => {
     const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
     const [removeMeasure, { error: errorRemoveMeasure }] = useRemoveMeasureMutation();
 
-    // const filterFields = ['category', 'product', 'unit', 'factory'];
+
     const filterFields = [];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 

@@ -4,7 +4,9 @@ import { MenuItem,TextField } from '@mui/material';
 export const CustomSelect = (
     {set, nameField, value='', label, options, optionsValue, optionsValueToShow=false, ifFunc=false, showAllFactoryLine=false }
     ) => {
-        
+        const getNestedValue = (obj, path) => {
+            return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+        }
     return (
         <TextField
         id="filled-select-currency"
@@ -39,9 +41,15 @@ export const CustomSelect = (
         </MenuItem>
         }
         {options && options.length > 0 && options.map( item => (
-            <MenuItem key={item._id} value={optionsValueToShow ? item[optionsValueToShow] : item[optionsValue]}>
-                {item[optionsValue]}
-            </MenuItem>
+            <MenuItem 
+            key={item._id} 
+            value={optionsValueToShow ? getNestedValue(item, optionsValueToShow) : getNestedValue(item, optionsValue)}
+            >
+            {getNestedValue(item, optionsValue)}
+          </MenuItem>
+            // <MenuItem key={item._id} value={optionsValueToShow ? item[optionsValueToShow] : item[optionsValue]}>
+            //     {item[optionsValue]}
+            // </MenuItem>
         ))}
     </TextField>
     )

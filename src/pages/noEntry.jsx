@@ -1,33 +1,23 @@
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { handleFormHook } from '../components/HandleFormHook';
 import { useConnectUserMutation } from '../dl/api/usersApi';
 import noEntry from '../assetes/noEntry.png';
 import '../css/noEntry.css'; 
 
-export const NoEntry = ({setIfLicense=console.log}) => {
+export const NoEntry = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
     const [form, setForm] = useState({password: '', email: ''});
-    const [messageError, setMessageError] = useState('');
-    const [connectUser, { error }] = useConnectUserMutation();
+    const { from } = location.state || { from: { pathname: "/" } };
+
+    const [connectUser, { error, isLouding }] = useConnectUserMutation();
     const connect = async () => {
         try {
             await connectUser(form).unwrap();
-            setIfLicense('there license');
-            if (error) {
-                setMessageError(error.data.message);
-            }
-        } catch (err) {
-            setMessageError(err.message);
-        }
+            navigate(from?.pathname)
+        } catch (err) { }
     }
-    // const connect = async () => {
-    //     try {
-    //         const actionResult = await dispatch( connectUser(form) );
-    //         const result = unwrapResult(actionResult);
-    //         setMessageError(result)
-    //     }catch (err) {
-    //         setMessageError(err)
-    //     }
-    // };
 
     return (
         <div className="container-entry">
@@ -42,7 +32,7 @@ export const NoEntry = ({setIfLicense=console.log}) => {
                     onChange={e => handleFormHook(e.target, setForm)} className="input-entry" 
                     />
                 <button onClick={connect} className='connect'>התחבר</button>
-                <div className='message-error'>{messageError}</div>
+                {error && error.data.message}
             </div>
         </div>
     );

@@ -22,7 +22,7 @@ export const OldOrders = () => {
     const { user } = useSelector( state => state.users);
     const ability = defineAbilitiesFor(user);
 
-    const filterFields = ['category', 'factory', 'unitOfMeasure', 'supplier'];
+    const filterFields = ['category', 'branch', 'unitOfMeasure', 'supplier'];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
     const sortedByCategory = list => {
@@ -67,7 +67,7 @@ export const OldOrders = () => {
           <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allOldOrders}>
             <Box sx={{p: 1}}>
             {filteredData && filteredData.length > 0 ? filteredData.map(invitation => (
-                ability.can('read', 'PendingOrders', invitation.factory) ? (
+                ability.can('read', 'PendingOrders', invitation.branch._id) ? (
                   <Invitation
                     key={`${invitation._id}-${invitation.listProducts.length}`} 
                     invitation={invitation}
@@ -83,7 +83,7 @@ export const OldOrders = () => {
 
 
 const Invitation = ({invitation, supplierName}) => {
-    const { listProducts, factory, date, time, _id, _idSupplier } = invitation;
+    const { listProducts, branch, date, time, _id, _idSupplier } = invitation;
     // const listProductsSorted = [...listProducts].sort((a, b) => a.category.localeCompare(b.category));
     const [showCamera, setShowCamera] = useState(false);
     const [imageSrc, setImageSrc] = useState('');
@@ -94,7 +94,7 @@ const Invitation = ({invitation, supplierName}) => {
             summary={
                 <Grid container spacing={1}  alignItems="center">
                     <Grid item xs={12} sx={{maxHeight: '30px'}}>
-                       <StackChips factory={factory} name={supplierName} />
+                       <StackChips branch={branch} name={supplierName} />
                     </Grid>
                     <Grid item xs={4}>
                         <Typography>
@@ -126,7 +126,7 @@ const Invitation = ({invitation, supplierName}) => {
                         <ShowOldOrder key={`${order._id}-${order.quantity}`}
                         time={time}
                         date={date}
-                        factory={factory}
+                        branch={branch}
                         _idSupplier={_idSupplier}
                         order={order}
                         idOrderList={_id} />
@@ -140,7 +140,7 @@ const Invitation = ({invitation, supplierName}) => {
 
 
 const ShowOldOrder = props => {
-    const { idOrderList, factory, order, time, date, _idSupplier } = props;
+    const { idOrderList, branch, order, time, date, _idSupplier } = props;
     const { quantity, price, product } = order;
     const { _id, nameProduct, unitOfMeasure, category } = product;
 
@@ -153,13 +153,13 @@ const ShowOldOrder = props => {
 
     const ProductReceived = async () => {
         try {
-            await productReceived({ numberOrder: idOrderList, time, date, factory, _idSupplier,
+            await productReceived({ numberOrder: idOrderList, time, date, branch, _idSupplier,
                 product: {...order, temporaryQuantity: valueTemporaryQuantity}}).unwrap();
         }catch (err) { }
     }
     const returnToOrderManagement = () => {
         try {
-            returnProduct({nameProduct, factory, quantity,
+            returnProduct({nameProduct, branch, quantity,
                 unitOfMeasure, category, _id, idOrderList, userName: user.userName,
             }).unwrap();
         }catch (err) { }

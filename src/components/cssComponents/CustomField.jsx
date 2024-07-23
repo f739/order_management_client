@@ -9,7 +9,7 @@ export const CustomField = ({ id, name, value, label, onChange, type = "text", d
     label={label}
     onChange={onChange}
     disabled={disabled}
-    multiline
+    multiline={type === 'textarea'}
     fullWidth
     variant="filled"
     sx={{

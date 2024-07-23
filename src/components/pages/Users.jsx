@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { handleFormHook } from "../HandleFormHook";
 import { CustomSelect } from "../CustomSelect";
-import { roles, factories } from "../../data/roles";
+import { roles } from "../../data/roles";
 import {
     useGetUsersQuery,
     useCreateNewUserMutation,
     useRemoveUserMutation
 } from '../../dl/api/usersApi';
+import { useGetBranchesQuery } from "../../dl/api/branchesApi"
 import { AppBarSystemManagement, IconDeleteButton, LoudingPage, CustomField } from "../indexComponents";
 import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText } from "@mui/material";
 import { FilterRow } from "../cssComponents/FilterRow";
@@ -14,7 +15,9 @@ import { useFilters } from '../hooks/useFilters';
 
 export const Users = () => {
     const [formCreateUser, setFormCreateUser] = useState(
-        { userName: '', password: '', email: '', license: '', factory: '' });
+        { userName: '', password: '', email: '', license: '', branch: '' });
+
+    const { data: allBranches, error: errorGetBranches, isLoading: isLoadingGetBranches } = useGetBranchesQuery();
     const [createNewUser, { error, isLoading, data }] = useCreateNewUserMutation();
 
     const [secondaryTabValue, setSecondaryTabValue] = useState(1);
@@ -23,7 +26,7 @@ export const Users = () => {
     const createUser = async () => {
         try {
             await createNewUser(formCreateUser).unwrap();
-            setFormCreateUser({ userName: '', password: '', email: '', license: '', factory: '' });
+            setFormCreateUser({ userName: '', password: '', email: '', license: '', branch: '' });
         } catch (err) { }
     }
 
@@ -80,11 +83,12 @@ export const Users = () => {
                     />
                     <CustomSelect 
                         set={setFormCreateUser} 
-                        nameField='factory'
-                        value={formCreateUser.factory} 
+                        nameField='branch'
+                        value={formCreateUser.branch} 
                         label='סניף'
-                        options={factories} 
-                        optionsValue='name'
+                        options={allBranches} 
+                        optionsValue='nameBranch'
+                        optionsValueToShow='_id'
                     />
 
                     {error && <Typography variant="button" color="error" >{error.message}</Typography>}
@@ -103,7 +107,7 @@ const ShowUsers = () => {
     const [removeUser, { error: errorRemoveUser }] = useRemoveUserMutation();
 
     const filterFields = [];
-    const { filteredData, filters, updateFilter, setData, data } = useFilters(filterFields);
+    const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
     useEffect( () => {
         if (allUsers) {
@@ -130,7 +134,7 @@ const ShowUsers = () => {
                                     <Grid item xs={5} sx={{ minWidth: '100px' }}>
                                         <ListItemText
                                             primary={user.userName}
-                                            secondary={user.factory}
+                                            secondary={user.branch.nameBranch}
                                         />
                                     </Grid>
                                     <Grid item xs={6} sx={{ minWidth: '100px' }}>

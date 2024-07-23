@@ -37,7 +37,7 @@ export const oldOrdersApi = mainApi.injectEndpoints({
         if (!ability.can('delete', 'OldOrder')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
         
         return await baseQuery({
-          url: `${URL}/oldOrders/${_id}/${idOrderList}/removeProductInOldOrder`,
+          url: `/oldOrders/${_id}/${idOrderList}/removeProductInOldOrder`,
           method: 'PUT',
         })
       },
@@ -46,7 +46,7 @@ export const oldOrdersApi = mainApi.injectEndpoints({
     }),
     productReceived: builder.mutation({
       query: productData => ({
-        url: `${URL}/oldOrders/productReceived`,
+        url: `/oldOrders/productReceived`,
         method: 'PUT',
         body: productData
       }),

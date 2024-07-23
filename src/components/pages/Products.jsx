@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { handleFormHook } from '../HandleFormHook';
 import { DialogSendInvitation } from "../cssComponents/DialogSendInvitation";
 import {
@@ -7,21 +7,22 @@ import {
     useRemoveProductMutation,
     useEditProductMutation
 } from '../../dl/api/productsApi';
-import { factories } from "../../data/roles";
 import { useGetCategoriesQuery } from "../../dl/api/categoriesApi";
 import { useGetMeasuresQuery } from "../../dl/api/measuresApi";
 import { useGetSuppliersQuery } from "../../dl/api/suppliersApi";
+import { useGetBranchesQuery } from "../../dl/api/branchesApi"
 import { AppBarSystemManagement, LoudingPage, CustomField, CustomSelect, SelectFactoryMultipleHook } from "../indexComponents";
 import { Box, Typography, CircularProgress, Button, Stack, Grid, Chip, Divider, IconButton, ListItemText, FormControlLabel, Switch } from "@mui/material";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { FilterRow } from "../cssComponents/FilterRow";
 import { useFilters } from '../hooks/useFilters';
 import { BoxEditPrices } from "../BoxEditPrices";
+import { actions } from "../../dl/slices/products";
+import { useDispatch, useSelector } from "react-redux";
 
 export const Products = () => {
-    const [newProduct, setNewProduct] = useState({ nameProduct: '', factories: [], category: '', unitOfMeasure: '', sku: '', price: [] });
-    const [newPrice, setNewPrice] = useState({ _idSupplier: '', price: '', nameSupplier: '' });
-
+    const dispatch = useDispatch();
+    const { newPrice, newProduct, errorNewPrice } = useSelector( state => state.products);
     const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
     const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
     const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
@@ -35,45 +36,31 @@ export const Products = () => {
         { label: 'מק"ט', type: 'input', typeInput: 'text', name: 'sku' },
         { label: 'קטגוריה', type: 'select', name: 'category', options: allCategories, optionValue: 'nameCategory' },
         { label: 'יחידות מידה', type: 'select', name: 'unitOfMeasure', options: allMeasures, optionValue: 'measureName' },
-        // { label: 'מפעל', type: 'select', name: 'factory', options: factories, optionValue: 'name' },
+        // { label: 'מפעל', type: 'select', name: 'factory', options: branches, optionValue: 'name' },
         // { label: 'מחירים', type: 'button', name: 'price', element: <BoxEditPrices /> },
     ];
+    const handleUpdateNewPrice = (value, name) => {
+        dispatch(actions.updatedPrice({value, name}));
+    }
+    const handleUpdateNewPrpduct = (value, name) => {
+        dispatch( actions.updatedProduct({value, name}));
+    }
+
+    const handleSelectBranch = newBranches => {
+        handleUpdateNewPrpduct(newBranches, 'branches');
+    }
 
     const handleSaveNewPrice = () => {
-        if (newPrice._idSupplier === '' || newPrice.price === '' || !/^\d*\.?\d+$/.test(newPrice.price)) return;
-        if (newProduct.price.some(prod => prod._idSupplier === newPrice._idSupplier)) return;
-        setNewProduct(prev => {
-            const supplierIndex = prev.price.findIndex(supplier => supplier._id === newPrice._idSupplier);
-            let updatedPrice = [...prev.price];
-            if (supplierIndex !== -1) {
-                updatedPrice[supplierIndex] = { ...updatedPrice[supplierIndex], price: newPrice.price };
-            } else {
-                updatedPrice = [...updatedPrice, newPrice];
-            }
-            return {
-                ...prev,
-                price: updatedPrice
-            };
-        });
-        setNewPrice({ _idSupplier: '', price: '' });
+        dispatch( actions.saveNewPrice());
     }
 
-    const handleDeletePrice = i => {
-        setNewProduct(old => {
-            const newPriceArray = [...old.price];
-            newPriceArray.splice(i, 1);
-            return { ...old, price: newPriceArray };
-        });
+    const handleDeletePrice = placeDelete => {
+        dispatch(actions.deletePriceFromNewProduct(placeDelete))
     };
-
-    const handleSelectFactory = newFactories => {
-        setNewProduct(old => { return { ...old, factories: newFactories}})
-    }
 
     const handleSaveNewProduct = async () => {
         try {
-            await createNewProduct(newProduct).unwrap();
-            setNewProduct({ nameProduct: '', factories: [], category: '', unitOfMeasure: '', sku: '', price: [] });
+            await createNewProduct().unwrap();
         } catch (err) { console.log(err) }
     }
 
@@ -108,10 +95,11 @@ export const Products = () => {
                                 name={field.name}
                                 value={newProduct[field.name] || ''}
                                 label={field.label}
-                                onChange={e => handleFormHook(e.target, setNewProduct)}
+                                onChange={e => handleFormHook(e.target, handleUpdateNewPrpduct, true)}
                             /> : field.type === 'select' ?
                             <CustomSelect 
-                                set={setNewProduct} 
+                                set={handleUpdateNewPrpduct} 
+                                ifFunc={true}
                                 nameField={field.name}
                                 value={newProduct[field.name] || ''} 
                                 label={field.label}
@@ -126,20 +114,17 @@ export const Products = () => {
                     <Grid container spacing={2} alignItems="center">
                         <Grid item xs={12} >
                              מחירים: 
-                            {newProduct.price && newProduct.price.map((price, i) => (
-                                <>
-                                { console.log(price)}                               
-                                    <Chip sx={{marginRight: '5px'}} variant="outlined" color="success" size="small" key={price._idSupplier}
-                                        label={`${getDetalesSupplier(price._idSupplier)?.nameSupplier || ''} - ${price.price}`}
-                                        onDelete={() => handleDeletePrice(i)} 
-                                    />
-                                
-                                </>
+                            {newProduct.price && newProduct.price.map((price, i) => ( 
+                                <Chip sx={{marginRight: '5px', p: 1}} variant="outlined" color="success" size="small" key={price._idSupplier}
+                                    label={`${getDetalesSupplier(price._idSupplier)?.nameSupplier || ''} - ${price.price}`}
+                                    onDelete={() => handleDeletePrice(i)} 
+                                />
                             ))}
                         </Grid>
                         <Grid item xs={6} >
                             <CustomSelect 
-                                set={setNewPrice} 
+                                set={handleUpdateNewPrice} 
+                                ifFunc={true}
                                 nameField='_idSupplier'
                                 value={newPrice._idSupplier} 
                                 label='ספק'
@@ -153,7 +138,7 @@ export const Products = () => {
                                 name="price"
                                 value={newPrice.price}
                                 label='מחיר'
-                                onChange={e => handleFormHook(e.target, setNewPrice)}
+                                onChange={e => handleUpdateNewPrice(e.target.value, e.target.name)}
                             />
                         </Grid>
                         <Grid item xs={3}>
@@ -163,9 +148,10 @@ export const Products = () => {
                         </Grid>
                     </Grid>
                 </Box>
-                <SelectFactoryMultipleHook set={handleSelectFactory} form={newProduct} />
+                <SelectFactoryMultipleHook set={handleSelectBranch} form={newProduct} />
 
                 {error && <Typography variant="button" color="error" >{error.message}</Typography>}
+                {errorNewPrice && <Typography variant="button" color="error" >{errorNewPrice}</Typography>}
                 {dataCreateProduct && <Typography variant="button" color="success">{dataCreateProduct.message}</Typography>}
                 <Button onClick={handleSaveNewProduct} color="primary" variant="contained" disabled={isLoadingCreateProdact}>
                     {isLoadingCreateProdact ? <CircularProgress size={24} /> : 'שמור'}
@@ -180,8 +166,8 @@ export const Products = () => {
 const ShowProducts = ({secondaryTabValue}) => {
     const { data: allProducts, error: errorGetProducts, isLoading: isLoadingGetProducts } = useGetProductsQuery();
     const [showEditProduct, setShowEditProduct] = useState('');
-    console.log(allProducts);
-    const filterFields = ['category', 'factory', 'unitOfMeasure'];
+
+    const filterFields = ['category', 'branch', 'unitOfMeasure'];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
     useEffect( () => {
@@ -213,7 +199,7 @@ const ShowProducts = ({secondaryTabValue}) => {
                                     <Grid item xs={5} sx={{ minWidth: '100px' }}>
                                         <ListItemText
                                             primary={product.nameProduct}
-                                            secondary={product.factory}
+                                            secondary={product.branch.nameBranch}
                                         />
                                     </Grid>
                                     <Grid item xs={6} sx={{ minWidth: '100px' }}>
@@ -246,22 +232,21 @@ const ShowProducts = ({secondaryTabValue}) => {
 
 const EditProduct = props => {
     const { product, setShowEditProduct } = props;
-
-    const [removeProduct, { error: errorRemoveProduct, isLoading: isLoudingDelete }] = useRemoveProductMutation();
+    const [removeProduct, { error: errorRemoveProduct, isLoading: isLoudingDelete, data }] = useRemoveProductMutation();
     const [editProduct, { error: errorEdit, isLoading: isLoadingEdit }] = useEditProductMutation();
-    const [formEdit, setFormEdit] = useState(product);
+    const [formEdit, setFormEdit] = useState({...product, branch: product.branch._id});
     const [showEditPrices, setShowEditPrices] = useState(false);
     const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
     const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
+    const { data: allBranches, error: errorGetBranches, isLoading: isLoadingGetBranches } = useGetBranchesQuery();
     
     const fields = [
         { label: 'שם מוצר', type: 'input', typeInput: 'text', name: 'nameProduct' },
         { label: 'מק"ט', type: 'input', typeInput: 'text', name: 'sku' },
-        { label: 'מפעל', type: 'select', name: 'factory', options: factories, optionValue: 'name' },
+        { label: 'סניף', type: 'select', name: 'branch', options: allBranches, optionValue: 'nameBranch', optionsValueToShow: '_id' },
         { label: 'קטגוריה', type: 'select', name: 'category', options: allCategories, optionValue: 'nameCategory' },
         { label: 'יחידות מידה', type: 'select', name: 'unitOfMeasure', options: allMeasures, optionValue: 'measureName' },
-        { label: 'מחירים', type: 'button', name: 'price', 
-            element: <BoxEditPrices product={product} setShowEditPrices={setShowEditPrices} /> },
+        { label: 'מחירים', type: 'button', name: 'price'},
     ];
 
     const handleEditItem = async productUpdated => {
@@ -319,6 +304,7 @@ const EditProduct = props => {
                                     label={field.label}
                                     options={field.options} 
                                     optionsValue={field.optionValue}
+                                    optionsValueToShow={field.optionsValueToShow ?? false}
                                 /> : (
                                 <>
                                     <Button 
@@ -328,7 +314,9 @@ const EditProduct = props => {
                                     >
                                         {field.label}
                                     </Button>
-                                    {showEditPrices && field.element}
+                                        {showEditPrices && 
+                                            <BoxEditPrices product={product} setShowEditPrices={setShowEditPrices} />
+                                        }
                                 </>
                                 )
                             }

@@ -25,7 +25,7 @@ export const Orders = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [showTable, setShowTable] = useState(true);
     const [noteToOrder, setNoteToOrder] = useState('');
-    const filterFields = ['category', 'factory', 'unitOfMeasure'];
+    const filterFields = ['category', 'branch', 'unitOfMeasure'];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
     useEffect( () => {
@@ -39,7 +39,7 @@ export const Orders = () => {
     const SendAnInvitation = async () => {
         try {
             await sendAnInvitation(
-                {user, whichFactoryToSend: cartToBookingManager[0]?.factory, noteToOrder}
+                {user, whichBranchToSend: cartToBookingManager[0]?.branch._id, noteToOrder}
             ).unwrap();
             setOpenDialog(false);
         }catch (err) {
@@ -80,7 +80,7 @@ export const Orders = () => {
                         { filteredData.length > 0 ? (
                             filteredData.map( (item, i) => (
                                 <Item key={item._id}>
-                                    {ability.can('read', 'Order', item.factory) ? (
+                                    {ability.can('read', 'Order', item.branch._id) ? (
                                         <div>
                                             <ItemsBox item={item} />
                                             {i < filteredData.length - 1 && <Divider />}
@@ -113,7 +113,7 @@ export const Orders = () => {
                     cart={cartToBookingManager}
                     sendOrder={SendAnInvitation}
                     user={user} 
-                    to={ cartToBookingManager.length > 0 ? cartToBookingManager[0].factory : null }
+                    to={ cartToBookingManager.length > 0 ? cartToBookingManager[0].branch.nameBranch : null }
                     tableHead={
                         <TableHead>
                             <TableRow>
@@ -155,7 +155,7 @@ export const Orders = () => {
 
 const ItemsBox = ({ item }) => {
     const dispatch = useDispatch();
-    const { nameProduct, factory, _id, category, unitOfMeasure } = item;
+    const { nameProduct, branch, _id, category, unitOfMeasure } = item;
     
     const productActive = useSelector( state => {
         return state.orders.cartToBookingManager.find( pr => pr._id === _id);
@@ -179,7 +179,7 @@ const ItemsBox = ({ item }) => {
         <Grid container spacing={1} alignItems="start" 
         textAlign='start' justifyContent='space-between' sx={{paddingLeft: '20px'}}>
             <Grid item xs={12}>   
-                <StackChips factory={factory} catgory={category} />
+                <StackChips branch={branch} catgory={category} />
             </Grid>
             <Grid item>
                 <ListItemText primary={nameProduct} secondary={unitOfMeasure} />

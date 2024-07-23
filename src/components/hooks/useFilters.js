@@ -24,15 +24,15 @@ export const useFilters = (filterFields) => {
       });
     };
   
-    const filterProduct = (item, product) => {
+    const filterProduct = (item={}, product={}) => {
       let passes = true;
   
       filterFields.forEach(field => {
         if (currentFilters[field]) {
           if (product[field] !== undefined) {
-            passes = passes && (product[field] === currentFilters[field]);
+            passes = passes && searchInObject(product, currentFilters[field]);
           } else if (item[field] !== undefined) {
-            passes = passes && searchInObject(item[field], currentFilters[field]);
+            passes = passes && searchInObject(item, currentFilters[field]);
           }else {
             passes = false;
           }

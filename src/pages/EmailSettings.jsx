@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { handleFormHook } from '../components/HandleFormHook';
 import { toast } from "react-toastify";
+import { useGetAuthUrlQuery } from '../dl/api/settingsCompanyApi';
 import '../css/settings.css';
 const URL = import.meta.env.VITE_API_URL
 import $ from 'axios';
 
 export const EmailSettings = () => {
     const [editDetalseEmail, setEditDetalseEmail] = useState({email: '', code: ''});
+    // const [getAuthUrl, ] = useGetAuthUrlQuery;
     const sendForm = async () => {
         if (editDetalseEmail.code && editDetalseEmail.email) {
             try {
@@ -27,6 +29,18 @@ export const EmailSettings = () => {
             toast.error(err.response.data.message);
         }
     }
+
+    const getAuthUrl = async () => {
+        try {
+            const res = await $.get(`${URL}/settings/get-auth-url`);
+            console.log(res);
+            const { url } = res.data
+            window.open(url, '_blank');
+        }catch (err) {
+            console.log(err);
+        }
+
+    }
     return (
         <>
             <div className='form-edit-detales-email form'>
@@ -43,6 +57,11 @@ export const EmailSettings = () => {
                 <div style={{color: 'red'}}>זהירות...</div>
                 <button onClick={deleteDbOrdersReceived} className='delete-db'>מחק נתונים! מהזמנות שהתקבלו כבר</button>
             </div>
+            <div className='form-edit-detales-email form'>
+               <button onClick={getAuthUrl}>קבל טוקן מגגוגל</button>
+               
+            </div>
+
         </>
     )
 }

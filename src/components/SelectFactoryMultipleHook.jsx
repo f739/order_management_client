@@ -1,13 +1,21 @@
 import {Select, Chip, FormControl, MenuItem, InputLabel, Box} from '@mui/material';
+import { useGetBranchesQuery } from '../dl/api/branchesApi';
+import { LoudingPage } from './indexComponents';
 
 export const SelectFactoryMultipleHook = ({set, form, showAllFactoryLine=false}) => {
+    const { data: allBranches, error: errorGetBranches, isLoading: isLoadingGetBranches } = useGetBranchesQuery();
 
     const handleChange = event => {
         const { target: { value } } = event;
         set(value)
     };
-    const factories = ['קייטרינג', 'חצור', 'מאפיה']
-  
+
+    const getLabel = idBranch => {
+        const allBranch = allBranches.find( br => br._id === idBranch);
+        return allBranch.nameBranch;
+    }
+    
+    if (isLoadingGetBranches) return <LoudingPage /> 
     return (
         <FormControl variant="filled" sx={{ m: 1, width: '100%' }}>
         <InputLabel id="demo-simple-select-filled-label" sx={{ right: 25, transformOrigin: 'top right' }}>
@@ -18,12 +26,12 @@ export const SelectFactoryMultipleHook = ({set, form, showAllFactoryLine=false})
           id="demo-simple-select-filled"
           label="סניפים"
           multiple
-          value={form.factories}
+          value={form.branches}
           onChange={handleChange}
           renderValue={ selected => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map( value => (
-                    <Chip key={value} label={value} />
+                {selected.map( branch => (
+                    <Chip key={branch} label={getLabel(branch)} />
                 ))}
             </Box>
           )}
@@ -42,11 +50,11 @@ export const SelectFactoryMultipleHook = ({set, form, showAllFactoryLine=false})
                     כל המפעלים
                 </MenuItem>
             }
-            {factories.map( (factory, i) => (
-                <MenuItem key={i} value={factory} >
-                    {factory}
+            {allBranches.length > 0 && allBranches.map( branch => (
+                <MenuItem key={branch._id} value={branch._id} >
+                    {branch.nameBranch}
                 </MenuItem>
-            ))}
+            )) }
         </Select>
       </FormControl>
       

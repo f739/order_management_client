@@ -18,7 +18,7 @@ export const ordersApi = mainApi.injectEndpoints({
         [{ type: 'ActiveOrder', id: 'LIST' }],
     }),
     sendAnInvitation: builder.mutation({
-      queryFn: async ({ user, whichFactoryToSend, noteToOrder }, {getState}, ex, baseQuery ) => {
+      queryFn: async ({ user, whichBranchToSend, noteToOrder }, {getState}, ex, baseQuery ) => {
         const state = getState();
         const cart = state.orders.cartToBookingManager;
         const ability = getAbilityForUser(state.users.user);
@@ -28,7 +28,7 @@ export const ordersApi = mainApi.injectEndpoints({
         return await baseQuery({
           url: '/orders/sendAnInvitation',
           method: 'POST',
-          body: { user, whichFactoryToSend, note: noteToOrder, cart},
+          body: { user, whichBranchToSend, note: noteToOrder, cart},
         })
       },
       invalidatesTags: [{ type: 'ActiveOrder', id: 'LIST' }],
@@ -61,7 +61,7 @@ export const ordersApi = mainApi.injectEndpoints({
       },
       invalidatesTags: [{ type: 'ActiveOrder', id: 'LIST' }],
     }),
-    removeProduct: builder.mutation({
+    removeProductInPendingOrders: builder.mutation({
       queryFn: async ({ _id, idInvitation }, {getState}, ex, baseQuery) => {
         const user = getState().users.user;
         const ability = getAbilityForUser(user);
@@ -82,6 +82,6 @@ export const {
   useGetActiveOrdersQuery,
   useSendAnInvitationMutation,
   useSendOrderFromCartMutation,
-  useRemoveProductMutation,
+  useRemoveProductInPendingOrdersMutation,
   useDeleteInvtationMutation,
  } = ordersApi;

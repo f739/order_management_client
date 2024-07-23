@@ -1,22 +1,21 @@
-import React, { useEffect, useMemo } from 'react';
 import { Box, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { useGetCategoriesQuery } from "../../dl/api/categoriesApi";
 import { useGetMeasuresQuery } from "../../dl/api/measuresApi";
 import { useGetProductsQuery } from "../../dl/api/productsApi";
 import { useGetSuppliersQuery } from '../../dl/api/suppliersApi';
-import { factories } from '../../data/roles';
+import { useGetBranchesQuery } from '../../dl/api/branchesApi';
 
 export const FilterWrapper = ({ filters, filterFields, updateFilter }) => {
     const { data: allMeasures, error: errorGetMeasures } = useGetMeasuresQuery();
     const { data: allCategories, error: errorGetCategories } = useGetCategoriesQuery();
     const { data: allProducts, error: errorGetProducts } = useGetProductsQuery();
     const { data: allSuppliers, error: errorGetSuppliers } = useGetSuppliersQuery();
-
+    const { data: allBranches, error: errorGetBranches } = useGetBranchesQuery();
     const filterOptions = {
         category: allCategories || [],
         product: allProducts || [],
         unitOfMeasure: allMeasures || [],
-        factory: factories || [],
+        branch: allBranches || [],
         supplier: allSuppliers || [],
     }
 
@@ -28,8 +27,8 @@ export const FilterWrapper = ({ filters, filterFields, updateFilter }) => {
                 return option.nameProduct;
             case 'unitOfMeasure':
                 return option.measureName;
-            case 'factory':
-                return option.name;
+            case 'branch':
+                return option.nameBranch;
             case 'supplier': 
                 return option.nameSupplier
             default:

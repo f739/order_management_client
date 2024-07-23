@@ -61,7 +61,7 @@ const Chips = ({filters, updateFilter}) => {
             return <LocalOfferIcon />;
         case 'unitOfMeasure':
             return <ScaleIcon />;
-        case 'factory':
+        case 'branch':
             return <DomainIcon />
         case 'supplier':
             return <LocalShippingIcon />

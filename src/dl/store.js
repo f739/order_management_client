@@ -1,6 +1,7 @@
 import { configureStore, createListenerMiddleware } from "@reduxjs/toolkit";
 import { setupListeners } from '@reduxjs/toolkit/query'
 import general from "./slices/general";
+import prices from "./slices/prices";
 import categories from "./slices/categories";
 import suppliers from "./slices/suppliers";
 import measures from "./slices/measures";
@@ -21,6 +22,7 @@ export const store = configureStore({
   reducer: {
     [mainApi.reducerPath]: mainApi.reducer,
     general,
+    prices,
     categories,
     suppliers,
     measures,

@@ -8,9 +8,9 @@ const defineEmployeeAbilities = (can, cannot, user) => {
   can('enter', ['Order', 'PendingOrders', 'OldOrder']);
   cannot('enter', ['IssuingReport', 'NavPrivet', 'CreateUser',
   'Product', 'Supplier', 'Measure', 'Category', 'Branches', 'Log', 'Settings']);
-  can('read', 'Order', [user.factory] );
-  can('read', 'PendingOrders', [user.factory] );
-  can('read', 'OldOrder', [user.factory] );
+  can('read', 'Order', [user.branch._id] );
+  can('read', 'PendingOrders', [user.branch._id] );
+  can('read', 'OldOrder', [user.branch._id] );
   // can('delete', 'PendingOrders', [user._id]) להוסיף לכל הזמנה ID של מי שיצר אותה ולתת לו למחוק את ההזמנה שלו
   cannot('delete', ['PendingOrders', 'OldOrder', 'Branch', 'Supplier']);
   cannot('create', ['PendingOrders', 'Supplier', 'Category', 'User', 'Measure', 'Product', 'Branch']);
@@ -34,6 +34,9 @@ const defineGuestAbilities = (can, cannot) => {
 export const defineAbilitiesFor = user => defineAbility((can, cannot) => {
 
   switch (user.license) {
+    case 'מנהל':
+      defineAdminAbilities(can, cannot);
+      break;
     case 'purchasingManager':
       defineAdminAbilities(can, cannot);
       break;

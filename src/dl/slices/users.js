@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { usersApi } from "../api/usersApi";
 
 const initialState = {
@@ -8,7 +8,7 @@ const initialState = {
   email: '',
   license: '',
   userName: '',
-  factory: '',
+  branch: '',
   isAdmin: false,
   isSubscriber: false,
   role: 'guest'
@@ -38,16 +38,16 @@ export const slice = createSlice({
             builder.addMatcher(
               usersApi.endpoints.connectUser.matchFulfilled,
               (state, action) => {
-                const {license, factory, userName, email, token} = action.payload;
+                const {license, branch, userName, email, token} = action.payload;
                 localStorage.setItem('token', token);
-                state.user = {license, factory, userName, email}
+                state.user = {license, branch, userName, email}
             });
             builder.addMatcher(
               usersApi.endpoints.testToken.matchFulfilled,
               (state, action) => {
-                const {license, factory, userName, email, token} = action.payload;
+                const {license, branch, userName, email, token} = action.payload;
                 action.meta.arg.originalArgs !== token ? localStorage.setItem('token', token) : null;
-                state.user = {license, factory, userName, email}
+                state.user = {license, branch, userName, email}
             });
         }
     })

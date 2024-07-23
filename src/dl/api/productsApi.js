@@ -1,6 +1,7 @@
 import { mainApi } from './mainApi';
 import { fieldsAreNotEmpty } from '../../components/hooks/fanksHook';
 import { defineAbilitiesFor } from '../../auth/abilities';
+import { actions } from '../slices/products';
 
 const getAbilityForUser = user => {
   return defineAbilitiesFor(user);
@@ -18,23 +19,28 @@ export const productsApi = mainApi.injectEndpoints({
         [{ type: 'Product', id: 'LIST' }],
     }),
     createNewProduct: builder.mutation({
-      queryFn: async ( newProduct, {getState}, ex, baseQuery) => {
+      queryFn: async ( _, {getState, dispatch}, ex, baseQuery) => {
         const state = getState();
+        const {newProduct} = state.products;
         const ability = getAbilityForUser(state.users.user);
-        console.log(newProduct);
+
         if (!ability.can('create', 'Product')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
         if (!fieldsAreNotEmpty(newProduct) ||
           newProduct.price.length === 0 ||
-          newProduct.factories.length === 0) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}
+          newProduct.branches.length === 0) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}
         };
 
-        return await baseQuery({
+        const result = await baseQuery({
           url: '/products/newProduct',
           method: 'POST',
           body: newProduct,
         })
+        if (result.data) {
+          dispatch( actions.cleanNewProduct())
+        }
+        return result;
       },
-      transformResponse: res => res.newProduct, // savedProducts
+      transformResponse: res => res.savedProducts,
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
     editProduct: builder.mutation({
@@ -68,7 +74,7 @@ export const productsApi = mainApi.injectEndpoints({
           body: updatedPrices
         })
       },
-      transformResponse: res => res.updateProduct,
+      transformResponse: res => res.updateResults,
       invalidatesTags: [{ type: 'Product', id: 'LIST' }, { type: 'ActiveOrder', id: 'LIST' }],
     }),
     deletePrice: builder.mutation({
@@ -97,7 +103,6 @@ export const productsApi = mainApi.injectEndpoints({
           method: 'DELETE',
         })
       },
-      // transformErrorResponse: err => err.data.message,
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
   }),

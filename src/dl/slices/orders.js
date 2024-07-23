@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { ordersApi } from '../api/ordersApi';
 import { oldOrdersApi } from "../api/oldOrdersApi";
+import { findBestPrice } from "../../components/findBestPrice";
 
-const testIfSameFactory = (state, factory) => {
-  return factory === state[0]?.factory || state.length === 0;
+const testIfSameBranch = (state, branch) => {
+  return branch._id === state[0]?.branch._id || state.length === 0;
 }
 const removeItemFromCart = (state, _id) => {
   return state.filter( product => product._id !== _id);
@@ -11,13 +12,14 @@ const removeItemFromCart = (state, _id) => {
 
 const initialState = {
   allActiveOrders: [],
+  pricesToDeliver: {},
+  quantitiesToDeliver: {},
   cartToDeliver: [],
   cartToBookingManager: [],
   errorAddOrRemoveToCart: '',
   errorCartToBookingManager: {
     errorIncrease: '',
     errorChangeQuantity: '',
-
   }
 };
 
@@ -25,26 +27,50 @@ export const slice = createSlice({
   name: "orders",
   initialState,
   reducers: {
+    setPriceToDeliver(state, action) {
+      const { productId, price, _idSupplier } = action.payload;
+      state.pricesToDeliver[productId] = { price, _idSupplier };
+    },
+    setQuantityToDeliver(state, action) {
+      const { productId, temporaryQuantity, idInvitation} = action.payload;
+      state.quantitiesToDeliver[`${productId}-${idInvitation}`] = temporaryQuantity;
+    },
+    changeSupplierAction(state, action) {
+      const { _idSupplier, product } = action.payload;
+      const allPrice = product.price.find( price => price._idSupplier._id === _idSupplier);
+      state.pricesToDeliver[product._id] = {_idSupplier: allPrice._idSupplier._id, price: Number(allPrice.price)}
+
+      if (state.cartToDeliver.length > 0) {
+        state.cartToDeliver = state.cartToDeliver.map( prod => {
+          return prod._id === product._id ?
+           {...prod, _idSupplier: allPrice._idSupplier._id, price: Number(allPrice.price)} : prod;
+        });
+      }
+    },
     addToCart(state, action) {
-      const {editQuantity, temporaryQuantity, ...newProduct} = action.payload;
-      const ifSameFactory = testIfSameFactory(state.cartToDeliver, newProduct.factory);
-       const ifsupplierExist = state.cartToDeliver[0]?._idSupplier === newProduct._idSupplier 
+      const {editQuantityToDeliver, idInvitation, ...newProduct} = action.payload;
+      const ifSameBranch = testIfSameBranch(state.cartToDeliver, newProduct.branch);
+
+       const ifsupplierExist = 
+       state.cartToDeliver[0]?._idSupplier ===  state.pricesToDeliver[newProduct._id]?._idSupplier 
        || state.cartToDeliver.length === 0;
 
       if(newProduct.price.length === 0) {
         state.errorAddOrRemoveToCart = 'הגדר מחיר תחילה';
         return
-      }else if (!ifSameFactory) {
+      }else if (!ifSameBranch) {
         state.errorAddOrRemoveToCart = 'אין להכניס מוצרים המיועדים למפעל שונה';
       }else if (!ifsupplierExist) {
         state.errorAddOrRemoveToCart = 'ניסית לשים מוצרים מכמה ספקים שונים';
       } else {
-        let totalQuantity = state.allActiveOrders.flatMap(order => order.listProducts)
-          .filter(product => product.product._id === newProduct._id)
-          .reduce((acc, product) => acc + product.temporaryQuantity, 0);
+        let totalQuantity = Object.entries(state.quantitiesToDeliver)
+          .filter(([key, value]) => key.includes(newProduct._id))
+          .reduce((acc, [key, value]) => acc + value, 0);
 
-        editQuantity !== temporaryQuantity ? totalQuantity = editQuantity : null;
-        state.cartToDeliver.push({...newProduct, temporaryQuantity: totalQuantity});
+        editQuantityToDeliver ? totalQuantity = editQuantityToDeliver : null;
+        
+        const price = state.pricesToDeliver[newProduct._id]; 
+        state.cartToDeliver.push({...newProduct, temporaryQuantity: totalQuantity, ...price});
         state.errorAddOrRemoveToCart = '';
       }
     },
@@ -60,23 +86,19 @@ export const slice = createSlice({
       })
     },
     changePrice(state, action) {
-      const {idProduct, _idSupplier, price} = action.payload;
+      const {productId, price} = action.payload;
+      const _idSupplier = state.pricesToDeliver[productId]._idSupplier;
+      
+      state.pricesToDeliver[productId] = { _idSupplier, price };
       state.cartToDeliver = state.cartToDeliver.map( prod => {
-        return prod._id !== idProduct ? prod : {...prod, price, _idSupplier}
-      })
-    },
-    ifSelectedChangeSupplier( state, action) {
-      const {price, _idSupplier, _id} = action.payload;
-      if (state.cartToDeliver.length === 0) return;
-      state.cartToDeliver = state.cartToDeliver.map( prod => {
-        return prod._id !== _id ? prod : {...prod, price, _idSupplier};
+        return prod._id !== productId ? prod : {...prod, price, _idSupplier}
       })
     },
     increaseOne( state, action) {
-      const { _id, factory} = action.payload;
-      const ifSameFactory = testIfSameFactory(state.cartToBookingManager, factory);
+      const { _id, branch} = action.payload;
+      const ifSameBranch = testIfSameBranch(state.cartToBookingManager, branch);
       
-      if (!ifSameFactory) {
+      if (!ifSameBranch) {
         state.errorCartToBookingManager.errorIncrease = 'אין להכניס מוצרים ממפעל שונה';
         return
       }
@@ -101,11 +123,10 @@ export const slice = createSlice({
       
     },
     changeQuantityToBookingManager(state, action) {
-      console.log(action.payload);
-      const { _id, factory, quantity } = action.payload;
-      const ifSameFactory = testIfSameFactory(state.cartToBookingManager, factory);
+      const { _id, branch, quantity } = action.payload;
+      const ifSameBranch = testIfSameBranch(state.cartToBookingManager, branch);
 
-      if (!ifSameFactory) {
+      if (!ifSameBranch) {
         state.errorCartToBookingManager.errorChangeQuantity = 'אין להכניס מוצרים ממפעל שונה';
         return
       }

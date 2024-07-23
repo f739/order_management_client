@@ -3,14 +3,14 @@ import FactoryOutlinedIcon from '@mui/icons-material/FactoryOutlined';
 import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
 import { Chip, Stack } from "@mui/material";
 
-export const StackChips = ({factory=null, name=null, catgory=false }) => {
+export const StackChips = ({branch=null, name=null, catgory=false }) => {
     return (
         <>
             <Stack direction="row">
-               { factory && <Chip variant="outlined" color="primary"
+               { branch && <Chip variant="outlined" color="primary"
                 size="small"
                 icon={<FactoryOutlinedIcon fontSize="small" />} 
-                label={factory} 
+                label={branch.nameBranch} 
                 sx={{ p: 1, fontSize: '0.8rem', mx: 0.2 }}
                 />}
                { name && <Chip variant="outlined" color="secondary"
