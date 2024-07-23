@@ -34,9 +34,10 @@ export const Products = () => {
     const fields = [
         { label: 'שם מוצר', type: 'input', typeInput: 'text', name: 'nameProduct' },
         { label: 'מק"ט', type: 'input', typeInput: 'text', name: 'sku' },
-        { label: 'קטגוריה', type: 'select', name: 'category', options: allCategories, optionValue: 'nameCategory' },
-        { label: 'יחידות מידה', type: 'select', name: 'unitOfMeasure', options: allMeasures, optionValue: 'measureName' },
-        // { label: 'מפעל', type: 'select', name: 'factory', options: branches, optionValue: 'name' },
+        { label: 'קטגוריה', type: 'select', name: 'category',
+             options: allCategories, optionValue: 'nameCategory', optionsValueToShow: '_id' },
+        { label: 'יחידות מידה', type: 'select', name: 'unitOfMeasure',
+             options: allMeasures, optionValue: 'measureName', optionsValueToShow: '_id' },
         // { label: 'מחירים', type: 'button', name: 'price', element: <BoxEditPrices /> },
     ];
     const handleUpdateNewPrice = (value, name) => {
@@ -105,6 +106,7 @@ export const Products = () => {
                                 label={field.label}
                                 options={field.options} 
                                 optionsValue={field.optionValue}
+                                optionsValueToShow={field.optionsValueToShow ?? null}
                             /> :
                             null
                         }
@@ -204,8 +206,8 @@ const ShowProducts = ({secondaryTabValue}) => {
                                     </Grid>
                                     <Grid item xs={6} sx={{ minWidth: '100px' }}>
                                         <ListItemText
-                                            primary={product.category}
-                                            secondary={product.unitOfMeasure}
+                                            primary={product.category?.nameCategory}
+                                            secondary={product.unitOfMeasure?.measureName}
                                         />
                                     </Grid>
                                     <Grid item xs={1} >
@@ -234,7 +236,7 @@ const EditProduct = props => {
     const { product, setShowEditProduct } = props;
     const [removeProduct, { error: errorRemoveProduct, isLoading: isLoudingDelete, data }] = useRemoveProductMutation();
     const [editProduct, { error: errorEdit, isLoading: isLoadingEdit }] = useEditProductMutation();
-    const [formEdit, setFormEdit] = useState({...product, branch: product.branch._id});
+    const [formEdit, setFormEdit] = useState({...product, branch: product.branch._id, category: product.category?._id, unitOfMeasure: product.unitOfMeasure?._id});
     const [showEditPrices, setShowEditPrices] = useState(false);
     const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
     const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
@@ -243,9 +245,12 @@ const EditProduct = props => {
     const fields = [
         { label: 'שם מוצר', type: 'input', typeInput: 'text', name: 'nameProduct' },
         { label: 'מק"ט', type: 'input', typeInput: 'text', name: 'sku' },
-        { label: 'סניף', type: 'select', name: 'branch', options: allBranches, optionValue: 'nameBranch', optionsValueToShow: '_id' },
-        { label: 'קטגוריה', type: 'select', name: 'category', options: allCategories, optionValue: 'nameCategory' },
-        { label: 'יחידות מידה', type: 'select', name: 'unitOfMeasure', options: allMeasures, optionValue: 'measureName' },
+        { label: 'סניף', type: 'select', name: 'branch', options: allBranches,
+             optionValue: 'nameBranch', optionsValueToShow: '_id' },
+        { label: 'קטגוריה', type: 'select', name: 'category',
+             options: allCategories, optionValue: 'nameCategory', optionsValueToShow: '_id' },
+        { label: 'יחידות מידה', type: 'select', name: 'unitOfMeasure',
+             options: allMeasures, optionValue: 'measureName', optionsValueToShow: '_id' },
         { label: 'מחירים', type: 'button', name: 'price'},
     ];
 

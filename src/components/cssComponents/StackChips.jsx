@@ -22,7 +22,7 @@ export const StackChips = ({branch=null, name=null, catgory=false }) => {
                { catgory && <Chip variant="outlined" color="secondary"
                 size="small"
                 icon={<CategoryOutlinedIcon fontSize="small" />} 
-                label={catgory} 
+                label={catgory?.nameCategory} 
                 sx={{p: 1, mx: 0.2}}
                 />}
             </Stack>

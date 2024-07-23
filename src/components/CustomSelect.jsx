@@ -42,14 +42,11 @@ export const CustomSelect = (
         }
         {options && options.length > 0 && options.map( item => (
             <MenuItem 
-            key={item._id} 
-            value={optionsValueToShow ? getNestedValue(item, optionsValueToShow) : getNestedValue(item, optionsValue)}
+                key={item._id} 
+                value={optionsValueToShow ? getNestedValue(item, optionsValueToShow) : getNestedValue(item, optionsValue)}
             >
-            {getNestedValue(item, optionsValue)}
+                {getNestedValue(item, optionsValue)}
           </MenuItem>
-            // <MenuItem key={item._id} value={optionsValueToShow ? item[optionsValueToShow] : item[optionsValue]}>
-            //     {item[optionsValue]}
-            // </MenuItem>
         ))}
     </TextField>
     )

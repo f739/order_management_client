@@ -26,7 +26,7 @@ export const OldOrders = () => {
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
     const sortedByCategory = list => {
-        return list.sort((a, b) => a.product.category.localeCompare(b.product.category));
+        return list.sort((a, b) => a.product.category?.nameCategory.localeCompare(b.product.category?.nameCategory));
     }
 
     useEffect( () => {
@@ -160,7 +160,7 @@ const ShowOldOrder = props => {
     const returnToOrderManagement = () => {
         try {
             returnProduct({nameProduct, branch, quantity,
-                unitOfMeasure, category, _id, idOrderList, userName: user.userName,
+                unitOfMeasure: unitOfMeasure._id, category: category._id, _id, idOrderList, userName: user.userName,
             }).unwrap();
         }catch (err) { }
     }
@@ -180,7 +180,7 @@ const ShowOldOrder = props => {
                 <InputNumberQuantity  value={valueTemporaryQuantity} setValue={handleEditQuantity}/>
             </Grid>
             <Grid item xs={5} sm={4}>
-                <ListItemText primary={nameProduct} secondary={unitOfMeasure} />
+                <ListItemText primary={nameProduct} secondary={unitOfMeasure?.measureName} />
             </Grid>
             <Grid item xs={2} sm={2}>
                 <ListItemText primary={'מחיר'} secondary={price} />

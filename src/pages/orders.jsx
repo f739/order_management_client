@@ -31,7 +31,7 @@ export const Orders = () => {
     useEffect( () => {
         if (allProducts) {
             const sortedProducts = [...allProducts]
-            .sort((a, b) => a.category.localeCompare(b.category));
+            .sort((a, b) => a.category?.nameCategory.localeCompare(b.category?.nameCategory));
             setData(sortedProducts)
         }
     },[allProducts]);
@@ -128,9 +128,9 @@ export const Orders = () => {
                         <TableBody>
                             {cartToBookingManager.map( item => (
                                 <TableRow key={item._id}>
-                                    <TableCell align="right">{item.category}</TableCell>
+                                    <TableCell align="right">{item.category.nameCategory}</TableCell>
                                     <TableCell align="right">{item.nameProduct}</TableCell>
-                                    <TableCell align="right">{item.unitOfMeasure}</TableCell>
+                                    <TableCell align="right">{item.unitOfMeasure.measureName}</TableCell>
                                     <TableCell align="right">{item.quantity}</TableCell>
                                 </TableRow>
                             ))}
@@ -182,7 +182,7 @@ const ItemsBox = ({ item }) => {
                 <StackChips branch={branch} catgory={category} />
             </Grid>
             <Grid item>
-                <ListItemText primary={nameProduct} secondary={unitOfMeasure} />
+                <ListItemText primary={nameProduct} secondary={unitOfMeasure?.measureName} />
             </Grid>
             <Grid item>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

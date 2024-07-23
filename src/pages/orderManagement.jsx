@@ -28,7 +28,7 @@ export const OrderManagement = () => {
   const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
   const sortedByCategory = list => {
-    return list.sort((a, b) => a.product.category.localeCompare(b.product.category));
+    return list.sort((a, b) => a.product.category?.nameCategory.localeCompare(b.product.category?.nameCategory));
   }
 
   useEffect( () => {
@@ -203,7 +203,7 @@ const Product = ({ allProduct, idInvitation }) => {
         <InputNumberQuantity value={quantityToDeliver} setValue={handleEditQuantity}/>
       </Grid>
       <Grid item xs={6} md={4.5} >
-        <ListItemText primary={product.nameProduct} secondary={product.unitOfMeasure} />
+        <ListItemText primary={product.nameProduct} secondary={product.unitOfMeasure?.measureName} />
       </Grid>
       <Grid item xs={1} md={1}>
         <IconDeleteButton action={deleteProduct} title={'מחק מוצר'}/>
