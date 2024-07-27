@@ -17,9 +17,11 @@ export const AppBarSystemManagement = ({ secondaryTabs = [], secondaryTabValue, 
      '/systemManagement/Users', '/systemManagement/branches'
   ];
   const orderTabPaths = ['/orders', '/orderManagement', '/oldOrders'];
+  const settingsTabPaths = ['/companySettings/companyDetails', '/companySettings/license'];
   
   const isOrderPage = orderTabPaths.some(path => location.pathname === path);
-  const activePaths = isOrderPage ? orderTabPaths : mainTabPaths;
+  const isSettingsPage = settingsTabPaths.some(path => location.pathname === path);
+  const activePaths = isOrderPage ? orderTabPaths : isSettingsPage ? settingsTabPaths : mainTabPaths;
 
   const getCurrentTab = (pathname) => {
     const index = activePaths.findIndex(path => pathname === path);
@@ -43,6 +45,11 @@ export const AppBarSystemManagement = ({ secondaryTabs = [], secondaryTabValue, 
         { label: "הזמנות בתהליך", path: "/orderManagement" },
         { label: "קבלת הזמנות", path: "/oldOrders" },
       ]
+      : isSettingsPage ?
+      [
+        { label: "פרטי חברה", path: "/companySettings/companyDetails" },
+        { label: "רישיון", path: "/companySettings/license" },
+      ]
     : [
         { label: "מוצרים", path: "/systemManagement/products" },
         { label: "ספקים", path: "/systemManagement/supplier" },
@@ -60,7 +67,6 @@ export const AppBarSystemManagement = ({ secondaryTabs = [], secondaryTabValue, 
         indicatorColor="primary"
         textColor="primary"
         variant="fullWidth"
-        aria-label="main navigation tabs"
       >
         {mainTabs.map((tab, index) => (
           <Tab key={tab.path} label={tab.label} {...getTabProps(index)} />

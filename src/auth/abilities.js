@@ -7,7 +7,7 @@ const defineAdminAbilities = (can, cannot) => {
 const defineEmployeeAbilities = (can, cannot, user) => {
   can('enter', ['Order', 'PendingOrders', 'OldOrder']);
   cannot('enter', ['IssuingReport', 'NavPrivet', 'CreateUser',
-  'Product', 'Supplier', 'Measure', 'Category', 'Branches', 'Log', 'Settings']);
+  'Product', 'Supplier', 'Measure', 'Category', 'Branches', 'Log', 'companySettings']);
   can('read', 'Order', [user.branch._id] );
   can('read', 'PendingOrders', [user.branch._id] );
   can('read', 'OldOrder', [user.branch._id] );
@@ -23,12 +23,13 @@ const defineEmployeeAbilities = (can, cannot, user) => {
 const defineAccountantAbilities = (can, cannot) => {
   can('enter', 'IssuingReport');
   cannot('enter', ['Order', 'PendingOrders', 'OldOrder', 'NavPrivet', 'CreateUser',
-  'Product', 'Supplier', 'Measure', 'Category', 'Log', 'Settings']);
+  'Product', 'Supplier', 'Measure', 'Category', 'Log', 'CompanySettings']);
   cannot(['create', 'delete'], ['PendingOrders', 'Order'])
 }
 
 const defineGuestAbilities = (can, cannot) => {
     cannot('enter', 'all');
+    can('create', 'Company');
 }
 
 export const defineAbilitiesFor = user => defineAbility((can, cannot) => {

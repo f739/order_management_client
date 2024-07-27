@@ -10,11 +10,12 @@ import { Supplier } from './pages/subPages/Supplier.jsx';
 import { Measure } from './pages/subPages/Measure.jsx';
 import { Categories } from './pages/subPages/Categories.jsx';
 import { Branches } from './pages/subPages/Branches.jsx';
-import { EmailSettings } from './pages/EmailSettings.jsx';
+import { License } from './pages/companySettings/Lisence.jsx';
 import { IssuingReports } from './pages/IssuingReports.jsx';
 import { Logger } from './pages/logger.jsx';
 import { NoEntry } from './pages/noEntry.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
+import { CompanyDetails } from './pages/companySettings/CompanyDetails.jsx';
 
 export const routers = createBrowserRouter([{
     element: <Layout />,
@@ -44,8 +45,12 @@ export const routers = createBrowserRouter([{
             element: <ProtectedRoute element={IssuingReports} action="enter" subject="IssuingReport" />
         },
         {
-            path: "emailSettings",
-            element: <ProtectedRoute element={EmailSettings} action="enter" subject="Settings" />
+            path: "companySettings",
+            children: [
+                {path: 'companyDetails', element: <ProtectedRoute element={CompanyDetails} action="enter" subject="CompanySettings" />},
+                {path: 'license', element: <ProtectedRoute element={License} action="enter" subject="License" />},
+
+            ]
         },
         {
             path: "/systemManagement",

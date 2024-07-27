@@ -17,4 +17,5 @@ export { TooltipComponent } from './TooltipComponent';
 export { MyAppBar } from './AppBar';
 export { BottomNav } from './BottomNav';
 export { AppBarSystemManagement } from './AppBarSystemManagement';
+export { DrawerMiniRight } from './DrawerMiniRight';
 export { CustomField } from './CustomField';

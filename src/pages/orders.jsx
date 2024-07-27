@@ -98,7 +98,7 @@ export const Orders = () => {
                         sx={{
                             position: 'fixed',
                             bottom: 16,
-                            right: 16,
+                            right: 76,
                         }}
                     >
                         <SendIcon />

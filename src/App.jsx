@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Outlet, RouterProvider, NavLink } from "react-router-dom";
 import { routers } from "./routers";
 import { ToastContainer } from 'react-toastify';
@@ -5,19 +6,36 @@ import 'react-toastify/dist/ReactToastify.css';
 import bic_logo from './assetes/bic_logo.png';
 import { useTestTokenQuery } from "./dl/api/usersApi";
 import './css/main.css';
-import { MyAppBar, BottomNav } from "./components/indexComponents";
+import { MyAppBar, BottomNav, DrawerMiniRight, LoudingPage } from "./components/indexComponents";
+import { Box, CssBaseline, Toolbar } from "@mui/material";
 
 export function Layout () {
   const  { data: user, isLoading } = useTestTokenQuery();
-  if (isLoading) return <h1>🌀 Loading...</h1>;
+
+  const [open, setOpen] = useState(false);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  if (isLoading) return <LoudingPage /> ;
   else return (
-    <>
-      <MyAppBar />
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <MyAppBar open={open} handleDrawerOpen={handleDrawerOpen}/>
+      <DrawerMiniRight open={open} handleDrawerClose={handleDrawerClose} />
+      <Box component="main" sx={{ flexGrow: 1}}>
+        <Toolbar /> 
+        <Outlet />
+      </Box>
       <ToastContainer />
-      <Outlet /> 
       {/* <BottomNav /> */}
-    </>
-  )
+    </Box>
+  );
 }
 
 function App() {

@@ -1,10 +1,9 @@
 import React from 'react';
+import { CreateCompany } from './CreateCompany';
 
 export const Home = () => {
     return (
-        <div >
-          <h1>שלום!!</h1>
-        </div>
+        <CreateCompany />
       );
     }
 
