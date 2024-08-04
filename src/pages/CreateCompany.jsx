@@ -21,8 +21,8 @@ export const CreateCompany = () => {
 
     const handleCreateCompany = async () => {
         try {
-            await createCompany(newCompany).unwarp();
-            navigate('./companySettings');
+            await createCompany(newCompany).unwrap();
+            navigate('./auth/emailVerificationPage');
         }catch (err) {}
     }
 

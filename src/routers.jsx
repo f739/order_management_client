@@ -13,9 +13,11 @@ import { Branches } from './pages/subPages/Branches.jsx';
 import { License } from './pages/companySettings/Lisence.jsx';
 import { IssuingReports } from './pages/IssuingReports.jsx';
 import { Logger } from './pages/logger.jsx';
-import { NoEntry } from './pages/noEntry.jsx';
+import { NoEntry } from './pages/authPages/noEntry.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import { CompanyDetails } from './pages/companySettings/CompanyDetails.jsx';
+import { EmailVerificationPage } from './pages/authPages/EmailVerificationPage.jsx';
+import { LoginPage } from './pages/authPages/LoginPage.jsx';
 
 export const routers = createBrowserRouter([{
     element: <Layout />,
@@ -23,10 +25,6 @@ export const routers = createBrowserRouter([{
         {
             path: "/",
             element: <Home />
-        },
-        {
-            path: "/noEntry",
-            element: <NoEntry />
         },
         {
             path: "/orders",
@@ -49,6 +47,15 @@ export const routers = createBrowserRouter([{
             children: [
                 {path: 'companyDetails', element: <ProtectedRoute element={CompanyDetails} action="enter" subject="CompanySettings" />},
                 {path: 'license', element: <ProtectedRoute element={License} action="enter" subject="License" />},
+
+            ]
+        },
+        {
+            path: "auth",
+            children: [
+                {path: 'noEntry', element: <ProtectedRoute element={NoEntry} action="enter" subject="NoEntry" />},
+                {path: 'login', element: <ProtectedRoute element={LoginPage} action="enter" subject="Login" />},
+                {path: 'emailVerificationPage', element: <ProtectedRoute element={EmailVerificationPage} action="enter" subject="EmailVerification" />},
 
             ]
         },

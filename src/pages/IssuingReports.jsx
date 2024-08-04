@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useState } from "react";
-import { NoEntry } from "./noEntry";
+import { NoEntry } from "./authPages/noEntry";
 import { sendProductReport, sendBookkeepingReport } from "../dl/slices/issuingReports";
 // import { SelectSuppliersHook } from "../components/SelectSuppliersHook";
 // import { SelectProductsHook } from "../components/selectProductsHook";

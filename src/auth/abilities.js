@@ -34,7 +34,7 @@ const defineGuestAbilities = (can, cannot) => {
 
 export const defineAbilitiesFor = user => defineAbility((can, cannot) => {
 
-  switch (user.license) {
+  switch (user.role) {
     case 'מנהל':
       defineAdminAbilities(can, cannot);
       break;

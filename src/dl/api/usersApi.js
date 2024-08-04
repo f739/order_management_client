@@ -22,8 +22,16 @@ export const usersApi = mainApi.injectEndpoints({
         [{ type: 'User', _id: 'LIST' }],
     }),
     connectUser: builder.mutation({
-      query: ({email, password}) => `/login/${password}/${email}/connectUser`,
-      transformResponse: res => res?.user,
+      query: (form) => {
+        if (!fieldsAreNotEmpty(form)) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
+        if (!validEmail(form.email)) { return { error: {message: 'האימייל אינו תקני'}}} 
+
+        return {
+          url: `/login/connectUser`,
+          method: 'PUT',
+          body: form
+        }
+      },
     }),
     testToken: builder.query({
       query: () => {

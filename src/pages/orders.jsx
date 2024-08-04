@@ -54,7 +54,7 @@ export const Orders = () => {
         padding: theme.spacing(1),
         textAlign: 'center',
         color: theme.palette.text.secondary,
-        padding: '20px 20px 0px 0px'
+        // padding: '20px 20px 0px 0px'
     }));
 
     const [valueTab, setValueTab] = useState(1);

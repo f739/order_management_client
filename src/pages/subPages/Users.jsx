@@ -146,7 +146,7 @@ const ShowUsers = ({ secondaryTabValue }) => {
                                     <Grid item xs={3} sx={{ minWidth: '100px' }}>
                                         <ListItemText
                                             primary={user.userName}
-                                            secondary={user.branch.nameBranch}
+                                            secondary={user?.branch?.nameBranch}
                                         />
                                     </Grid>
                                     <Grid item xs={5} sx={{ minWidth: '100px' }}>

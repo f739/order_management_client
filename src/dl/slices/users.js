@@ -1,17 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { usersApi } from "../api/usersApi";
+import { mainApi } from "../api/mainApi";
+import { logOut, updateUserInfo } from "./login";
 
 const initialState = {
   allUsers: [],
   user: {
-  _id: '',
-  email: '',
-  license: '',
-  userName: '',
-  branch: '',
-  isAdmin: false,
-  isSubscriber: false,
-  role: 'guest'
+    ifVerifiedEmail: false,
+    _id: '',
+    email: '',
+    userName: '',
+    branch: '',
+    company: '',
+    role: 'guest'
   },
 }
 
@@ -22,6 +23,16 @@ export const slice = createSlice({
         
         },
         extraReducers: builder => {
+            builder.addCase(updateUserInfo, (state, action) => {
+              const { role, email, company, _id, ifVerifiedEmail } = action.payload;
+              Object.assign(state.user, { role, _id, email, company, ifVerifiedEmail });
+            });
+            builder.addCase(logOut, (state, action) => {
+              state.user.role = 'guest';
+              state.user.email = '';
+              state.user.company = '';
+              state.user.ifVerifiedEmail = false;
+            });
             builder.addMatcher(
               usersApi.endpoints.getUsers.matchFulfilled,
               (state, action) => {
@@ -35,21 +46,36 @@ export const slice = createSlice({
               usersApi.endpoints.removeUser.matchFulfilled, (state, action) => {
               state.allUsers = state.allUsers.filter( el => el._id !== action.payload._id);
             });
+            builder.addMatcher( mainApi.endpoints.connectUser.matchFulfilled, (state, action) => {
+              const { token, ifVerifiedEmail, tokenCompany } = action.payload.user;
+                
+                localStorage.setItem('tokenCompany', tokenCompany);
+                localStorage.setItem('userToken', token);
+                localStorage.setItem('ifVerifiedEmail', ifVerifiedEmail);
+                state.user = {...action.payload.user};
+              }
+            );
+              // builder.addMatcher(
+              //   usersApi.endpoints.testToken.matchFulfilled,
+              //   (state, action) => {
+              //     const {license, branch, userName, email, token} = action.payload;
+              //     action.meta.arg.originalArgs !== token ? localStorage.setItem('token', token) : null;
+              //     state.user = {license, branch, userName, email}
+              //   });
             builder.addMatcher(
-              usersApi.endpoints.connectUser.matchFulfilled,
-              (state, action) => {
-                const {license, branch, userName, email, token} = action.payload;
-                localStorage.setItem('token', token);
-                state.user = {license, branch, userName, email}
-            });
+              mainApi.endpoints.createNewCompany.matchFulfilled, (state, action) => {
+                const { tokenCompany, newUser } = action.payload;
+                state.user = {...newUser};
+                
+                localStorage.setItem('tokenCompany', tokenCompany);
+                localStorage.setItem('userToken', newUser.token);
+              });
             builder.addMatcher(
-              usersApi.endpoints.testToken.matchFulfilled,
-              (state, action) => {
-                const {license, branch, userName, email, token} = action.payload;
-                action.meta.arg.originalArgs !== token ? localStorage.setItem('token', token) : null;
-                state.user = {license, branch, userName, email}
+              mainApi.endpoints.verifyEmailAndUpdatePass.matchFulfilled, (state, action) => {
+                state.user.ifVerifiedEmail = true;
+                localStorage.setItem('ifVerifiedEmail', true);
             });
-        }
+            }
     })
     
     

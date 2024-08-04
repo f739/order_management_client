@@ -8,10 +8,11 @@ import { useTestTokenQuery } from "./dl/api/usersApi";
 import './css/main.css';
 import { MyAppBar, BottomNav, DrawerMiniRight, LoudingPage } from "./components/indexComponents";
 import { Box, CssBaseline, Toolbar } from "@mui/material";
+import { useJwtParser } from './hooks/useJwtParser';
 
 export function Layout () {
-  const  { data: user, isLoading } = useTestTokenQuery();
-
+  // const  { data: user, isLoading } = useTestTokenQuery();
+  // useJwtParser();
   const [open, setOpen] = useState(false);
 
   const handleDrawerOpen = () => {
@@ -22,8 +23,9 @@ export function Layout () {
     setOpen(false);
   };
 
-  if (isLoading) return <LoudingPage /> ;
-  else return (
+  // if (isLoading) return <LoudingPage /> ;
+  // else 
+  return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <MyAppBar open={open} handleDrawerOpen={handleDrawerOpen}/>

@@ -1,6 +1,7 @@
 import { mainApi } from './mainApi';
 import { defineAbilitiesFor } from '../../auth/abilities';
 import { fieldsAreNotEmpty, validEmail } from '../../hooks/fanksHook';
+import { arePasswordsEqual } from '../../hooks/validatePasswords';
 
 const getAbilityForUser = user => {
   return defineAbilitiesFor(user);
@@ -31,10 +32,23 @@ export const compamyApi = mainApi.injectEndpoints({
         })
       },
     }),
+    verifyEmailAndUpdatePass: builder.mutation({
+      queryFn: async ({tempPassword ,newPassword, confirmPassword}, {getState}, ex, baseQuery) => {
+        const { email } = getState().users.user;
+
+        if (!arePasswordsEqual(newPassword, confirmPassword)) {return { error: { message: 'הסיסמאות אינן שוות'}}};
+          return await baseQuery({
+           url: `/users/verifyEmailAndUpdatePass`,
+           method: 'PUT',
+           body: {tempPassword, newPassword, email},
+         });
+      },
+    }),
   }),
 });
 
 
 export const { 
     useCreateNewCompanyMutation,
+    useVerifyEmailAndUpdatePassMutation
   } = compamyApi;

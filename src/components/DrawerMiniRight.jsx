@@ -13,6 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import SettingsIcon from '@mui/icons-material/Settings';
 import BusinessIcon from '@mui/icons-material/Business';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -68,6 +69,7 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
     const theme = useTheme();
   
     const pages = [
+      { name: 'כניסה', icon: <VpnKeyIcon /> , path: '/auth/login' },
       { name: 'הזמנות', icon: <ShoppingCartIcon />, path: '/orders' },
       { name: 'ניהול תוכן', icon: <BusinessIcon />, path: '/systemManagement/products' },
       { name: 'הגדרות חברה', icon: <SettingsIcon /> , path: '/companySettings/companyDetails' },
