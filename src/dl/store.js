@@ -1,7 +1,6 @@
 import { configureStore, createListenerMiddleware } from "@reduxjs/toolkit";
 import { setupListeners } from '@reduxjs/toolkit/query'
 import login from "./slices/login";
-import prices from "./slices/prices";
 import companies from './slices/companies';
 import categories from "./slices/categories";
 import suppliers from "./slices/suppliers";
@@ -23,7 +22,6 @@ export const store = configureStore({
   reducer: {
     [mainApi.reducerPath]: mainApi.reducer,
     login,
-    prices,
     companies,
     categories,
     suppliers,

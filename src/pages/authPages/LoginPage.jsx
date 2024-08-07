@@ -19,7 +19,7 @@ export const LoginPage = () => {
     const connect = async () => {
         try {
             await connectUser(form).unwrap();
-            navigate('../orders')
+            navigate('../../orders')
         } catch (err) { console.log(err);
         }
     }

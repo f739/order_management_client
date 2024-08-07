@@ -1,6 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { productsApi } from "../api/productsApi";
-import { ordersApi } from "../api/ordersApi";
 import { mainApi } from "../api/mainApi";
 
 const initialState = {
@@ -29,9 +27,9 @@ export const slice = createSlice({
       const { name, value } = action.payload;
       state.newProduct = {...state.newProduct, [name]: value};
     },
-    cleanNewProduct(state, action) {
-      state.newProduct = { nameProduct: '', branches: [], category: '', unitOfMeasure: '', sku: '', price: [] };
-    },
+    // cleanNewProduct(state, action) {
+    //   state.newProduct = { nameProduct: '', branches: [], category: '', unitOfMeasure: '', sku: '', price: [] };
+    // },
     saveNewPrice(state, action) {
       const {newPrice, newProduct} = state;
       if (newPrice._idSupplier === '' || newPrice.price === '' || !/^\d*\.?\d+$/.test(newPrice.price)) {
@@ -61,10 +59,11 @@ export const slice = createSlice({
       (state, action) => {
       state.allProducts = action.payload;
     });
-    // builder.addMatcher(
-    //   productsApi.endpoints.createNewProduct.matchFulfilled, (state, action) => {
-    //     state.allProducts.push(action.payload) 
-    //   });
+    builder.addMatcher(
+      mainApi.endpoints.createNewProduct.matchFulfilled, (state, action) => {
+        // state.allProducts.push(action.payload) 
+        state.newProduct = { nameProduct: '', branches: [], category: '', unitOfMeasure: '', sku: '', price: [] };
+      });
     builder.addMatcher(
       mainApi.endpoints.removeProduct.matchFulfilled, (state, action) => {
         state.allProducts = state.allProducts.filter( el => el._id !== action.payload._id);
@@ -82,18 +81,18 @@ export const slice = createSlice({
     });
     builder.addMatcher(
       mainApi.endpoints.addPrice.matchFulfilled, (state, action) => {
-        // const { _id, price } = action.payload;
-        console.log(action.payload);
-        // if (state.allProducts.length === 0) {
-        //   return state.allProducts.push(action.payload)
-        // }
-        // state.allProducts = state.allProducts.map( product => {
-        //     if (product._id === _id) {
-        //       return {...product, price: price};
-        //     }
-        //     return product;
-        // });
-    });
+        const productsUpdated = action.payload.updateResults;
+
+        const updatedProductsMap = productsUpdated.reduce((acc, product) => {
+          acc[product._id] = product;
+          return acc;
+        }, {});
+
+        state.allProducts = state.allProducts.map(product => {
+          return updatedProductsMap[product._id] ?? product;                
+        });
+      }
+    )
   }
 })
     

@@ -19,7 +19,7 @@ export const EmailVerificationPage = () => {
     event.preventDefault();
     try {
       await verifyEmail(formEmailVerification).unwrap();
-      navigate('../orders');
+      navigate('../../orders');
     } catch (error) { }
   };
 

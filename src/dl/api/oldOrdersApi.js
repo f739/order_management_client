@@ -1,15 +1,13 @@
 import { mainApi } from './mainApi';
-import { defineAbilitiesFor } from '../../auth/abilities';
-
-const getAbilityForUser = user => {
-  return defineAbilitiesFor(user);
-};
 
 export const oldOrdersApi = mainApi.injectEndpoints({
   reducerPath: 'oldOrdersApi',
   endpoints: builder => ({
     getOldOrders: builder.query({
-      query: () => '/oldOrders/getOldOrders',
+      query: () => ({
+        url: '/oldOrders/getOldOrders',
+        headers: { 'x-action': 'read', 'x-subject': 'OldOrder' },
+      }),
       transformResponse: res => res.oldOrders,
       providesTags: result =>
         result ? 
@@ -17,30 +15,20 @@ export const oldOrdersApi = mainApi.injectEndpoints({
         [{ type: 'OldOrder', _id: 'LIST' }],
     }),
     returnProduct: builder.mutation({
-      queryFn: async ( data, {getState}, ex, baseQuery) => {
-        const { user } = getState().users;
-        const ability = getAbilityForUser(user);
-        if (!ability.can('delete', 'OldOrder')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
-          
-        return await baseQuery( {
-            url: '/oldOrders/returnProduct',
-            method: 'POST',
-            body: data,
-          })
-      },
+      query: data => ({
+        url: '/oldOrders/returnProduct',
+        method: 'POST',
+        body: data,
+        headers: { 'x-action': 'delete', 'x-subject': 'OldOrder' },
+      }),
       invalidatesTags: [{ type: 'ActiveOrder', _id: 'LIST' }, { type: 'OldOrder', _id: 'LIST' }],
     }),
     removeProductInOldOrder: builder.mutation({
-      queryFn: async ({ _id, idOrderList }, {getState}, ex, baseQuery) => {
-        const { user } = getState().users;
-        const ability = getAbilityForUser(user);
-        if (!ability.can('delete', 'OldOrder')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
-        
-        return await baseQuery({
-          url: `/oldOrders/${_id}/${idOrderList}/removeProductInOldOrder`,
-          method: 'PUT',
-        })
-      },
+      query: ({ _id, idOrderList }) => ({
+        url: `/oldOrders/${_id}/${idOrderList}/removeProductInOldOrder`,
+        method: 'PUT',
+        headers: { 'x-action': 'delete', 'x-subject': 'OldOrder' },
+      }),
       transformResponse: res => res.doc,
       invalidatesTags: [{ type: 'OldOrder', _id: 'LIST' }],
     }),
@@ -48,7 +36,8 @@ export const oldOrdersApi = mainApi.injectEndpoints({
       query: productData => ({
         url: `/oldOrders/productReceived`,
         method: 'PUT',
-        body: productData
+        body: productData,
+        headers: { 'x-action': 'update', 'x-subject': 'OldOrder' },
       }),
       transformResponse: res => res.orderUpdated,
       invalidatesTags: [{ type: 'OldOrder', _id: 'LIST' }],

@@ -9,7 +9,10 @@ export const measuresApi = mainApi.injectEndpoints({
   reducerPath: 'measuresApi',
   endpoints: (builder) => ({
     getMeasures: builder.query({
-      query: () => '/measures/getAllMeasures',
+      query: () => ({
+        url: '/measures/getAllMeasures',
+        headers: { 'x-action': 'read', 'x-subject': 'Measure' },
+      }),
       transformResponse: res => res.allMeasures,
       providesTags: res =>
         res ? 
@@ -18,16 +21,13 @@ export const measuresApi = mainApi.injectEndpoints({
     }),
     createNewMeasure: builder.mutation({
       queryFn: async ({newMeasure}, {getState}, ex, baseQuery) => {
-        const state = getState();
-        const ability = getAbilityForUser(state.users.user);
-
+        
         if (newMeasure.measureName === '') { return {error: {message: 'חסר פרטים בטופס'}}} 
-        if (!ability.can('create', 'Measure')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
-
         return await baseQuery({
           url: '/measures/newMeasure',
           method: 'POST',
           body: newMeasure,
+          headers: { 'x-action': 'create', 'x-subject': 'Measure' },
         })
       },
       transformResponse: res => res,
@@ -37,21 +37,17 @@ export const measuresApi = mainApi.injectEndpoints({
       query: _id => ({
         url: `/measures/${_id}/deleteMeasure`,
         method: 'DELETE',
+        headers: { 'x-action': 'delete', 'x-subject': 'Measure' },
       }),
       invalidatesTags: [{ type: 'Measure', _id: 'LIST' }],
     }),
     changeActiveMeasure: builder.mutation({
-      queryFn: async ({active, measureId}, {getState}, ex, baseQuery) => {
-        const state = getState();
-        const ability = getAbilityForUser(state.users.user);
-        if (!ability.can('update', 'Measure')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
-
-        return await baseQuery({
-          url: `/measures/changeActiveMeasure`,
-          method: 'PUT',
-          body: {active, measureId}
-        })
-      },
+      query: ({active, measureId}) => ({
+        url: `/measures/changeActiveMeasure`,
+        method: 'PUT',
+        body: {active, measureId},
+        headers: { 'x-action': 'update', 'x-subject': 'Measure' },
+      }),
       invalidatesTags: [{ type: 'Measure', _id: 'LIST' }],
     }),
   }),

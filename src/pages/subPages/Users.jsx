@@ -17,7 +17,7 @@ import { useActiveInactiveSort } from '../../hooks/useActiveInactiveSort';
 
 export const Users = () => {
     const [formCreateUser, setFormCreateUser] = useState(
-        { userName: '', password: '', email: '', license: '', branch: '' });
+        { userName: '', password: '', email: '', role: '', branch: '' });
 
     const { data: allBranches, error: errorGetBranches, isLoading: isLoadingGetBranches } = useGetBranchesQuery();
     const [createNewUser, { error, isLoading, data }] = useCreateNewUserMutation();
@@ -28,7 +28,7 @@ export const Users = () => {
     const createUser = async () => {
         try {
             await createNewUser(formCreateUser).unwrap();
-            setFormCreateUser({ userName: '', password: '', email: '', license: '', branch: '' });
+            setFormCreateUser({ userName: '', password: '', email: '', role: '', branch: '' });
         } catch (err) { }
     }
 
@@ -52,14 +52,12 @@ export const Users = () => {
             {secondaryTabValue === 0 ?
                 (<Stack sx={{ p: '20px' }} spacing={1}>
                     <CustomField
-                        id="filled-area"
                         name="userName"
                         value={formCreateUser.userName}
                         label="שם משתמש"
                         onChange={e => handleFormHook(e.target, setFormCreateUser)}
                     />
                     <CustomField
-                        id="filled-area"
                         type="password"
                         name="password"
                         value={formCreateUser.password}
@@ -67,7 +65,6 @@ export const Users = () => {
                         onChange={e => handleFormHook(e.target, setFormCreateUser)}
                     />
                     <CustomField
-                        id="filled-area"
                         type="email"
                         name="email"
                         value={formCreateUser.email}
@@ -77,8 +74,8 @@ export const Users = () => {
 
                     <CustomSelect
                         set={setFormCreateUser}
-                        nameField='license'
-                        value={formCreateUser.license}
+                        nameField='role'
+                        value={formCreateUser.role}
                         label='תפקיד'
                         options={roles}
                         optionsValue='name'
@@ -152,7 +149,7 @@ const ShowUsers = ({ secondaryTabValue }) => {
                                     <Grid item xs={5} sx={{ minWidth: '100px' }}>
                                         <ListItemText
                                             primary={user.email}
-                                            secondary={user.license}
+                                            secondary={user.role}
                                         />
                                     </Grid>
                                     <Grid item xs={3} >

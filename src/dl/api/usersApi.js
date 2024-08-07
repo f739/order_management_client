@@ -1,57 +1,36 @@
 import { mainApi } from './mainApi';
 import { validEmail, fieldsAreNotEmpty } from '../../hooks/fanksHook';
-import { defineAbilitiesFor } from '../../auth/abilities';
-
-const getAbilityForUser = user => {
-  return defineAbilitiesFor(user);
-};
-
-const tokenFromLocalStorage = () => {
-  return localStorage.getItem('token');
-};
 
 export const usersApi = mainApi.injectEndpoints({
   reducerPath: 'usersApi',
   endpoints: (builder) => ({
     getUsers: builder.query({
-      query: () => '/users/getUsers',
+      query: () => ({
+        url: '/users/getUsers',
+        headers: { 'x-action': 'read', 'x-subject': 'User' },
+      }),
       transformResponse: (res) => res.allUsers,
       providesTags: (result) =>
         result ? 
         [...result.map(({ _id }) => ({ type: 'User', _id })), { type: 'User', _id: 'LIST' }] :
         [{ type: 'User', _id: 'LIST' }],
     }),
+    // forward to authApi page
     connectUser: builder.mutation({
       query: (form) => {
         if (!fieldsAreNotEmpty(form)) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
         if (!validEmail(form.email)) { return { error: {message: 'האימייל אינו תקני'}}} 
 
         return {
-          url: `/login/connectUser`,
+          url: `/auth/login`,
           method: 'PUT',
-          body: form
+          body: form,
+          headers: { 'x-action': 'login', 'x-subject': 'User' },
         }
       },
     }),
-    testToken: builder.query({
-      query: () => {
-        const localToken = tokenFromLocalStorage();
-        if (!localToken) {
-          return { url: '/', method: 'GET' };
-        }  
-        return {
-          url: `/login/${localToken}/testToken`,
-          method: 'GET',
-        }
-      },  
-      transformResponse: res => res?.user ?? null,
-    }),
     createNewUser: builder.mutation({
       queryFn: async (formCreateUser, {getState}, ex, baseQuery)  => {
-        const state = getState();
-        const ability = getAbilityForUser(state.users.user);
-
-        if (!ability.can('create', 'User')) { return {error:{ message: 'אין לך רישיון מתאים'}}};
         if (!fieldsAreNotEmpty(formCreateUser)) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
         if (!validEmail(formCreateUser.email)) { return { error: {message: 'האימייל אינו תקני'}}} 
 
@@ -59,6 +38,7 @@ export const usersApi = mainApi.injectEndpoints({
           url: '/users/createNewUser',
           method: 'POST',
           body: formCreateUser,
+          headers: { 'x-action': 'create', 'x-subject': 'User' },
         })
       },
       invalidatesTags: [{ type: 'User', _id: 'LIST' }],
@@ -67,18 +47,17 @@ export const usersApi = mainApi.injectEndpoints({
       query: _id => ({
         url: `/users/${_id}/deleteUser`,
         method: 'DELETE',
+        headers: { 'x-action': 'delete', 'x-subject': 'User' },
       }),
       invalidatesTags: [{ type: 'User', _id: 'LIST' }],
     }),
     changeActiveUser: builder.mutation({
-      queryFn: async ({active, userId}, {getState}, ex, baseQuery) => {
-
-        return await baseQuery({
-          url: `/users/changeActiveUser`,
-          method: 'PUT',
-          body: {active, userId}
-        })
-      },
+      query: ({active, userId}) => ({
+        url: `/users/changeActiveUser`,
+        method: 'PUT',
+        body: {active, userId},
+        headers: { 'x-action': 'update', 'x-subject': 'User' },
+      }),
       invalidatesTags: [{ type: 'User', _id: 'LIST' }],
     }),
   }),

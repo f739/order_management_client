@@ -3,19 +3,22 @@ const URL = import.meta.env.VITE_API_URL;
 
 const baseQueryWithHeaders = fetchBaseQuery({
     baseUrl: URL,
-    prepareHeaders: (headers, { getState }) => {
+    credentials: 'include',
+    prepareHeaders: (headers, { getState ,extra }) => {
         try {
             const { company, _id, email } = getState().users.user;
-
+            
+            // authorization
             if (company) {
-                headers.set('companyId', company);
+                headers.set('x-company', company);
             }
             if (_id) {
-                headers.set('idUser', _id);
+                headers.set('x-idUser', _id);
             }
             if (email) {
-                headers.set('emailUser', email);
+                headers.set('x-email', email);
             }
+
         } catch (error) {
             console.error('Error preparing headers:', error);
         }
