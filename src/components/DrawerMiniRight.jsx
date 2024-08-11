@@ -71,7 +71,7 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
     const pages = [
       { name: 'כניסה', icon: <VpnKeyIcon /> , path: '/auth/login' },
       { name: 'הזמנות', icon: <ShoppingCartIcon />, path: '/orders' },
-      { name: 'ניהול תוכן', icon: <BusinessIcon />, path: '/systemManagement/products' },
+      { name: 'ניהול תוכן', icon: <BusinessIcon />, path: '/contentManagement/products' },
       { name: 'הגדרות חברה', icon: <SettingsIcon /> , path: '/companySettings/companyDetails' },
     ];
   

@@ -12,9 +12,9 @@ export const AppBarSystemManagement = ({ secondaryTabs = [], secondaryTabValue, 
   const location = useLocation();
   
   const mainTabPaths = [
-    '/systemManagement/products', '/systemManagement/supplier',
-     '/systemManagement/categories', '/systemManagement/measure',
-     '/systemManagement/Users', '/systemManagement/branches'
+    '/contentManagement/products', '/contentManagement/supplier',
+     '/contentManagement/categories', '/contentManagement/measure',
+     '/contentManagement/Users', '/contentManagement/branches'
   ];
   const orderTabPaths = ['/orders', '/orderManagement', '/oldOrders'];
   const settingsTabPaths = ['/companySettings/companyDetails', '/companySettings/license'];
@@ -51,12 +51,12 @@ export const AppBarSystemManagement = ({ secondaryTabs = [], secondaryTabValue, 
         { label: "רישיון", path: "/companySettings/license" },
       ]
     : [
-        { label: "מוצרים", path: "/systemManagement/products" },
-        { label: "ספקים", path: "/systemManagement/supplier" },
-        { label: "קטגוריות", path: "/systemManagement/categories" },
-        { label: "יחידות מידה", path: "/systemManagement/measure" },
-        { label: "משתמשים", path: "/systemManagement/Users" },
-        { label: "סניפים", path: "/systemManagement/Branches" },
+        { label: "מוצרים", path: "/contentManagement/products" },
+        { label: "ספקים", path: "/contentManagement/supplier" },
+        { label: "קטגוריות", path: "/contentManagement/categories" },
+        { label: "יחידות מידה", path: "/contentManagement/measure" },
+        { label: "משתמשים", path: "/contentManagement/Users" },
+        { label: "סניפים", path: "/contentManagement/Branches" },
       ];
 
   const renderMainTabs = () => (

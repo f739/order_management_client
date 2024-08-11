@@ -4,12 +4,12 @@ import { Home } from './pages/home';
 import { Orders } from './pages/orders';
 import { OldOrders } from './pages/oldOrders.jsx';
 import { OrderManagement } from './pages/orderManagement.jsx';
-import { Users } from './pages/subPages/Users.jsx';
-import { Products } from './pages/subPages/Products.jsx';
-import { Supplier } from './pages/subPages/Supplier.jsx';
-import { Measure } from './pages/subPages/Measure.jsx';
-import { Categories } from './pages/subPages/Categories.jsx';
-import { Branches } from './pages/subPages/Branches.jsx';
+import { Users } from './pages/contentManagement/Users.jsx';
+import { Products } from './pages/contentManagement/Products.jsx';
+import { Supplier } from './pages/contentManagement/Supplier.jsx';
+import { Measure } from './pages/contentManagement/Measure.jsx';
+import { Categories } from './pages/contentManagement/Categories.jsx';
+import { Branches } from './pages/contentManagement/Branches.jsx';
 import { License } from './pages/companySettings/Lisence.jsx';
 import { IssuingReports } from './pages/IssuingReports.jsx';
 import { Logger } from './pages/logger.jsx';
@@ -61,9 +61,9 @@ export const routers = createBrowserRouter([{
             ]
         },
         {
-            path: "/systemManagement",
+            path: "/contentManagement",
             children: [
-                { path: "Users", element: <ProtectedRoute element={Users} action="enter" subject="CreateUser" /> },
+                { path: "users", element: <ProtectedRoute element={Users} action="enter" subject="CreateUser" /> },
                 { path: "products", element: <ProtectedRoute element={Products} action="enter" subject="Product" /> },
                 { path: "supplier", element: <ProtectedRoute element={Supplier} action="enter" subject="Supplier" /> },
                 { path: "measure", element: <ProtectedRoute element={Measure} action="enter" subject="Measure" /> },

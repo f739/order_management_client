@@ -23,8 +23,6 @@ export function Layout () {
     setOpen(false);
   };
 
-  // if (isLoading) return <LoudingPage /> ;
-  // else 
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />

@@ -16,11 +16,11 @@
 //   {
 //     name: 'ניהול מערכת',
 //     subPages: [
-//       { name: 'משתמשים', path: './systemManagement/users' },
-//       { name: 'מוצרים', path: './systemManagement/products' },
-//       { name: 'קטגוריות', path: './systemManagement/categories' },
-//       { name: 'ספקים', path: './systemManagement/supplier' },
-//       { name: 'יחידות מידה', path: './systemManagement/measure' },
+//       { name: 'משתמשים', path: './contentManagement/users' },
+//       { name: 'מוצרים', path: './contentManagement/products' },
+//       { name: 'קטגוריות', path: './contentManagement/categories' },
+//       { name: 'ספקים', path: './contentManagement/supplier' },
+//       { name: 'יחידות מידה', path: './contentManagement/measure' },
 //     ],
 //   },
 //   { name: 'הגדרות חברה', path: './companySettings' },
