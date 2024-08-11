@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { usersApi } from "../api/usersApi";
 import { mainApi } from "../api/mainApi";
-import { logOut, updateUserInfo } from "./login";
+import { logOut, updateUserInfo } from "./auth";
 
 const initialState = {
   allUsers: [],
@@ -32,6 +32,13 @@ export const slice = createSlice({
               state.user.email = '';
               state.user.company = '';
               state.user.ifVerifiedEmail = false;
+            });
+            builder.addMatcher(
+              mainApi.endpoints.resetPassword.matchFulfilled, (state, action) => {
+                const { role, email, company, _id, ifVerifiedEmail, token, tokenCompany } = action.payload.userUpdated;
+                Object.assign(state.user, { role, _id, email, company, ifVerifiedEmail });
+                localStorage.setItem('tokenCompany', tokenCompany);
+                localStorage.setItem('userToken', token);
             });
             builder.addMatcher(
               usersApi.endpoints.getUsers.matchFulfilled,

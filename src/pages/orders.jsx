@@ -14,6 +14,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { DialogSendInvitation } from "../components/DialogSendInvitation";
 import { FilterRow } from "../components/filters/FilterRow";
 import { useFilters } from "../hooks/useFilters";
+import { ErrorPage } from "./ErrorPage";
 
 export const Orders = () => {
     const { data: allProducts, error: errorGetProducts, isLoading: isLoadingGetProducts } = useGetProductsQuery();
@@ -63,7 +64,7 @@ export const Orders = () => {
         setValueTab(newValue)
     }
 
-    if (errorGetProducts) return <h3>ERROR: {errorGetProducts.error}</h3>
+    if (errorGetProducts) return <ErrorPage error={errorGetProducts} />
     if (isLoadingGetProducts) return <LoudingPage />;
 
     return (

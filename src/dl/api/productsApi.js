@@ -1,6 +1,5 @@
 import { mainApi } from './mainApi';
 import { fieldsAreNotEmpty } from '../../hooks/fanksHook';
-// import { actions } from '../slices/products';
 
 export const productsApi = mainApi.injectEndpoints({
   reducerPath: 'productsApi',

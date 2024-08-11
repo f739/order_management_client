@@ -28,7 +28,8 @@ const defineAccountantAbilities = (can, cannot) => {
 }
 
 const defineGuestAbilities = (can, cannot) => {
-    cannot('enter', 'all');
+    cannot('enter', ['PendingOrders', 'Supplier', 'Category', 'User', 'Measure', 'Product', 'Branch']);
+    can('enter', ['NoEntry', 'Login', 'EmailVerification', 'ResetPassword']);
     can('create', 'Company');
 }
 

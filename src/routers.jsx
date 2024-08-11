@@ -18,6 +18,7 @@ import ProtectedRoute from './ProtectedRoute.jsx';
 import { CompanyDetails } from './pages/companySettings/CompanyDetails.jsx';
 import { EmailVerificationPage } from './pages/authPages/EmailVerificationPage.jsx';
 import { LoginPage } from './pages/authPages/LoginPage.jsx';
+import { ResetPassword } from './pages/authPages/ResetPassword.jsx';
 
 export const routers = createBrowserRouter([{
     element: <Layout />,
@@ -56,7 +57,7 @@ export const routers = createBrowserRouter([{
                 {path: 'noEntry', element: <ProtectedRoute element={NoEntry} action="enter" subject="NoEntry" />},
                 {path: 'login', element: <ProtectedRoute element={LoginPage} action="enter" subject="Login" />},
                 {path: 'emailVerificationPage', element: <ProtectedRoute element={EmailVerificationPage} action="enter" subject="EmailVerification" />},
-
+                {path: 'ResetPassword', element: <ProtectedRoute element={ResetPassword} action="enter" subject="ResetPassword" />},
             ]
         },
         {

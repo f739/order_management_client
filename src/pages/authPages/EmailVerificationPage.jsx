@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { Box, Button, Typography, Container, Paper, Alert, CircularProgress } from '@mui/material';
 import { CustomField } from '../../components/CustomField';
 import { handleFormHook } from '../../hooks/HandleFormHook';
-import { useVerifyEmailAndUpdatePassMutation } from '../../dl/api/companyApi';
+import { useVerifyEmailAndUpdatePassMutation } from '../../dl/api/authApi';
+import { Link as MuiLink } from '@mui/material';
 
 export const EmailVerificationPage = () => {
     const navigate = useNavigate();
@@ -27,7 +28,7 @@ export const EmailVerificationPage = () => {
     <Container component="main" maxWidth="xs">
       <Paper elevation={3} sx={{ mt: 8, p: 4 }}>
         <Typography component="h1" variant="h5" align="center">
-          אימות אימייל ושינוי סיסמה
+          החלפת סיסמה
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           {errorVerify && <Alert severity="error" sx={{ mb: 2 }}>{errorVerify?.message || errorVerify.data.message}</Alert>}
@@ -53,6 +54,37 @@ export const EmailVerificationPage = () => {
           >
             {isLouding ? <CircularProgress size={24} /> : 'שלח'}
           </Button>
+          <MuiLink 
+            component={RouterLink} 
+            to="../resetPassword" 
+            variant="body2" 
+            sx={{ 
+                display: 'block', 
+                textAlign: 'center',
+                mt: 2 
+            }}
+        >
+            שחזור סיסמה
+        </MuiLink>
+        <MuiLink 
+          component={RouterLink} 
+          to="../login" 
+          variant="body2"
+          color='secondary' 
+          sx={{ 
+              display: 'block', 
+              textAlign: 'center',
+              mt: 2,
+              textDecoration: 'none',
+              fontWeight: 'bold',
+              fontSize: '1rem',
+              '&:hover': {
+                textDecoration: 'underline',
+              }
+          }}
+        >
+          התחברות
+        </MuiLink>
         </Box>
       </Paper>
     </Container>

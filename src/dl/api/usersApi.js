@@ -15,20 +15,6 @@ export const usersApi = mainApi.injectEndpoints({
         [...result.map(({ _id }) => ({ type: 'User', _id })), { type: 'User', _id: 'LIST' }] :
         [{ type: 'User', _id: 'LIST' }],
     }),
-    // forward to authApi page
-    connectUser: builder.mutation({
-      query: (form) => {
-        if (!fieldsAreNotEmpty(form)) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
-        if (!validEmail(form.email)) { return { error: {message: 'האימייל אינו תקני'}}} 
-
-        return {
-          url: `/auth/login`,
-          method: 'PUT',
-          body: form,
-          headers: { 'x-action': 'login', 'x-subject': 'User' },
-        }
-      },
-    }),
     createNewUser: builder.mutation({
       queryFn: async (formCreateUser, {getState}, ex, baseQuery)  => {
         if (!fieldsAreNotEmpty(formCreateUser)) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
@@ -67,7 +53,6 @@ export const usersApi = mainApi.injectEndpoints({
 export const { 
     useGetUsersQuery, 
     useTestTokenQuery, 
-    useConnectUserMutation, 
     useCreateNewUserMutation, 
     useRemoveUserMutation,
     useChangeActiveUserMutation 

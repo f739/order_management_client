@@ -1,6 +1,5 @@
 import { mainApi } from './mainApi';
 import { fieldsAreNotEmpty, validEmail } from '../../hooks/fanksHook';
-import { arePasswordsEqual } from '../../hooks/validatePasswords';
 
 export const compamyApi = mainApi.injectEndpoints({
   reducerPath: 'compamyApi',
@@ -19,24 +18,11 @@ export const compamyApi = mainApi.injectEndpoints({
           headers: { 'x-action': 'create', 'x-subject': 'Company' },
         })
       },
-    }),
-    // forward to authaApi
-    verifyEmailAndUpdatePass: builder.mutation({
-      queryFn: async ({tempPassword ,newPassword, confirmPassword}, {getState}, ex, baseQuery) => {
-        if (!arePasswordsEqual(newPassword, confirmPassword)) {return { error: { message: 'הסיסמאות אינן שוות'}}};
-          return await baseQuery({
-            url: `/users/verifyEmailAndUpdatePass`,
-            method: 'PUT',
-            body: {tempPassword, newPassword},
-            headers: { 'x-action': 'login', 'x-subject': 'Company' },
-         });
-      },
-    }),
+    }),    
   }),
 });
 
 
 export const { 
     useCreateNewCompanyMutation,
-    useVerifyEmailAndUpdatePassMutation
   } = compamyApi;

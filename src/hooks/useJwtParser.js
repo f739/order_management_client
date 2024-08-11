@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import {jwtDecode} from 'jwt-decode';
-import { actions } from '../dl/slices/login';
+import { jwtDecode } from 'jwt-decode';
+import { actions } from '../dl/slices/auth';
 import { useNavigate } from 'react-router-dom';
 
 export const useJwtParser = (emailUser) => {
@@ -17,7 +17,6 @@ export const useJwtParser = (emailUser) => {
         try {
           const decoded = jwtDecode(userToken);
           const decodedCompany = jwtDecode(tokenCompany);
-          console.log('decoded: ', decoded);
 
           const currentTime = Date.now() / 1000;
           if (decodedCompany?.exp < currentTime) {
@@ -45,8 +44,8 @@ export const useJwtParser = (emailUser) => {
   }, [dispatch, emailUser]);
 
   const handleLogout = () => {
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('tokenCompany');
+    // localStorage.removeItem('userToken');
+    // localStorage.removeItem('tokenCompany');
     dispatch(actions.logOut());
   };
 
