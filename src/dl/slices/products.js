@@ -75,9 +75,10 @@ export const slice = createSlice({
     });
     builder.addMatcher(
       mainApi.endpoints.editProduct.matchFulfilled, (state, action) => {
-        const { newProduct } = action.payload;
+        const { productUpdated } = action.payload;
+        
         state.allProducts = state.allProducts
-        .map( el => el._id !== newProduct._id ? el : newProduct)
+        .map( el => el._id !== productUpdated._id ? el : productUpdated)
     });
     builder.addMatcher(
       mainApi.endpoints.addPrice.matchFulfilled, (state, action) => {

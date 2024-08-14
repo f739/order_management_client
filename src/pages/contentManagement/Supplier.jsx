@@ -11,8 +11,8 @@ import { Box, Button, Stack, ListItemText, IconButton, Grid, Divider, CircularPr
 import { useFilters } from '../../hooks/useFilters';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { FilterRow } from "../../components/filters/FilterRow";
-import { DialogSendInvitation } from "../../components/DialogSendInvitation";
 import { useActiveInactiveSort } from "../../hooks/useActiveInactiveSort";
+import { ErrorPage, DialogSendInvitation } from "../../components/indexComponents";
 
 export const Supplier = () => {
     const [newSupplier, setNewSupplier] = useState({ nameSupplier: '', tel: '', email: '', supplierNumber: '' });
@@ -31,6 +31,13 @@ export const Supplier = () => {
         setSecondaryTabValue(newValue)
     }
 
+    const fields = [
+        { name: 'nameSupplier', label: 'שם ספק', typeInput: 'text', type: 'input' },
+        { name: 'supplierNumber', label: 'מספר ספק', typeInput: 'text', type: 'input' },
+        { name: 'tel', label: 'פלאפון ספק', typeInput: 'tel', type: 'input' },
+        { name: 'email', label: 'אימייל ספק', typeInput: 'email', type: 'input' },
+    ];
+
     return (
         <Box sx={{
             bgcolor: 'background.paper',
@@ -46,31 +53,16 @@ export const Supplier = () => {
             />
             {secondaryTabValue === 0 ?
                 (<Stack sx={{ p: '20px' }} spacing={1}>
-                    <CustomField
-                        name="nameSupplier"
-                        value={newSupplier.nameSupplier}
-                        label="שם ספק"
-                        onChange={e => handleFormHook(e.target, setNewSupplier)}
-                    />
-                    <CustomField
-                        name="supplierNumber"
-                        value={newSupplier.supplierNumber}
-                        label="מספר ספק"
-                        onChange={e => handleFormHook(e.target, setNewSupplier)}
-                    />
-                    <CustomField
-                        name="tel"
-                        value={newSupplier.tel}
-                        label="פלאפון"
-                        onChange={e => handleFormHook(e.target, setNewSupplier)}
-                    />
-                    <CustomField
-                        name="email"
-                        value={newSupplier.email}
-                        label="אמייל"
-                        onChange={e => handleFormHook(e.target, setNewSupplier)}
-                    />
-
+                    { fields.map( field => (
+                        <React.Fragment key={field.name}>
+                            <CustomField 
+                                name={field.name}
+                                value={newSupplier[field.name]}
+                                label={field.label}
+                                onChange={e => handleFormHook(e.target, setNewSupplier)}
+                            />
+                        </React.Fragment>
+                    ))}
                     {error && <Typography variant="button" color="error" >{error.message}</Typography>}
                     {data && <Typography variant="button" color="success">{data.message}</Typography>}
                     <Button onClick={handleSaveNewSupplier} color="primary" variant="contained" disabled={isLoading}>
@@ -100,7 +92,7 @@ const ShowSuppliers = ({ secondaryTabValue }) => {
 
     const [suppliersActive, suppliersOff] = useActiveInactiveSort(filteredData);
 
-    if (errorGetsuppliers) return <h3>ERROR: {errorGetsuppliers.error}</h3>
+    if (errorGetsuppliers) return <ErrorPage error={errorGetsuppliers} />
     if (isLoadingGetsuppliers) return <LoudingPage />;
 
     return (
@@ -150,7 +142,7 @@ const EditSupplier = props => {
     const { setShowEditSupplier, supplier } = props;
     const [removeSupplier, { error: errorRemoveSupplier, isLoading: isLoadingDelete }] = useRemoveSupplierMutation();
     const [editSupplier, { error: errorEdit, isLoading: isLoadingEdit }] = useEditSupplierMutation();
-    const [formEdit, setFormEdit] = useState(supplier);
+    const [formEdit, setFormEdit] = useState({_id: supplier._id, active: supplier.active ,nameSupplier: '', tel: '', email: '', supplierNumber: ''});
 
     const fields = [
         { name: 'nameSupplier', label: 'שם ספק', typeInput: 'text', type: 'input' },
@@ -201,7 +193,8 @@ const EditSupplier = props => {
                         <React.Fragment key={field.name}>
                             <CustomField
                                 name={field.name}
-                                value={formEdit[field.name] || ''}
+                                initialValue={supplier[field.name]}
+                                value={formEdit[field.name]}
                                 label={field.label}
                                 onChange={e => handleFormHook(e.target, setFormEdit)}
                                 type={field.typeInput}

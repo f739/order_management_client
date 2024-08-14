@@ -1,4 +1,6 @@
 import { mainApi } from './mainApi';
+import { fieldsAreNotEmpty } from '../../hooks/fanksHook';
+import { useRemoveEmptyFields } from '../../hooks/useRemoveEmptyFields';
 
 export const categoriesApi = mainApi.injectEndpoints({
   reducerPath: 'categoriesApi',
@@ -28,20 +30,24 @@ export const categoriesApi = mainApi.injectEndpoints({
       transformResponse: res => res,
       invalidatesTags: [{ type: 'Category', _id: 'LIST' }],
     }),
+    editCategory: builder.mutation({
+      queryFn: async (categoryUpdated, {}, ex, baseQuery) => {        
+        const dataWithOutEmptys = useRemoveEmptyFields(categoryUpdated);
+
+        return await baseQuery({
+          url: `/categories/editCategory`,
+          method: 'PUT',
+          body: dataWithOutEmptys,
+          headers: { 'x-action': 'update', 'x-subject': 'Category' },
+        })
+      },
+      invalidatesTags: [{ type: 'Category', _id: 'LIST' }],
+    }),
     removeCategory: builder.mutation({
       query: _id => ({
         url: `/categories/${_id}/deleteCategory`,
         method: 'DELETE',
         headers: { 'x-action': 'delete', 'x-subject': 'Category' },
-      }),
-      invalidatesTags: [{ type: 'Category', _id: 'LIST' }],
-    }),
-    changeActiveCategory: builder.mutation({
-      query: ({active, categoryId}) => ({
-          url: `/categories/changeActiveCategory`,
-          method: 'PUT',
-          body: {active, categoryId},
-          headers: { 'x-action': 'update', 'x-subject': 'Category' },
       }),
       invalidatesTags: [{ type: 'Category', _id: 'LIST' }],
     }),
@@ -53,5 +59,5 @@ export const {
     useGetCategoriesQuery, 
     useCreateNewCategoryMutation,
     useRemoveCategoryMutation,
-    useChangeActiveCategoryMutation
+    useEditCategoryMutation
   } = categoriesApi;

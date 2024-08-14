@@ -2,7 +2,7 @@ import { handleFormHook } from '../hooks/HandleFormHook';
 import { MenuItem, TextField } from '@mui/material';
 
 export const CustomSelect = (
-    { set, nameField, value = '', label, options, optionsValue, optionsValueToShow = false, ifFunc = false, showAllFactoryLine = false }
+    { set, disabled, nameField, value = '', label, options, optionsValue, optionsValueToShow = false, ifFunc = false, showAllFactoryLine = false }
 ) => {
     const getNestedValue = (obj, path) => {
         return path.split('.').reduce((acc, part) => acc && acc[part], obj);
@@ -15,6 +15,7 @@ export const CustomSelect = (
             onChange={e => handleFormHook(e.target, set, ifFunc)}
             select
             fullWidth
+            disabled={disabled}
             label={label}
             variant="filled"
             sx={{

@@ -11,7 +11,7 @@ import { useGetCategoriesQuery } from "../../dl/api/categoriesApi";
 import { useGetMeasuresQuery } from "../../dl/api/measuresApi";
 import { useGetSuppliersQuery } from "../../dl/api/suppliersApi";
 import { useGetBranchesQuery } from "../../dl/api/branchesApi"
-import { AppBarSystemManagement, LoudingPage, CustomField, CustomSelect, SelectFactoryMultipleHook } from "../../components/indexComponents";
+import { AppBarSystemManagement, ErrorPage, LoudingPage, CustomField, CustomSelect, SelectFactoryMultipleHook } from "../../components/indexComponents";
 import { Box, Typography, CircularProgress, Button, Stack, Grid, Chip, Divider, IconButton, ListItemText, FormControlLabel, Switch } from "@mui/material";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { FilterRow } from "../../components/filters/FilterRow";
@@ -77,6 +77,9 @@ export const Products = () => {
     const changeTab = (e, newValue) => {
         setSecondaryTabValue(newValue)
     }
+    if (errorGetCategories) return <ErrorPage error={errorGetCategories} />
+    if (errorGetMeasures) return <ErrorPage error={errorGetMeasures} />
+    if (errorGetsuppliers) return <ErrorPage error={errorGetsuppliers} />
     if (isLoadingGetCategories || isLoadingGetMeasures || isLoadingGetsuppliers) return <LoudingPage />;
 
     return (
@@ -164,13 +167,17 @@ export const Products = () => {
                         {isLoadingCreateProdact ? <CircularProgress size={24} /> : 'שמור'}
                     </Button>
                 </Stack>) :
-                <ShowProducts secondaryTabValue={secondaryTabValue} />
+                <ShowProducts 
+                    secondaryTabValue={secondaryTabValue} 
+                    allCategories={allCategories}
+                    allMeasures={allMeasures}
+                />
             }
         </Box>
     )
 }
 
-const ShowProducts = ({ secondaryTabValue }) => {
+const ShowProducts = ({ secondaryTabValue, allCategories, allMeasures }) => {
     const { data: allProducts, error: errorGetProducts, isLoading: isLoadingGetProducts } = useGetProductsQuery();
     const [showEditProduct, setShowEditProduct] = useState('');
 
@@ -185,7 +192,7 @@ const ShowProducts = ({ secondaryTabValue }) => {
 
     const [productsActive, productsOff] = useActiveInactiveSort(filteredData);
 
-    if (errorGetProducts) return <h3>ERROR: {errorGetProducts.error}</h3>
+    if (errorGetProducts) return <ErrorPage error={errorGetProducts} />
     if (isLoadingGetProducts) return <LoudingPage />;
 
     return (
@@ -219,6 +226,8 @@ const ShowProducts = ({ secondaryTabValue }) => {
                                     <EditProduct
                                         product={product}
                                         setShowEditProduct={setShowEditProduct}
+                                        allCategories={allCategories}
+                                        allMeasures={allMeasures}
                                     />
                                 }
                             </div>
@@ -231,13 +240,11 @@ const ShowProducts = ({ secondaryTabValue }) => {
 }
 
 const EditProduct = props => {
-    const { product, setShowEditProduct } = props;
+    const { product, setShowEditProduct, allCategories, allMeasures } = props;
     const [removeProduct, { error: errorRemoveProduct, isLoading: isLoudingDelete, data }] = useRemoveProductMutation();
     const [editProduct, { error: errorEdit, isLoading: isLoadingEdit }] = useEditProductMutation();
     const [formEdit, setFormEdit] = useState({ ...product, branch: product.branch._id, category: product.category?._id, unitOfMeasure: product.unitOfMeasure?._id });
     const [showEditPrices, setShowEditPrices] = useState(false);
-    const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
-    const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
     const { data: allBranches, error: errorGetBranches, isLoading: isLoadingGetBranches } = useGetBranchesQuery();
 
     const fields = [
@@ -271,6 +278,7 @@ const EditProduct = props => {
             setShowEditProduct('');
         } catch (err) { }
     }
+    if (errorGetBranches) return <ErrorPage error={errorGetBranches} />
 
     return (
         <DialogSendInvitation
@@ -300,8 +308,8 @@ const EditProduct = props => {
                             {field.type === 'input' ?
                                 <CustomField
                                     name={field.name}
-                                    value={formEdit[field.name] || ''}
-                                    label={field.label}
+                                    initialValue={product[field.name]}
+                                    value={formEdit[field.name]}                                    label={field.label}
                                     onChange={e => handleFormHook(e.target, setFormEdit)}
                                     type={field.typeInput}
                                     disabled={!formEdit.active || false}

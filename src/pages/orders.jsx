@@ -14,7 +14,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { DialogSendInvitation } from "../components/DialogSendInvitation";
 import { FilterRow } from "../components/filters/FilterRow";
 import { useFilters } from "../hooks/useFilters";
-import { ErrorPage } from "./ErrorPage";
+import { ErrorPage } from "../components/indexComponents";
 
 export const Orders = () => {
     const { data: allProducts, error: errorGetProducts, isLoading: isLoadingGetProducts } = useGetProductsQuery();

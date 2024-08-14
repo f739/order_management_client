@@ -1,41 +1,52 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { handleFormHook } from "../../hooks/HandleFormHook";
-import { CustomSelect } from "../../components/CustomSelect";
 import { roles } from "../../data/roles";
 import {
     useGetUsersQuery,
     useCreateNewUserMutation,
     useRemoveUserMutation,
-    useChangeActiveUserMutation
+    useEditUserMutation
 } from '../../dl/api/usersApi';
 import { useGetBranchesQuery } from "../../dl/api/branchesApi"
-import { AppBarSystemManagement, IconDeleteButton, LoudingPage, CustomField } from "../../components/indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText, FormControlLabel, Switch } from "@mui/material";
+import { AppBarSystemManagement, LoudingPage, CustomField } from "../../components/indexComponents";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText, FormControlLabel, Switch, IconButton } from "@mui/material";
 import { FilterRow } from "../../components/filters/FilterRow";
 import { useFilters } from '../../hooks/useFilters';
 import { useActiveInactiveSort } from '../../hooks/useActiveInactiveSort';
+import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import { ErrorPage, DialogSendInvitation, CustomSelect } from "../../components/indexComponents";
 
 export const Users = () => {
     const [formCreateUser, setFormCreateUser] = useState(
-        { userName: '', password: '', email: '', role: '', branch: '' });
+        { userName: '', email: '', role: '', branch: '' });
 
     const { data: allBranches, error: errorGetBranches, isLoading: isLoadingGetBranches } = useGetBranchesQuery();
     const [createNewUser, { error, isLoading, data }] = useCreateNewUserMutation();
-
+    
     const [secondaryTabValue, setSecondaryTabValue] = useState(1);
     const secondaryTabs = ['צור משתמש חדש', 'משתמשים פעילים', 'משתמשים שאינם פעילים'];
-
+    
     const createUser = async () => {
         try {
             await createNewUser(formCreateUser).unwrap();
             setFormCreateUser({ userName: '', password: '', email: '', role: '', branch: '' });
         } catch (err) { }
     }
-
+    
     const changeTab = (e, newValue) => {
         setSecondaryTabValue(newValue)
     }
 
+    if (errorGetBranches) return <ErrorPage error={errorGetBranches} />
+    if (isLoadingGetBranches) return <LoudingPage />
+
+    const fields = [
+        { name: 'userName', label: 'שם משתמש', typeInput: 'text', type: 'input' },
+        { name: 'email', label: 'אמייל', typeInput: 'email', type: 'input' },
+        { name: 'role', label: 'תפקיד', type: 'select', options: roles, optionsValue: 'name' },
+        { name: 'branch', label: 'סניף', type: 'select', options: allBranches, optionsValue: 'nameBranch' ,optionsValueToShow: '_id' },
+    ];
+    
     return (
         <Box sx={{
             bgcolor: 'background.paper',
@@ -51,60 +62,41 @@ export const Users = () => {
             />
             {secondaryTabValue === 0 ?
                 (<Stack sx={{ p: '20px' }} spacing={1}>
-                    <CustomField
-                        name="userName"
-                        value={formCreateUser.userName}
-                        label="שם משתמש"
-                        onChange={e => handleFormHook(e.target, setFormCreateUser)}
-                    />
-                    <CustomField
-                        type="password"
-                        name="password"
-                        value={formCreateUser.password}
-                        label="סיסמה"
-                        onChange={e => handleFormHook(e.target, setFormCreateUser)}
-                    />
-                    <CustomField
-                        type="email"
-                        name="email"
-                        value={formCreateUser.email}
-                        label="אמייל"
-                        onChange={e => handleFormHook(e.target, setFormCreateUser)}
-                    />
-
-                    <CustomSelect
-                        set={setFormCreateUser}
-                        nameField='role'
-                        value={formCreateUser.role}
-                        label='תפקיד'
-                        options={roles}
-                        optionsValue='name'
-                    />
-                    <CustomSelect
-                        set={setFormCreateUser}
-                        nameField='branch'
-                        value={formCreateUser.branch}
-                        label='סניף'
-                        options={allBranches}
-                        optionsValue='nameBranch'
-                        optionsValueToShow='_id'
-                    />
-
+                    { fields.map( filed => (
+                        <React.Fragment key={filed.name}>
+                            {filed.type === 'input' ?
+                            <CustomField 
+                                name={filed.name}
+                                type={filed.type}
+                                value={formCreateUser[filed.name]}
+                                label={filed.label}
+                                onChange={e => handleFormHook(e.target, setFormCreateUser)}
+                            /> :
+                            <CustomSelect 
+                                set={setFormCreateUser}
+                                nameField={filed.name}
+                                value={formCreateUser[filed.name] || ''}
+                                label={filed.label}
+                                options={filed.options}
+                                optionsValue={filed.optionsValue}
+                                optionsValueToShow={filed.optionsValueToShow ?? null}
+                            />}
+                        </React.Fragment>
+                    )) }
                     {error && <Typography variant="button" color="error" >{error.message}</Typography>}
                     {data && <Typography variant="button" color="success">{data.message}</Typography>}
                     <Button onClick={createUser} color="primary" variant="contained" disabled={isLoading}>
                         {isLoading ? <CircularProgress size={24} /> : 'שמור'}
                     </Button>
-                </Stack>) : <ShowUsers secondaryTabValue={secondaryTabValue} />
+                </Stack>) : <ShowUsers secondaryTabValue={secondaryTabValue} allBranches={allBranches} />
             }
         </Box>
     )
 }
 
-const ShowUsers = ({ secondaryTabValue }) => {
+const ShowUsers = ({ secondaryTabValue, allBranches }) => {
     const { data: allUsers, error: errorGetUsers, isLoading: isLoadingGetUsers } = useGetUsersQuery();
-    const [removeUser, { error: errorRemoveUser }] = useRemoveUserMutation();
-    const [changeActiveUser, { error: errorChangeActiveUser }] = useChangeActiveUserMutation();
+    const [showEditUser, setShowEditUser] = useState(false);
 
     const filterFields = [];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
@@ -117,20 +109,8 @@ const ShowUsers = ({ secondaryTabValue }) => {
 
     const [usersActive, usersOff] = useActiveInactiveSort(filteredData);
 
-    const deleteUser = async _id => {
-        try {
-            await removeUser(_id).unwrap();
-        } catch (err) { }
-    }
-
-    const handleChangeActive = async (checked, userId) => {
-        try {
-            await changeActiveUser({ active: checked, userId }).unwrap();
-        } catch (err) { }
-    }
-
+    if (errorGetUsers) return <ErrorPage error={errorGetUsers} />;
     if (isLoadingGetUsers) return <LoudingPage />;
-    if (errorGetUsers) return <h1> {errorGetUsers} </h1>;
 
     return (
         <Box sx={{ display: 'flex', p: 1 }}>
@@ -138,46 +118,122 @@ const ShowUsers = ({ secondaryTabValue }) => {
                 <Box sx={{ p: 2 }}>
                     {(secondaryTabValue === 1 ? usersActive : usersOff).length > 0 ? (
                         (secondaryTabValue === 1 ? usersActive : usersOff).map(user => (
-                            <div key={user._id}>
-                                <Grid container alignItems="center" spacing={1}>
-                                    <Grid item xs={3} sx={{ minWidth: '100px' }}>
+                            <React.Fragment key={user._id}>
+                                <Grid container alignItems="center" justifyContent="space-between">
+                                    <Grid item xs={5} sx={{ minWidth: '100px' }}>
                                         <ListItemText
                                             primary={user.userName}
                                             secondary={user?.branch?.nameBranch}
                                         />
                                     </Grid>
-                                    <Grid item xs={5} sx={{ minWidth: '100px' }}>
+                                    <Grid item xs={6} sx={{ minWidth: '100px' }}>
                                         <ListItemText
                                             primary={user.email}
                                             secondary={user.role}
                                         />
                                     </Grid>
-                                    <Grid item xs={3} >
-                                        {errorChangeActiveUser && '!'}
-                                        <FormControlLabel
-                                            label={user.active ? 'פעיל' : 'לא פעיל'}
-                                            control={
-                                                <Switch
-                                                    name="active"
-                                                    checked={user.active || false}
-                                                    onChange={e => handleChangeActive(e.target.checked, user._id)}
-                                                />
-                                            }
-                                        />
-                                    </Grid>
                                     <Grid item xs={1} >
-                                        <IconDeleteButton
-                                            action={() => deleteUser(user._id)}
-                                            title={errorRemoveUser?.message ?? 'מחק'}
-                                        />
+                                        <IconButton onClick={() => setShowEditUser(user)}>
+                                            <MoreVertOutlinedIcon />
+                                        </IconButton>
                                     </Grid>
                                 </Grid>
                                 <Divider />
-                            </div>
+                                {showEditUser._id === user._id &&
+                                    <EditUser
+                                        setShowEditUser={setShowEditUser}
+                                        user={user}
+                                        allBranches={allBranches}
+                                    />
+                                }
+                            </React.Fragment>
                         ))) : <Typography>אין משתמשים להצגה</Typography>
                     }
                 </Box>
             </FilterRow>
         </Box>
+    )
+};
+
+
+const EditUser = props => {
+    const { setShowEditUser, user, allBranches } = props;
+    const [removeUser, { error: errorRemoveUser, isLoading: isLoadingDelete }] = useRemoveUserMutation();
+    const [editUser, { error: errorEdit, isLoading: isLoadingEdit }] = useEditUserMutation();
+    const [formEdit, setFormEdit] = useState({_id: user._id, active: user.active ,userName: '', email: '', role: '', branch: ''});
+
+    const fields = [
+        { name: 'userName', label: 'שם משתמש', typeInput: 'text', type: 'input' },
+        { name: 'email', label: 'אמייל', typeInput: 'email', type: 'input' },
+        { name: 'branch', label: 'סניף', type: 'select', options: allBranches, optionsValue: 'nameBranch' ,optionsValueToShow: '_id' },
+        { name: 'role', label: 'תפקיד', type: 'select', options: roles, optionsValue: 'name', disabled: true },
+    ];
+
+    const handleEditItem = async userUpdated => {
+        try {
+            await editUser(userUpdated).unwrap();
+            setShowEditUser(false);
+        } catch (err) { }
+    }
+
+    const deleteUser = async _id => {
+        try {
+            await removeUser(_id).unwrap();
+        } catch (err) { }
+    }
+
+    return (
+        <DialogSendInvitation
+            title='ערוך משתמש'
+            cart={false}
+            setOpenDialog={setShowEditUser}
+            sendOrder={() => handleEditItem(formEdit)}
+            isLoudingSendOrder={isLoadingEdit}
+            errorMessage={errorEdit || errorRemoveUser?.data || errorRemoveUser}
+            labelDelete='מחק לצמיתות'
+            labelConfirm="שמור"
+            isLoadingDelete={isLoadingDelete}
+            actionDelete={() => deleteUser(user._id)}
+            fields={
+                <>
+                    <FormControlLabel
+                        label={formEdit.active ? 'פעיל' : 'לא פעיל'}
+                        control={
+                            <Switch
+                                name="active"
+                                checked={formEdit.active}
+                                onChange={e => setFormEdit(old => ({ ...old, active: e.target.checked }))}
+                            />
+                        } />
+                    {fields.map(field => (
+                        <React.Fragment key={field.name}>
+                            { field.type === 'input' ? 
+                                <CustomField
+                                    name={field.name}
+                                    initialValue={user[field.name]}
+                                    value={formEdit[field.name]}
+                                    label={field.label}
+                                    onChange={e => handleFormHook(e.target, setFormEdit)}
+                                    type={field.typeInput}
+                                    disabled={!formEdit.active || formEdit.disabled}
+                                /> :
+                                <CustomSelect 
+                                    set={setFormEdit}
+                                    nameField={field.name}
+                                    value={formEdit[field.name] || user[field.name]?._id || user[field.name]}
+                                    label={field.label}
+                                    options={field.options}
+                                    optionsValue={field.optionsValue}
+                                    optionsValueToShow={field.optionsValueToShow ?? null}
+                                    disabled={user[field.name] === 'מנהל'  &&field.disabled}
+                                />
+                            }
+                        </React.Fragment>
+                    ))}
+                </>
+            }
+        >
+
+        </DialogSendInvitation>
     )
 }

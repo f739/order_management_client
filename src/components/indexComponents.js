@@ -12,6 +12,7 @@ export { IconCheckButton } from './icons/IconCheckButton';
 export { IconRemoveButton } from './icons/IconRemoveButton'
 export { IconAddButton } from './icons/IconAddButton'
 export { LoudingPage } from './LoudingPage';
+export { ErrorPage } from './ErrorPage';
 export { StackChips } from './StackChips';
 export { TooltipComponent } from './TooltipComponent';
 export { MyAppBar } from './AppBar';
@@ -19,3 +20,4 @@ export { BottomNav } from './BottomNav';
 export { AppBarSystemManagement } from './AppBarSystemManagement';
 export { DrawerMiniRight } from './DrawerMiniRight';
 export { CustomField } from './CustomField';
+export { DialogSendInvitation } from './DialogSendInvitation';

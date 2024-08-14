@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { handleFormHook } from '../../hooks/HandleFormHook';
 import {
     useGetCategoriesQuery,
     useCreateNewCategoryMutation,
     useRemoveCategoryMutation,
-    useChangeActiveCategoryMutation
+    useEditCategoryMutation
 } from '../../dl/api/categoriesApi';
-import { AppBarSystemManagement, IconDeleteButton, LoudingPage, CustomField } from "../../components/indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, FormControlLabel, Switch } from "@mui/material";
+import { AppBarSystemManagement, LoudingPage, CustomField, ErrorPage, DialogSendInvitation } from "../../components/indexComponents";
+import { Box, Typography, IconButton ,CircularProgress, Button, Stack, Grid, Divider, FormControlLabel, Switch } from "@mui/material";
+import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { useFilters } from '../../hooks/useFilters';
 import { FilterRow } from "../../components/filters/FilterRow";
 import { useActiveInactiveSort } from "../../hooks/useActiveInactiveSort";
@@ -67,8 +68,7 @@ export const Categories = () => {
 
 const ShowCategories = ({ secondaryTabValue }) => {
     const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
-    const [removeCategory, { error: errorRemoveCategory }] = useRemoveCategoryMutation();
-    const [changeActiveCategory, { error: errorChangeActiveCategory }] = useChangeActiveCategoryMutation();
+    const [showEditCategory, setShowEditCategory] = useState(false);
 
     const filterFields = [];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
@@ -81,19 +81,7 @@ const ShowCategories = ({ secondaryTabValue }) => {
 
     const [categoriesActive, categoriesOff] = useActiveInactiveSort(filteredData);
 
-    const handleChangeActive = async (checked, categoryId) => {
-        try {
-            await changeActiveCategory({ active: checked, categoryId }).unwrap();
-        } catch (err) { }
-    }
-
-    const deleteCategory = async _id => {
-        try {
-            await removeCategory(_id).unwrap();
-        } catch (err) { }
-    }
-
-    if (errorGetCategories) return <h3>ERROR: {errorGetCategories.error}</h3>
+    if (errorGetCategories) return <ErrorPage error={errorGetCategories}/>
     if (isLoadingGetCategories) return <LoudingPage />;
 
     return (
@@ -109,30 +97,91 @@ const ShowCategories = ({ secondaryTabValue }) => {
                                             {category.nameCategory}
                                         </Typography>
                                     </Grid>
-                                    <Grid item  >
-                                        {errorChangeActiveCategory && '!'}
-                                        <FormControlLabel
-                                            label={category.active ? 'פעיל' : 'לא פעיל'}
-                                            control={
-                                                <Switch
-                                                    name="active"
-                                                    checked={category.active || false}
-                                                    onChange={e => handleChangeActive(e.target.checked, category._id)}
-                                                />
-                                            }
-                                        />
-                                    </Grid>
-                                    <Grid item sx={{ p: 1 }}>
-                                        <IconDeleteButton action={() => deleteCategory(category._id)}
-                                            title={errorRemoveCategory?.message ?? 'מחק'} />
+                                    <Grid item >
+                                        <IconButton onClick={() => setShowEditCategory(category)}>
+                                            <MoreVertOutlinedIcon />
+                                        </IconButton>
                                     </Grid>
                                 </Grid>
                                 <Divider />
+                                {showEditCategory._id === category._id &&
+                                    <EditCategory
+                                        setShowEditCategory={setShowEditCategory}
+                                        category={category}
+                                    />
+                                }
                             </div>
                         ))) : <Typography>אין קטגוריות להצגה</Typography>
                     }
                 </Box>
             </FilterRow>
         </Box>
+    )
+}
+
+const EditCategory = props => {
+    const { setShowEditCategory, category } = props;
+    const [removeCategory, { error: errorRemoveCategory, isLoading: isLoadingDelete }] = useRemoveCategoryMutation();
+    const [editCategory, { error: errorEdit, isLoading: isLoadingEdit }] = useEditCategoryMutation();
+    const [formEdit, setFormEdit] = useState({_id: category._id, active: category.active ,nameCategory: ''});
+
+    const fields = [
+        { name: 'nameCategory', label: 'שם קטגוריה', typeInput: 'text', type: 'input' },
+    ];
+
+    const handleEditItem = async categoryUpdated => {
+        try {
+            await editCategory(categoryUpdated).unwrap();
+            setShowEditCategory(false);
+        } catch (err) { }
+    }
+
+    const deleteCategory = async _id => {
+        try {
+            await removeCategory(_id).unwrap();
+        } catch (err) { }
+    }
+
+    return (
+        <DialogSendInvitation
+            title='ערוך קטגוריה'
+            cart={false}
+            setOpenDialog={setShowEditCategory}
+            sendOrder={() => handleEditItem(formEdit)}
+            isLoudingSendOrder={isLoadingEdit}
+            errorMessage={errorEdit || errorRemoveCategory?.data || errorRemoveCategory}
+            labelDelete='מחק לצמיתות'
+            labelConfirm="שמור"
+            isLoadingDelete={isLoadingDelete}
+            actionDelete={() => deleteCategory(category._id)}
+            fields={
+                <>
+                    <FormControlLabel
+                        label={formEdit.active ? 'פעיל' : 'לא פעיל'}
+                        control={
+                            <Switch
+                                name="active"
+                                checked={formEdit.active || false}
+                                onChange={e => setFormEdit(old => ({ ...old, active: e.target.checked }))}
+                            />
+                        } />
+
+                    {fields.map(field => (
+                        <React.Fragment key={field.name}>
+                            <CustomField
+                                name={field.name}
+                                initialValue={category[field.name]}
+                                value={formEdit[field.name]}                                label={field.label}
+                                onChange={e => handleFormHook(e.target, setFormEdit)}
+                                type={field.typeInput}
+                                disabled={!formEdit.active || false}
+                            />
+                        </React.Fragment>
+                    ))}
+                </>
+            }
+        >
+
+        </DialogSendInvitation>
     )
 }

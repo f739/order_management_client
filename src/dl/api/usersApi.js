@@ -1,5 +1,6 @@
 import { mainApi } from './mainApi';
 import { validEmail, fieldsAreNotEmpty } from '../../hooks/fanksHook';
+import { useRemoveEmptyFields } from '../../hooks/useRemoveEmptyFields';
 
 export const usersApi = mainApi.injectEndpoints({
   reducerPath: 'usersApi',
@@ -29,20 +30,25 @@ export const usersApi = mainApi.injectEndpoints({
       },
       invalidatesTags: [{ type: 'User', _id: 'LIST' }],
     }),
+    editUser: builder.mutation({
+      queryFn: async (userUpdated, {}, ex, baseQuery) => {
+        const dataWithOutEmptys = useRemoveEmptyFields(userUpdated);
+        if (dataWithOutEmptys.email && !validEmail(dataUpdated.email)) { return { error: {message: 'האימייל אינו תקני'}}} 
+
+        return await baseQuery({
+          url: `/users/editUser`,
+          method: 'PUT',
+          body: dataWithOutEmptys,
+          headers: { 'x-action': 'update', 'x-subject': 'User' },
+        })
+      },
+      invalidatesTags: [{ type: 'User', _id: 'LIST' }],
+    }),
     removeUser: builder.mutation({
       query: _id => ({
         url: `/users/${_id}/deleteUser`,
         method: 'DELETE',
         headers: { 'x-action': 'delete', 'x-subject': 'User' },
-      }),
-      invalidatesTags: [{ type: 'User', _id: 'LIST' }],
-    }),
-    changeActiveUser: builder.mutation({
-      query: ({active, userId}) => ({
-        url: `/users/changeActiveUser`,
-        method: 'PUT',
-        body: {active, userId},
-        headers: { 'x-action': 'update', 'x-subject': 'User' },
       }),
       invalidatesTags: [{ type: 'User', _id: 'LIST' }],
     }),
@@ -55,5 +61,5 @@ export const {
     useTestTokenQuery, 
     useCreateNewUserMutation, 
     useRemoveUserMutation,
-    useChangeActiveUserMutation 
+    useEditUserMutation 
   } = usersApi;

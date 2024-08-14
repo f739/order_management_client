@@ -1,5 +1,6 @@
 import { mainApi } from './mainApi';
 import { validEmail, fieldsAreNotEmpty } from '../../hooks/fanksHook';
+import { useRemoveEmptyFields } from '../../hooks/useRemoveEmptyFields';
 
 export const suppliersApi = mainApi.injectEndpoints({
   reducerPath: 'suppliersApi',
@@ -31,14 +32,14 @@ export const suppliersApi = mainApi.injectEndpoints({
       invalidatesTags: [{ type: 'Supplier', _id: 'LIST' }],
     }),
     editSupplier: builder.mutation({
-      queryFn: async (supplierUpdated, {getState}, ex, baseQuery)  => {
-        if (!fieldsAreNotEmpty(supplierUpdated)) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
-        if (!validEmail(supplierUpdated.email)) { return { error: {message: 'האימייל אינו תקני'}}} 
-
+      queryFn: async (dataUpdated, {getState}, ex, baseQuery)  => {
+        const dataWithOutEmptys = useRemoveEmptyFields(dataUpdated)
+        if (dataWithOutEmptys.email && !validEmail(dataUpdated.email)) { return { error: {message: 'האימייל אינו תקני'}}} 
+        
         return await baseQuery({
           url: `/suppliers/editSupplier`,
           method: 'PUT',
-          body: supplierUpdated,
+          body: dataWithOutEmptys,
           headers: { 'x-action': 'update', 'x-subject': 'Supplier' },
         })
       },

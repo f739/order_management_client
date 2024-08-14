@@ -1,5 +1,6 @@
 import { mainApi } from './mainApi';
 import { fieldsAreNotEmpty } from '../../hooks/fanksHook';
+import { useRemoveEmptyFields } from '../../hooks/useRemoveEmptyFields';
 
 export const branchesApi = mainApi.injectEndpoints({
   reducerPath: 'branchesApi',
@@ -29,6 +30,19 @@ export const branchesApi = mainApi.injectEndpoints({
       transformResponse: res => res,
       invalidatesTags: [{ type: 'Branch', _id: 'LIST' }],
     }),
+    editBranch: builder.mutation({
+      queryFn: async (branchUpdated, {}, ex, baseQuery) => {
+        const dataWithOutEmptys = useRemoveEmptyFields(branchUpdated);
+        
+        return await baseQuery({
+          url: `/branches/editBranch`,
+          method: 'PUT',
+          body: dataWithOutEmptys,
+          headers: { 'x-action': 'update', 'x-subject': 'Branch' },
+        })
+      },
+      invalidatesTags: [{ type: 'Branch', _id: 'LIST' }],
+    }),
     removeBranch: builder.mutation({
       query: _id => ({
         url: `/branches/${_id}/deleteBranch`,
@@ -44,5 +58,6 @@ export const branchesApi = mainApi.injectEndpoints({
 export const { 
     useGetBranchesQuery, 
     useCreateNewBranchMutation,
-    useRemoveBranchMutation
+    useRemoveBranchMutation,
+    useEditBranchMutation
   } = branchesApi;

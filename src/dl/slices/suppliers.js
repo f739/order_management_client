@@ -29,7 +29,7 @@ export const slice = createSlice({
           builder.addMatcher(
             suppliersApi.endpoints.editSupplier.matchFulfilled, (state, action) => {
               state.allSuppliers = state.allSuppliers
-              .map( el => el._id !== action.payload._id ? el : action.payload)
+              .map( el => el._id !== action.payload._id ? el : action.payload.supplierUpdated)
           });
         }
     })

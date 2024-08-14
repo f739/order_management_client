@@ -1,5 +1,6 @@
 import { mainApi } from './mainApi';
 import { fieldsAreNotEmpty } from '../../hooks/fanksHook';
+import { useRemoveEmptyFields } from '../../hooks/useRemoveEmptyFields';
 
 export const productsApi = mainApi.injectEndpoints({
   reducerPath: 'productsApi',
@@ -41,16 +42,15 @@ export const productsApi = mainApi.injectEndpoints({
     }),
     editProduct: builder.mutation({
       queryFn: async (productUpdated, {getState}, ex, baseQuery) => {
-          if (!fieldsAreNotEmpty(productUpdated)) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
+        const dataWithOutEmptys = useRemoveEmptyFields(productUpdated);
   
           return await baseQuery({
             url: `/products/editProduct`,
             method: 'PUT',
-            body: productUpdated,
+            body: dataWithOutEmptys,
             headers: { 'x-action': 'update', 'x-subject': 'Product' },
           })
       },
-      transformResponse: res => res.newProduct,
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
     addPrice: builder.mutation({

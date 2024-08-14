@@ -1,9 +1,6 @@
-import { defineAbilitiesFor } from '../../auth/abilities';
 import { mainApi } from './mainApi';
-
-const getAbilityForUser = user => {
-  return defineAbilitiesFor(user);
-};
+import { fieldsAreNotEmpty } from '../../hooks/fanksHook';
+import { useRemoveEmptyFields } from '../../hooks/useRemoveEmptyFields';
 
 export const measuresApi = mainApi.injectEndpoints({
   reducerPath: 'measuresApi',
@@ -33,20 +30,24 @@ export const measuresApi = mainApi.injectEndpoints({
       transformResponse: res => res,
       invalidatesTags: [{ type: 'Measure', _id: 'LIST' }],
     }),
+    editMeasure: builder.mutation({
+      queryFn: async (measureUpdated, {}, ex, baseQuery) => {
+        const dataWithOutEmptys = useRemoveEmptyFields(measureUpdated);
+
+        return await baseQuery({
+          url: `/measures/editMeasure`,
+          method: 'PUT',
+          body: dataWithOutEmptys,
+          headers: { 'x-action': 'update', 'x-subject': 'Measure' },
+        })
+      },
+      invalidatesTags: [{ type: 'Measure', _id: 'LIST' }],
+    }),
     removeMeasure: builder.mutation({
       query: _id => ({
         url: `/measures/${_id}/deleteMeasure`,
         method: 'DELETE',
         headers: { 'x-action': 'delete', 'x-subject': 'Measure' },
-      }),
-      invalidatesTags: [{ type: 'Measure', _id: 'LIST' }],
-    }),
-    changeActiveMeasure: builder.mutation({
-      query: ({active, measureId}) => ({
-        url: `/measures/changeActiveMeasure`,
-        method: 'PUT',
-        body: {active, measureId},
-        headers: { 'x-action': 'update', 'x-subject': 'Measure' },
       }),
       invalidatesTags: [{ type: 'Measure', _id: 'LIST' }],
     }),
@@ -58,5 +59,5 @@ export const {
     useGetMeasuresQuery, 
     useCreateNewMeasureMutation,
     useRemoveMeasureMutation,
-    useChangeActiveMeasureMutation
+    useEditMeasureMutation
   } = measuresApi;
