@@ -96,8 +96,8 @@ export const AppBarSystemManagement = ({ secondaryTabs = [], secondaryTabValue, 
 
   return (
     <>
-      {renderMainTabs()}
-      {renderSecondaryTabs()}
+      {/* {renderMainTabs()}
+      {renderSecondaryTabs()} */}
     </>
   );
 };

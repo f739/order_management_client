@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -15,6 +15,18 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import BusinessIcon from '@mui/icons-material/Business';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import { Link } from 'react-router-dom';
+import Inventory2Icon from '@mui/icons-material/Inventory2';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import CategoryIcon from '@mui/icons-material/Category';
+import SquareFootIcon from '@mui/icons-material/SquareFoot';
+import PeopleIcon from '@mui/icons-material/People';
+import StoreIcon from '@mui/icons-material/Store';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
 
 const drawerWidth = 240;
 
@@ -34,7 +46,7 @@ const closedMixin = (theme) => ({
   }),
   overflowX: 'hidden',
   width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
+  [theme.breakpoints.down('sm')]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
 });
@@ -42,9 +54,9 @@ const closedMixin = (theme) => ({
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'flex-end',
   padding: theme.spacing(0, 1),
   ...theme.mixins.toolbar,
-  justifyContent: 'flex-start',
 }));
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -63,18 +75,60 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
   }),
 );
-
-
 export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
     const theme = useTheme();
-  
+    const location = useLocation();
+    const [subPages, setSubPages] = useState([]);
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
     const pages = [
       { name: 'כניסה', icon: <VpnKeyIcon /> , path: '/auth/login' },
       { name: 'הזמנות', icon: <ShoppingCartIcon />, path: '/orders' },
       { name: 'ניהול תוכן', icon: <BusinessIcon />, path: '/contentManagement/products' },
       { name: 'הגדרות חברה', icon: <SettingsIcon /> , path: '/companySettings/companyDetails' },
     ];
-  
+
+    const contentManagementPages = [
+      {name: 'מוצרים', icon: <Inventory2Icon />, path: '/contentManagement/products'},
+      {name: 'ספקים', icon: <LocalShippingIcon />, path: '/contentManagement/supplier'},
+      {name: 'קטגוריות', icon: <CategoryIcon />, path: '/contentManagement/categories'},
+      {name: 'יחידות מידה', icon: <SquareFootIcon />, path: '/contentManagement/measure'},
+      {name: 'משתמשים', icon: <PeopleIcon />, path: '/contentManagement/Users'},
+      {name: 'סניפים', icon: <StoreIcon />, path: '/contentManagement/branches'},
+    ];
+
+    const orderPages = [
+      {name: 'הזמנות', icon: <ReceiptIcon />, path: '/orders'},
+      {name: 'ניהול הזמנות', icon: <ShoppingCartIcon />, path: '/orderManagement'},
+      {name: 'היסטוריית הזמנות', icon: <MoveToInboxIcon />, path: '/oldOrders'},
+    ];
+
+    const companySettingsPages = [
+      {name: 'פרטי חברה', icon: <BusinessCenterIcon />, path: '/companySettings/companyDetails'},
+      {name: 'פרטי משתמש', icon: <ManageAccountsIcon />, path: '/companySettings/license'},
+    ];
+
+    useEffect(() => {
+      if (location.pathname.startsWith('/contentManagement')) {
+        setSubPages(contentManagementPages);
+      } else if (location.pathname.startsWith('/orders') || location.pathname.startsWith('/orderManagement') || location.pathname.startsWith('/oldOrders')) {
+        setSubPages(orderPages);
+      } else if (location.pathname.startsWith('/companySettings')) {
+        setSubPages(companySettingsPages);
+      } else {
+        setSubPages([]);
+      }
+    }, [location]);
+
+    const isActive = (path) => {
+      if (path === '/orders') {
+        return location.pathname.startsWith('/orders') || 
+               location.pathname.startsWith('/orderManagement') || 
+               location.pathname.startsWith('/oldOrders');
+      }
+      return location.pathname.startsWith(path);
+    };
+
     return (
       <Drawer
         variant="permanent"
@@ -84,6 +138,13 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
           '& .MuiDrawer-paper': { 
             borderRight: 'none',
             borderLeft: '1px solid rgba(0, 0, 0, 0.12)',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'fixed',
+            height: '100%',
+            [theme.breakpoints.down('sm')]: {
+              width: open ? drawerWidth : `calc(${theme.spacing(8)} + 1px)`,
+            },
           },
         }}
       >
@@ -93,7 +154,7 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List>
+        <List sx={{ flexGrow: 1}}>
           {pages.map((page) => (
             <ListItem key={page.name} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
@@ -112,13 +173,62 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
                     justifyContent: 'center',
                   }}
                 >
-                  {page.icon}
+                  {React.cloneElement(page.icon, { 
+                    color: isActive(page.path) ? 'primary' : 'action'
+                  })}
                 </ListItemIcon>
-                <ListItemText primary={page.name} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText 
+                  primary={page.name} 
+                  sx={{ 
+                    opacity: open ? 1 : 0,
+                    display: isMobile && !open ? 'none' : 'block',
+                    color: isActive(page.path) ? theme.palette.primary.main : 'inherit',
+                  }} 
+                />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
+        {subPages.length > 0 && (
+          <>
+            <Divider />
+            <List>
+              {subPages.map((page) => (
+                <ListItem key={page.name} disablePadding sx={{ display: 'block' }}>
+                  <ListItemButton
+                    component={Link}
+                    to={page.path}
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? 'initial' : 'center',
+                      px: 2.5,
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : 'auto',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {React.cloneElement(page.icon, { 
+                        color: location.pathname === page.path ? 'primary' : 'action'
+                      })}
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={page.name} 
+                      sx={{ 
+                        opacity: open ? 1 : 0,
+                        display: isMobile && !open ? 'none' : 'block',
+                        color: location.pathname === page.path ? theme.palette.primary.main : 'inherit',
+                      }} 
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </>
+        )}
       </Drawer>
     );
-  };
+};
