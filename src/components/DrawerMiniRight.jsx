@@ -105,7 +105,7 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
 
     const companySettingsPages = [
       {name: 'פרטי חברה', icon: <BusinessCenterIcon />, path: '/companySettings/companyDetails'},
-      {name: 'פרטי משתמש', icon: <ManageAccountsIcon />, path: '/companySettings/license'},
+      {name: 'פרטי משתמש', icon: <ManageAccountsIcon />, path: '/companySettings/UserDetails'},
     ];
 
     useEffect(() => {

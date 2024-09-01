@@ -11,7 +11,8 @@ import { defineAbilitiesFor } from '../auth/abilities';
 import {
     IconDeleteButton, IconCameraButton, IconCheckButton,
     IconReturnButton, LoudingPage, AccordionComponent,
-    InputNumberQuantity, StackChips, AppBarSystemManagement
+    InputNumberQuantity, StackChips, AppBarSystemManagement,
+    ErrorPage
 } from '../components/indexComponents';
 import moment from 'moment';
 import { Grid, Typography, Link, ListItemText, Divider, Box } from "@mui/material";
@@ -59,7 +60,7 @@ export const OldOrders = () => {
     //         setGroupedOrders(groupBySupplier);
     // }, [allOldOrders]);
 
-    if (errorGetOldOrders) return <h3>ERROR: בעיה בטעינה</h3>
+    if (errorGetOldOrders) return <ErrorPage error={errorGetOldOrders} />
     if (isLoadingGetOldOrders) return <LoudingPage />;
 
     return (

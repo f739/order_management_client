@@ -12,7 +12,7 @@ export const ErrorPage = props => {
                 </Typography>
                 <Box sx={{mt: 3}}>
                     <Typography variant="h6" align="center">
-                        הודעה: {error.data.message}
+                        הודעה: {error?.data?.message}
                     </Typography>
                     <MuiLink 
                         component={RouterLink} 

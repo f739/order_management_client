@@ -4,10 +4,11 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton,
   Stack
  } from '@mui/material';
 import {Close as CloseIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon} from '@mui/icons-material';
+import { SimpleAlert } from './SimpleAlert';
 
 export const DialogSendInvitation = props => {
   const {title, setOpenDialog, labelConfirm='אשר', sendOrder, isLoudingSendOrder, to=false, cart=[], showTable=false, setShowTable,
-    tableHead, tableBody, fields, errorMessage, labelDelete, actionDelete, isLoadingDelete, moreActions=false, sxBox={} } = props;
+    tableHead, tableBody, fields, errorMessage, isSuccess, labelDelete, actionDelete, isLoadingDelete, moreActions=false, sxBox={} } = props;
 
   return (
     <Dialog
@@ -40,7 +41,7 @@ export const DialogSendInvitation = props => {
                 </IconButton>
             </Box>
             ) : cart.length === 0 ? (
-              <Typography color="error">לא נבחרו מוצרים!</Typography>
+                <SimpleAlert message='לא נבחרו מוצרים' />
             ) : null
         }
         { showTable && tableHead && tableBody && (
@@ -55,12 +56,10 @@ export const DialogSendInvitation = props => {
         {moreActions && moreActions}
       </DialogContent>
       {errorMessage && 
-        <Box sx={{ mt: 2, p: 1, border: '1px solid',
-          borderColor: 'error.main', borderRadius: 1, bgcolor: 'error.light' }}>
-          <Typography>
-            {errorMessage.message}
-          </Typography>
-        </Box>
+        <SimpleAlert message={errorMessage} />
+      }
+      {isSuccess && 
+        <SimpleAlert message={isSuccess} severity="success" />
       }
       <DialogActions>
         <Stack direction="row" sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, m: 1 }}>

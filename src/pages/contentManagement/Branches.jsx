@@ -6,7 +6,7 @@ import {
     useRemoveBranchMutation,
     useEditBranchMutation
 } from '../../dl/api/branchesApi';
-import { AppBarSystemManagement, LoudingPage, CustomField, ErrorPage, DialogSendInvitation} from "../../components/indexComponents";
+import { AppBarSystemManagement, LoudingPage, CustomField, ErrorPage, DialogSendInvitation, TimedAlert} from "../../components/indexComponents";
 import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText, IconButton, FormControlLabel, Switch } from "@mui/material";
 import { useFilters } from '../../hooks/useFilters';
 import { FilterRow } from "../../components/filters/FilterRow";
@@ -60,12 +60,12 @@ export const Branches = () => {
                         />
                         </React.Fragment>
                     ))}
-                    {error && <Typography variant="button" color="error" >{error.message}</Typography>}
-                    {data && <Typography variant="button" color="success">{data.message}</Typography>}
+                    {error && <TimedAlert message={error}  />}
+                    {data && <TimedAlert message={data} severity={'success'} /> }
                     <Button onClick={handleSaveNewCategory} color="primary" variant="contained" disabled={isLoading}>
                         {isLoading ? <CircularProgress size={24} /> : 'שמור'}
                     </Button>
-                </Stack>) :
+                </Stack>) : 
                 (
                     <ShowBranches secondaryTabValue={secondaryTabValue} />
                 )
@@ -161,7 +161,7 @@ const EditBranch = props => {
             setOpenDialog={setShowEditBranch}
             sendOrder={() => handleEditItem(formEdit)}
             isLoudingSendOrder={isLoadingEdit}
-            errorMessage={errorEdit || errorRemoveBranch?.data || errorRemoveBranch}
+            errorMessage={errorEdit || errorRemoveBranch}
             labelDelete='מחק לצמיתות'
             labelConfirm="שמור"
             isLoadingDelete={isLoadingDelete}

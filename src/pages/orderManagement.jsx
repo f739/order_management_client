@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from "react";
-import { NewOrderToDeliver, CustomSelect, findBestPrice, LoudingPage, TooltipComponent } from '../components/indexComponents';
+import { NewOrderToDeliver, CustomSelect, findBestPrice, LoudingPage, TooltipComponent, SimpleAlert, ErrorPage } from '../components/indexComponents';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '../dl/slices/orders';
 import {
@@ -49,7 +49,7 @@ export const OrderManagement = () => {
   const changeTab = (e, newValue) => {
     setValueTab(newValue)
   }
-  if (errorGetActiveOrders) return <h3>ERROR{errorGetActiveOrders.error}</h3>
+  if (errorGetActiveOrders) return <ErrorPage error={errorGetActiveOrders} />
   if (isLoadingGetActiveOrders) return <LoudingPage />;
 
   return (
@@ -81,7 +81,7 @@ export const OrderManagement = () => {
               </Fab>
               // </TooltipComponent>
               : <NewOrderToDeliver setShowSendEmail={setShowSendEmail} />}
-            {errorAddOrRemoveToCart && <Typography>{errorAddOrRemoveToCart}</Typography>}
+            {errorAddOrRemoveToCart && <SimpleAlert message={errorAddOrRemoveToCart} />}
           </Box>
         </FilterRow>
       </Box>
@@ -192,7 +192,7 @@ const Product = ({ allProduct, idInvitation }) => {
   const deleteProduct = async e => {
     try {
       await removeProduct({ _id: product._id, idInvitation });
-    } catch (err) { console.log(errorRemoveProduct) }
+    } catch (err) {  }
   }
 
   return (

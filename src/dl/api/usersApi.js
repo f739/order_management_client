@@ -8,13 +8,13 @@ export const usersApi = mainApi.injectEndpoints({
     getUsers: builder.query({
       query: () => ({
         url: '/users/getUsers',
-        headers: { 'x-action': 'read', 'x-subject': 'User' },
+        headers: { 'x-action': 'read', 'x-subject': 'Users' },
       }),
       transformResponse: (res) => res.allUsers,
       providesTags: (result) =>
         result ? 
-        [...result.map(({ _id }) => ({ type: 'User', _id })), { type: 'User', _id: 'LIST' }] :
-        [{ type: 'User', _id: 'LIST' }],
+        [...result.map(({ _id }) => ({ type: 'Users', _id })), { type: 'Users', _id: 'LIST' }] :
+        [{ type: 'Users', _id: 'LIST' }],
     }),
     createNewUser: builder.mutation({
       queryFn: async (formCreateUser, {getState}, ex, baseQuery)  => {
@@ -25,10 +25,10 @@ export const usersApi = mainApi.injectEndpoints({
           url: '/users/createNewUser',
           method: 'POST',
           body: formCreateUser,
-          headers: { 'x-action': 'create', 'x-subject': 'User' },
+          headers: { 'x-action': 'create', 'x-subject': 'Users' },
         })
       },
-      invalidatesTags: [{ type: 'User', _id: 'LIST' }],
+      invalidatesTags: [{ type: 'Users', _id: 'LIST' }],
     }),
     editUser: builder.mutation({
       queryFn: async (userUpdated, {}, ex, baseQuery) => {
@@ -39,18 +39,18 @@ export const usersApi = mainApi.injectEndpoints({
           url: `/users/editUser`,
           method: 'PUT',
           body: dataWithOutEmptys,
-          headers: { 'x-action': 'update', 'x-subject': 'User' },
+          headers: { 'x-action': 'update', 'x-subject': 'Users' },
         })
       },
-      invalidatesTags: [{ type: 'User', _id: 'LIST' }],
+      invalidatesTags: [{ type: 'Users', _id: 'LIST' }],
     }),
     removeUser: builder.mutation({
       query: _id => ({
         url: `/users/${_id}/deleteUser`,
         method: 'DELETE',
-        headers: { 'x-action': 'delete', 'x-subject': 'User' },
+        headers: { 'x-action': 'delete', 'x-subject': 'Users' },
       }),
-      invalidatesTags: [{ type: 'User', _id: 'LIST' }],
+      invalidatesTags: [{ type: 'Users', _id: 'LIST' }],
     }),
   }),
 });

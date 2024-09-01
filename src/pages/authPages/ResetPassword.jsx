@@ -4,6 +4,7 @@ import { Box, Button, Typography, Container, Paper, Alert, CircularProgress } fr
 import { CustomField } from '../../components/CustomField';
 import { useResetPasswordMutation } from '../../dl/api/authApi';
 import { Link as MuiLink } from '@mui/material';
+import { SimpleAlert } from '../../components/SimpleAlert';
 
 export const ResetPassword = () => {
     const navigate = useNavigate();
@@ -25,7 +26,7 @@ export const ResetPassword = () => {
           שחזור סיסמה
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          {errorResetPassword && <Alert severity="error" sx={{ mb: 2 }}>{errorResetPassword || errorResetPassword?.message || errorResetPassword.data.message}</Alert>}
+          {errorResetPassword && <SimpleAlert message={errorResetPassword} />}
                 <CustomField
                   name='email'
                   type="email"

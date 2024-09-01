@@ -6,7 +6,7 @@ import {
     useRemoveCategoryMutation,
     useEditCategoryMutation
 } from '../../dl/api/categoriesApi';
-import { AppBarSystemManagement, LoudingPage, CustomField, ErrorPage, DialogSendInvitation } from "../../components/indexComponents";
+import { AppBarSystemManagement, LoudingPage, CustomField, ErrorPage, DialogSendInvitation, TimedAlert } from "../../components/indexComponents";
 import { Box, Typography, IconButton ,CircularProgress, Button, Stack, Grid, Divider, FormControlLabel, Switch } from "@mui/material";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { useFilters } from '../../hooks/useFilters';
@@ -23,7 +23,7 @@ export const Categories = () => {
         try {
             await createNewCategory({ newCategory }).unwrap();
             setNewCategory({ nameCategory: '' })
-        } catch (err) { return }
+        } catch (err) { }
     }
 
     const changeTab = (e, newValue) => {
@@ -52,8 +52,8 @@ export const Categories = () => {
                         onChange={e => handleFormHook(e.target, setNewCategory)}
                     />
 
-                    {error && <Typography variant="button" color="error" >{error.message}</Typography>}
-                    {data && <Typography variant="button" color="success">{data.message}</Typography>}
+                    {error && <TimedAlert message={error}  />}
+                    {data && <TimedAlert message={data} severity={'success'} /> }
                     <Button onClick={handleSaveNewCategory} color="primary" variant="contained" disabled={isLoading}>
                         {isLoading ? <CircularProgress size={24} /> : 'שמור'}
                     </Button>
@@ -149,7 +149,7 @@ const EditCategory = props => {
             setOpenDialog={setShowEditCategory}
             sendOrder={() => handleEditItem(formEdit)}
             isLoudingSendOrder={isLoadingEdit}
-            errorMessage={errorEdit || errorRemoveCategory?.data || errorRemoveCategory}
+            errorMessage={errorEdit || errorRemoveCategory}
             labelDelete='מחק לצמיתות'
             labelConfirm="שמור"
             isLoadingDelete={isLoadingDelete}

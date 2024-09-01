@@ -5,31 +5,29 @@ const defineAdminAbilities = (can, cannot) => {
 }
 
 const defineEmployeeAbilities = (can, cannot, user) => {
-  can('enter', ['Order', 'PendingOrders', 'OldOrder']);
-  cannot('enter', ['IssuingReport', 'NavPrivet', 'CreateUser',
-  'Product', 'Supplier', 'Measure', 'Category', 'Branches', 'Log', 'companySettings']);
-  can('read', 'Order', [user.branch._id] );
-  can('read', 'PendingOrders', [user.branch._id] );
-  can('read', 'OldOrder', [user.branch._id] );
+  can('enter', ['Order', 'PendingOrders', 'OldOrder', 'UserDetails']);
+  can('manage', 'auth');
+  cannot('enter', ['IssuingReport', 'contentManagement', 'Log', 'companySettings']);
+  can('read', 'Order', [user.branch] );
+  can('read', 'PendingOrders', [user.branch] );
+  can('read', 'OldOrder', [user.branch] );
   // can('delete', 'PendingOrders', [user._id]) להוסיף לכל הזמנה ID של מי שיצר אותה ולתת לו למחוק את ההזמנה שלו
-  cannot('delete', ['PendingOrders', 'OldOrder', 'Branch', 'Supplier']);
-  cannot('create', ['PendingOrders', 'Supplier', 'Category', 'User', 'Measure', 'Product', 'Branch']);
-  cannot('update', ['Supplier', 'Product', 'Branch', 'Measure', 'Category']);
+  cannot('delete', ['PendingOrders', 'OldOrder', 'contentManagement']);
+  cannot('create', 'contentManagement');
+  cannot('update', 'contentManagement');
   can('create', 'Order');
   can('update', ['Order']);
-  cannot('delete', 'all'); 
 }
 
 const defineAccountantAbilities = (can, cannot) => {
   can('enter', 'IssuingReport');
-  cannot('enter', ['Order', 'PendingOrders', 'OldOrder', 'NavPrivet', 'CreateUser',
-  'Product', 'Supplier', 'Measure', 'Category', 'Log', 'CompanySettings']);
+  cannot('enter', ['Order', 'PendingOrders', 'OldOrder', 'contentManagement' ,'Log', 'CompanySettings']);
   cannot(['create', 'delete'], ['PendingOrders', 'Order'])
 }
 
 const defineGuestAbilities = (can, cannot) => {
-    cannot('enter', ['PendingOrders', 'Supplier', 'Category', 'User', 'Measure', 'Product', 'Branch']);
-    can('enter', ['NoEntry', 'Login', 'EmailVerification', 'ResetPassword']);
+    can('manage', 'auth');
+    cannot('enter', ['PendingOrders', 'contentManagement']);
     can('create', 'Company');
 }
 
@@ -42,7 +40,7 @@ export const defineAbilitiesFor = user => defineAbility((can, cannot) => {
     case 'purchasingManager':
       defineAdminAbilities(can, cannot);
       break;
-    case 'cooker':
+    case "מנהל רכש":
       defineEmployeeAbilities(can, cannot, user);
       break;
     case 'accountant':

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Tooltip, MenuItem } from '@mui/material';
-import { useNavigate, NavLink } from 'react-router-dom';
+import React from 'react';
+import { Box, Toolbar, IconButton, Avatar, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import AdbIcon from '@mui/icons-material/Adb';
 import { styled } from '@mui/material/styles';
 import MuiAppBar from '@mui/material/AppBar';
+import bic_logo from '../assetes/bic_logo.png';
+import order_logo from '../assetes/logo_order1_flow.png'; 
 
 const drawerWidth = 240;
 
@@ -25,19 +25,7 @@ const StyledAppBar = styled(MuiAppBar, {
   }),
 }));
 
-const settings = ['פרופיל', 'הגדרות חשבון', 'לוח בקרה', 'התנתק'];
-
 export const MyAppBar = ({ open, handleDrawerOpen }) => {
-  const [anchorElUser, setAnchorElUser] = useState(null);
-
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
   return (
     <StyledAppBar position="fixed" open={open} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar>
@@ -45,46 +33,33 @@ export const MyAppBar = ({ open, handleDrawerOpen }) => {
           color="inherit"
           edge="start"
           onClick={handleDrawerOpen}
-          sx={{  ...(open && { display: 'none' }) }}
+          sx={{ ...(open && { display: 'none' }) }}
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap component="div" href="#" 
-          sx={{ flexGrow: 1, textAlign: 'center',
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            textDecoration: 'none' }}
-          >
-          TLR
-        </Typography>
+        <Box sx={{p: 0, flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <img
+            src={order_logo}
+            alt="TLR Logo"
+            style={{
+              height: '65px',  
+              maxWidth: '200px', 
+              objectFit: 'contain'
+            }}
+          />
+        </Box>
         <Box>
-          <Tooltip title="הגדרות משתמש">
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, boxShadow: 'none' }}>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+          <Tooltip title="אתר ביכורים">
+            <IconButton
+              component="a"
+              href="https://www.bikurim.co.il"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ p: 0, boxShadow: 'none' }}
+            >
+              <Avatar alt="Bicurim" src={bic_logo} />
             </IconButton>
           </Tooltip>
-          <Menu
-            sx={{ mt: '45px' }}
-            id="menu-appbar"
-            anchorEl={anchorElUser}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorElUser)}
-            onClose={handleCloseUserMenu}
-          >
-            {settings.map((setting) => (
-              <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                <Typography textAlign="center">{setting}</Typography>
-              </MenuItem>
-            ))}
-          </Menu>
         </Box>
       </Toolbar>
     </StyledAppBar>

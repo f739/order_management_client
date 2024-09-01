@@ -10,15 +10,16 @@ import { Supplier } from './pages/contentManagement/Supplier.jsx';
 import { Measure } from './pages/contentManagement/Measure.jsx';
 import { Categories } from './pages/contentManagement/Categories.jsx';
 import { Branches } from './pages/contentManagement/Branches.jsx';
-import { License } from './pages/companySettings/Lisence.jsx';
+import { UserDetails } from './pages/settings/userSettings/UserDetails.jsx';
 import { IssuingReports } from './pages/IssuingReports.jsx';
 import { Logger } from './pages/logger.jsx';
 import { NoEntry } from './pages/authPages/noEntry.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
-import { CompanyDetails } from './pages/companySettings/CompanyDetails.jsx';
+import { CompanyDetails } from './pages/settings/companySettings/CompanyDetails.jsx';
 import { EmailVerificationPage } from './pages/authPages/EmailVerificationPage.jsx';
 import { LoginPage } from './pages/authPages/LoginPage.jsx';
 import { ResetPassword } from './pages/authPages/ResetPassword.jsx';
+import { Verification } from './pages/authPages/Verification.jsx';
 
 export const routers = createBrowserRouter([{
     element: <Layout />,
@@ -46,29 +47,30 @@ export const routers = createBrowserRouter([{
         {
             path: "companySettings",
             children: [
-                {path: 'companyDetails', element: <ProtectedRoute element={CompanyDetails} action="enter" subject="CompanySettings" />},
-                {path: 'license', element: <ProtectedRoute element={License} action="enter" subject="License" />},
+                { path: 'companyDetails', element: <ProtectedRoute element={CompanyDetails} action="enter" subject="CompanySettings" /> },
+                { path: 'userDetails', element: <ProtectedRoute element={UserDetails} action="enter" subject="UserDetails" /> },
 
             ]
         },
         {
             path: "auth",
             children: [
-                {path: 'noEntry', element: <ProtectedRoute element={NoEntry} action="enter" subject="NoEntry" />},
-                {path: 'login', element: <ProtectedRoute element={LoginPage} action="enter" subject="Login" />},
-                {path: 'emailVerificationPage', element: <ProtectedRoute element={EmailVerificationPage} action="enter" subject="EmailVerification" />},
-                {path: 'ResetPassword', element: <ProtectedRoute element={ResetPassword} action="enter" subject="ResetPassword" />},
+                { path: 'noEntry', element: <ProtectedRoute element={NoEntry} action="enter" subject="auth" /> },
+                { path: 'login', element: <ProtectedRoute element={LoginPage} action="enter" subject="auth" /> },
+                { path: 'emailVerificationPage', element: <ProtectedRoute element={EmailVerificationPage} action="enter" subject="auth" /> },
+                { path: 'resetPassword', element: <ProtectedRoute element={ResetPassword} action="enter" subject="auth" /> },
+                { path: 'verification/:email/:isUser', element: <ProtectedRoute element={Verification} action="enter" subject="auth" /> },
             ]
         },
         {
             path: "/contentManagement",
             children: [
-                { path: "users", element: <ProtectedRoute element={Users} action="enter" subject="CreateUser" /> },
-                { path: "products", element: <ProtectedRoute element={Products} action="enter" subject="Product" /> },
-                { path: "supplier", element: <ProtectedRoute element={Supplier} action="enter" subject="Supplier" /> },
-                { path: "measure", element: <ProtectedRoute element={Measure} action="enter" subject="Measure" /> },
-                { path: "categories", element: <ProtectedRoute element={Categories} action="enter" subject="Category" /> },
-                { path: "Branches", element: <ProtectedRoute element={Branches} action="enter" subject="Branches" /> },
+                { path: "users", element: <ProtectedRoute element={Users} action="enter" subject="contentManagement" /> },
+                { path: "products", element: <ProtectedRoute element={Products} action="enter" subject="contentManagement" /> },
+                { path: "supplier", element: <ProtectedRoute element={Supplier} action="enter" subject="contentManagement" /> },
+                { path: "measure", element: <ProtectedRoute element={Measure} action="enter" subject="contentManagement" /> },
+                { path: "categories", element: <ProtectedRoute element={Categories} action="enter" subject="contentManagement" /> },
+                { path: "Branches", element: <ProtectedRoute element={Branches} action="enter" subject="contentManagement" /> },
                 { path: "logger", element: <ProtectedRoute element={Logger} action="enter" subject="Log" /> },
             ]
         },

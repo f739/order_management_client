@@ -18,7 +18,22 @@ export const FilterWrapper = ({ filters, filterFields, updateFilter }) => {
         branch: allBranches || [],
         supplier: allSuppliers || [],
     }
-
+    const getTitleLabel = (filterType) => {
+        switch (filterType) {
+            case 'category':
+                return 'קטגוריות'
+            case 'product':
+                return 'מוצרים'
+            case 'unitOfMeasure':
+                return 'יחידות מידה'
+            case 'branch': 
+                return 'סניפים'
+            case 'supplier':
+                return 'ספקים'
+            default:
+                return ''
+        }
+    }
     const getOptionLabel = (filterType, option) => {
         switch (filterType) {
             case 'category':
@@ -47,7 +62,7 @@ export const FilterWrapper = ({ filters, filterFields, updateFilter }) => {
             />
             {filterFields.map((filterType) => (
                 <FormControl fullWidth key={filterType} margin="normal">
-                    <InputLabel>{filterType}</InputLabel>
+                    <InputLabel>{getTitleLabel(filterType)}</InputLabel>
                     <Select
                         value={filters[filterType] || ''}
                         onChange={(e) => updateFilter(filterType, e.target.value)}

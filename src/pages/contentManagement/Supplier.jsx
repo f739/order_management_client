@@ -6,7 +6,7 @@ import {
     useRemoveSupplierMutation,
     useEditSupplierMutation
 } from '../../dl/api/suppliersApi';
-import { AppBarSystemManagement, LoudingPage, CustomField } from '../../components/indexComponents'
+import { AppBarSystemManagement, LoudingPage, CustomField, TimedAlert } from '../../components/indexComponents'
 import { Box, Button, Stack, ListItemText, IconButton, Grid, Divider, CircularProgress, Chip, Typography, useMediaQuery, Switch, FormControlLabel } from '@mui/material'
 import { useFilters } from '../../hooks/useFilters';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
@@ -63,8 +63,8 @@ export const Supplier = () => {
                             />
                         </React.Fragment>
                     ))}
-                    {error && <Typography variant="button" color="error" >{error.message}</Typography>}
-                    {data && <Typography variant="button" color="success">{data.message}</Typography>}
+                    {error && <TimedAlert message={error}  />}
+                    {data && <TimedAlert message={data} severity={'success'} /> }                    
                     <Button onClick={handleSaveNewSupplier} color="primary" variant="contained" disabled={isLoading}>
                         {isLoading ? <CircularProgress size={24} /> : 'שמור'}
                     </Button>
@@ -172,7 +172,7 @@ const EditSupplier = props => {
             setOpenDialog={setShowEditSupplier}
             sendOrder={() => handleEditItem(formEdit)}
             isLoudingSendOrder={isLoadingEdit}
-            errorMessage={errorEdit || errorRemoveSupplier?.data || errorRemoveSupplier}
+            errorMessage={errorEdit || errorRemoveSupplier}
             labelDelete='מחק לצמיתות'
             labelConfirm="שמור"
             isLoadingDelete={isLoadingDelete}

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { handleFormHook } from '../../hooks/HandleFormHook';
 import { useConnectUserMutation } from '../../dl/api/authApi';
-import { CustomField } from '../../components/CustomField';
-import { Alert, Box, Button, CircularProgress, Container, Typography, Paper } from '@mui/material';
+import { Box, Button, CircularProgress, Container, Typography, Paper } from '@mui/material';
 import { Link as MuiLink } from '@mui/material';
+import { SimpleAlert, CustomField } from '../../components/indexComponents';
 
 export const LoginPage = () => {
     const navigate = useNavigate();
@@ -19,8 +19,7 @@ export const LoginPage = () => {
         try {
             await connectUser(form).unwrap();
             navigate('../../orders')
-        } catch (err) { console.log(err);
-        }
+        } catch (err) { console.log(err) }
     }
     
     return (        
@@ -30,7 +29,7 @@ export const LoginPage = () => {
                     התחברות
                 </Typography>
                 <Box sx={{mt: 3}}>
-                    {errorConnect && <Alert severity="error" sx={{ mb: 2 }}>{errorConnect?.message || errorConnect.data.message}</Alert>}
+                    {errorConnect && <SimpleAlert message={errorConnect} />}
                     {fields.map( field => (
                         <React.Fragment key={field.name}>
                             <CustomField 

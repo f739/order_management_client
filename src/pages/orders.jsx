@@ -66,7 +66,7 @@ export const Orders = () => {
 
     if (errorGetProducts) return <ErrorPage error={errorGetProducts} />
     if (isLoadingGetProducts) return <LoudingPage />;
-
+    
     return (
         <>
             <AppBarSystemManagement secondaryTabValue={valueTab} onSecondaryTabChange={changeTab} />

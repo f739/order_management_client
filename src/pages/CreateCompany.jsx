@@ -4,17 +4,19 @@ import { Box, Stack, Button, Checkbox, FormControlLabel, Typography,  } from '@m
 import { CustomField } from '../components/indexComponents';
 import { handleFormHook } from '../hooks/HandleFormHook';
 import { useCreateNewCompanyMutation } from '../dl/api/companyApi';
+import { SimpleAlert } from '../components/indexComponents';
 
 export const CreateCompany = () => {
     const navigate = useNavigate();
-    const [newCompany, setNewCompany] = useState({nameCompany: '', companyRegistration: '', address: '', email: '', contactPersonPhone: '', approvalOfRegulations: false});;
+    const [newCompany, setNewCompany] = useState({nameCompany: '', companyRegistration: '', address: '', email: '', phone: '', userName: '', approvalOfRegulations: false});;
 
     const fields = [
         {name: 'nameCompany', label: "שם החברה", type: 'input' },
+        {name: 'userName', label: "שם המנהל", type: 'input' },
         {name: 'companyRegistration', label:"ח.פ.", type: 'input', typeInput: 'number' },
         {name: 'address', label: "כתובת", type: 'input' },
         {name: 'email', label: "דואר אלקטרוני", type: 'input', typeInput: 'email' },
-        {name: 'contactPersonPhone', label: "פלאפון", type: 'input', typeInput: 'tel' },
+        {name: 'phone', label: "פלאפון", type: 'input', typeInput: 'tel' },
     ];
 
     const [createCompany, {isLouding: isLoudingCreateCompany, error: errorCreateCompany}] = useCreateNewCompanyMutation()
@@ -35,7 +37,7 @@ export const CreateCompany = () => {
 
     return (
         <>
-            <Box sx={{p: 5, height: '500px', width: '400px', boxShadow: 1, borderRadius: 5, m: 2}}>
+            <Box sx={{p: 5, minHeight: '600px', width: '400px', boxShadow: 1, borderRadius: 5, m: 2}}>
                 <Stack sx={{ p: 1 }}
                         direction="column"
                         justifyContent="flex-start"
@@ -63,7 +65,7 @@ export const CreateCompany = () => {
                         />} 
                         label="אשר תקנון"
                     />
-                    <Typography>{errorCreateCompany?.message ?? null}</Typography>
+                    {errorCreateCompany && <SimpleAlert message={errorCreateCompany} />}
                     <Button onClick={handleCreateCompany} color="primary" variant="contained" disabled={isLoudingCreateCompany}>
                         {isLoudingCreateCompany ? <CircularProgress size={24} /> : 'צור חברה'}
                     </Button>

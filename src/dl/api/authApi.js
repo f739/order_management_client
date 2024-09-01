@@ -6,16 +6,16 @@ export const authApi = mainApi.injectEndpoints({
   reducerPath: 'authApi',
   endpoints: (builder) => ({
     connectUser: builder.mutation({
-      query: (form) => {
+      queryFn: async (form, {}, ex, baseQuery) => {
         if (!fieldsAreNotEmpty(form)) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
         if (!validEmail(form.email)) { return { error: {message: 'האימייל אינו תקני'}}} 
 
-        return {
+        return await baseQuery({
           url: `/auth/login`,
           method: 'PUT',
           body: form,
-          headers: { 'x-action': 'login', 'x-subject': 'User' },
-        }
+          headers: { 'x-action': 'auth', 'x-subject': 'User' },
+        })
       },
     }),
     verifyEmailAndUpdatePass: builder.mutation({
@@ -25,7 +25,7 @@ export const authApi = mainApi.injectEndpoints({
             url: `/auth/verifyEmailAndUpdatePass`,
             method: 'PUT',
             body: {tempPassword, newPassword},
-            headers: { 'x-action': 'login', 'x-subject': 'Company' },
+            headers: { 'x-action': 'auth', 'x-subject': 'Company' },
          });
       },
     }),
@@ -38,9 +38,15 @@ export const authApi = mainApi.injectEndpoints({
             url: `/auth/resetPassword`,
             method: 'PUT',
             body: {email},
-            headers: { 'x-action': 'login', 'x-subject': 'User' },
+            headers: { 'x-action': 'auth', 'x-subject': 'User' },
          });
       },
+    }),
+    verificationEmailAuto: builder.query({
+      query: ({email, isUser}) => ({
+        url: `/auth/verifyEmailDetails/${email}/${isUser}`,
+        headers: { 'x-action': 'auth', 'x-subject': 'User' },
+      })
     })
   }),
 });
@@ -50,4 +56,5 @@ export const {
   useVerifyEmailAndUpdatePassMutation,
   useConnectUserMutation, 
   useResetPasswordMutation,
+  useVerificationEmailAutoQuery,
   } = authApi;

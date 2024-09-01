@@ -4,18 +4,16 @@ import { useSelector } from "react-redux";
 import { useGetSuppliersQuery } from "../dl/api/suppliersApi";
 import { useSendOrderFromCartMutation } from "../dl/api/ordersApi";
 import {
-    TextField, Typography, Box, ToggleButton, ToggleButtonGroup,
-    Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton
+    TextField, Box, ToggleButton, ToggleButtonGroup, TableBody, TableCell, TableHead, TableRow
 } from '@mui/material';
 import {
     Email as EmailIcon, WhatsApp as WhatsAppIcon, GetApp as GetAppIcon,
 } from '@mui/icons-material';
-
 import { DialogSendInvitation } from "./DialogSendInvitation";
 
 export const NewOrderToDeliver = ({ setShowSendEmail }) => {
     const { cartToDeliver } = useSelector(state => state.orders);
-    const [sendOrderFromCart, { error: errorSendOrderFromCart, isLoading: isLoudingSendOrder }] = useSendOrderFromCartMutation()
+    const [sendOrderFromCart, { data: dataSendOrder, error: errorSendOrderFromCart, isLoading: isLoudingSendOrder, isSuccess }] = useSendOrderFromCartMutation()
     const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
     const [emailForm, setEmailForm] = useState(
         { supplier: [], titleMessage: '', messageContent: '', howToSend: [] }
@@ -46,7 +44,6 @@ export const NewOrderToDeliver = ({ setShowSendEmail }) => {
     const sendOrder = async () => {
         try {
             await sendOrderFromCart(emailForm).unwrap();
-            setShowSendEmail(false);
         } catch (err) { }
     }
 
@@ -58,6 +55,7 @@ export const NewOrderToDeliver = ({ setShowSendEmail }) => {
             setShowTable={setShowTable}
             cart={cartToDeliver}
             errorMessage={errorSendOrderFromCart}
+            isSuccess={isSuccess && `${dataSendOrder.message}, <br> ניתן להוריד את ההזמנה <a href="${dataSendOrder.location}">בקישור</a>`}
             to={emailForm.supplier.nameSupplier ?
                 `${emailForm.supplier.nameSupplier} (${emailForm.supplier.email})` : null
             }
@@ -118,7 +116,7 @@ export const NewOrderToDeliver = ({ setShowSendEmail }) => {
                             <EmailIcon />
                             באמייל
                         </ToggleButton>
-                        <ToggleButton value="whatsapp" aria-label="whatsapp">
+                        <ToggleButton value="whatsapp" disabled aria-label="whatsapp">
                             <WhatsAppIcon />
                             בווצאפ
                         </ToggleButton>

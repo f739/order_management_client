@@ -32,8 +32,9 @@ export const ordersApi = mainApi.injectEndpoints({
       queryFn: async ({supplier, titleMessage, messageContent, howToSend}, {getState}, ex, baseQuery) => {
         const state = getState(); 
         const cartToDeliver = state.orders.cartToDeliver;
-
+        if (howToSend.length === 0) { return {error: {message: 'בחר שיטת שליחה'}} }
         if (cartToDeliver.length === 0){ return { error: {message: 'אין מוצרים לשליחה'}}};
+        
           return await baseQuery({
             url: '/orderManagement/sendOrderToSupplier',
             method: 'POST',

@@ -6,7 +6,7 @@ import {
     useRemoveMeasureMutation,
     useEditMeasureMutation
 } from '../../dl/api/measuresApi';
-import { AppBarSystemManagement, LoudingPage, CustomField, ErrorPage, DialogSendInvitation } from "../../components/indexComponents";
+import { AppBarSystemManagement, LoudingPage, CustomField, ErrorPage, DialogSendInvitation, TimedAlert } from "../../components/indexComponents";
 import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, FormControlLabel, Switch, IconButton } from "@mui/material";
 import { useFilters } from '../../hooks/useFilters';
 import { FilterRow } from "../../components/filters/FilterRow";
@@ -52,8 +52,8 @@ export const Measure = () => {
                         onChange={e => handleFormHook(e.target, setNewMeasure)}
                     />
 
-                    {error && <Typography variant="button" color="error" >{error.message}</Typography>}
-                    {data && <Typography variant="button" color="success">{data.message}</Typography>}
+                    {error && <TimedAlert message={error}  />}
+                    {data && <TimedAlert message={data} severity={'success'} /> }
                     <Button onClick={handleSaveNewMeasure} color="primary" variant="contained" disabled={isLoading}>
                         {isLoading ? <CircularProgress size={24} /> : 'שמור'}
                     </Button>
@@ -147,7 +147,7 @@ const EditMeasure = props => {
             setOpenDialog={setShowEditMeasure}
             sendOrder={() => handleEditItem(formEdit)}
             isLoudingSendOrder={isLoadingEdit}
-            errorMessage={errorEdit || errorRemoveMeasure?.data || errorRemoveMeasure}
+            errorMessage={errorEdit || errorRemoveMeasure}
             labelDelete='מחק לצמיתות'
             labelConfirm="שמור"
             isLoadingDelete={isLoadingDelete}
@@ -178,8 +178,6 @@ const EditMeasure = props => {
                     ))}
                 </>
             }
-        >
-
-        </DialogSendInvitation>
+        />
     )
 }

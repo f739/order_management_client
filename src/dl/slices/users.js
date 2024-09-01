@@ -28,10 +28,7 @@ export const slice = createSlice({
               Object.assign(state.user, { role, _id, email, company, ifVerifiedEmail });
             });
             builder.addCase(logOut, (state, action) => {
-              state.user.role = 'guest';
-              state.user.email = '';
-              state.user.company = '';
-              state.user.ifVerifiedEmail = false;
+              state.user = initialState.user;
             });
             builder.addMatcher(
               mainApi.endpoints.resetPassword.matchFulfilled, (state, action) => {
@@ -54,21 +51,15 @@ export const slice = createSlice({
               state.allUsers = state.allUsers.filter( el => el._id !== action.payload._id);
             });
             builder.addMatcher( mainApi.endpoints.connectUser.matchFulfilled, (state, action) => {
-              const { token, ifVerifiedEmail, tokenCompany } = action.payload.user;
+              const { token, ifVerifiedEmail, tokenCompany, branch } = action.payload.user;
                 
                 localStorage.setItem('tokenCompany', tokenCompany);
                 localStorage.setItem('userToken', token);
                 localStorage.setItem('ifVerifiedEmail', ifVerifiedEmail);
+                localStorage.setItem('branch', branch);
                 state.user = {...action.payload.user};
               }
             );
-              // builder.addMatcher(
-              //   usersApi.endpoints.testToken.matchFulfilled,
-              //   (state, action) => {
-              //     const {license, branch, userName, email, token} = action.payload;
-              //     action.meta.arg.originalArgs !== token ? localStorage.setItem('token', token) : null;
-              //     state.user = {license, branch, userName, email}
-              //   });
             builder.addMatcher(
               mainApi.endpoints.createNewCompany.matchFulfilled, (state, action) => {
                 const { tokenCompany, newUser } = action.payload;
@@ -81,6 +72,18 @@ export const slice = createSlice({
               mainApi.endpoints.verifyEmailAndUpdatePass.matchFulfilled, (state, action) => {
                 state.user.ifVerifiedEmail = true;
                 localStorage.setItem('ifVerifiedEmail', true);
+            });
+
+            builder.addMatcher(
+              mainApi.endpoints.editUserDetails.matchFulfilled, (state, action) => {
+                const { user } = action.payload;
+                
+                state.user.email = user.email;
+                state.user.userName = user.userName;
+                state.user.ifVerifiedEmail = false;
+                
+                localStorage.removeItem('ifVerifiedEmail');
+                localStorage.setItem('userToken', user.token);
             });
             }
     })

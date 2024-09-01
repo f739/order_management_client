@@ -8,7 +8,7 @@ import {
     useEditUserMutation
 } from '../../dl/api/usersApi';
 import { useGetBranchesQuery } from "../../dl/api/branchesApi"
-import { AppBarSystemManagement, LoudingPage, CustomField } from "../../components/indexComponents";
+import { AppBarSystemManagement, LoudingPage, CustomField, TimedAlert } from "../../components/indexComponents";
 import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText, FormControlLabel, Switch, IconButton } from "@mui/material";
 import { FilterRow } from "../../components/filters/FilterRow";
 import { useFilters } from '../../hooks/useFilters';
@@ -83,8 +83,8 @@ export const Users = () => {
                             />}
                         </React.Fragment>
                     )) }
-                    {error && <Typography variant="button" color="error" >{error.message}</Typography>}
-                    {data && <Typography variant="button" color="success">{data.message}</Typography>}
+                     {error && <TimedAlert message={error}  />}
+                     {data && <TimedAlert message={data} severity={'success'} /> } 
                     <Button onClick={createUser} color="primary" variant="contained" disabled={isLoading}>
                         {isLoading ? <CircularProgress size={24} /> : 'שמור'}
                     </Button>
@@ -189,7 +189,7 @@ const EditUser = props => {
             setOpenDialog={setShowEditUser}
             sendOrder={() => handleEditItem(formEdit)}
             isLoudingSendOrder={isLoadingEdit}
-            errorMessage={errorEdit || errorRemoveUser?.data || errorRemoveUser}
+            errorMessage={errorEdit || errorRemoveUser}
             labelDelete='מחק לצמיתות'
             labelConfirm="שמור"
             isLoadingDelete={isLoadingDelete}

@@ -1,11 +1,11 @@
-import { TextField } from "@mui/material";
+import { TextField, InputAdornment } from "@mui/material";
 import { useState } from "react";
 
-export const CustomField = ({ id, name, value, initialValue, label, onChange,
-   type = "text", disabled=false, required = false, variant = "filled",
-    children }) => {
+export const CustomField = ({ id, name, value, initialValue = '', label, onChange,
+   type = "text", disabled=false, required = false, variant = "filled", margin = "normal",
+    children, icon }) => {
 
-    const [localValue, setLocalValue] = useState(value || initialValue);
+    const [localValue, setLocalValue] = useState(value || initialValue );
     
       const handleChange = (e) => {
         setLocalValue(e.target.value);
@@ -32,8 +32,15 @@ export const CustomField = ({ id, name, value, initialValue, label, onChange,
           disabled={disabled}
           multiline={type === 'textarea'}
           fullWidth
-          margin="normal"
+          margin={margin}
           variant={variant}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                {icon}
+              </InputAdornment>
+            ),
+          }}
           InputLabelProps={{
             sx: {
               right: variant === 'filled' ? 12 : 14,

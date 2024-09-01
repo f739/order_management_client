@@ -21,3 +21,6 @@ export { AppBarSystemManagement } from './AppBarSystemManagement';
 export { DrawerMiniRight } from './DrawerMiniRight';
 export { CustomField } from './CustomField';
 export { DialogSendInvitation } from './DialogSendInvitation';
+export { ButtonConfirm } from './icons/ButtonConfirm';
+export { SimpleAlert } from './SimpleAlert';
+export { TimedAlert } from './TimedAlert';

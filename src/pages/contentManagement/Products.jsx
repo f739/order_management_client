@@ -11,7 +11,7 @@ import { useGetCategoriesQuery } from "../../dl/api/categoriesApi";
 import { useGetMeasuresQuery } from "../../dl/api/measuresApi";
 import { useGetSuppliersQuery } from "../../dl/api/suppliersApi";
 import { useGetBranchesQuery } from "../../dl/api/branchesApi"
-import { AppBarSystemManagement, ErrorPage, LoudingPage, CustomField, CustomSelect, SelectFactoryMultipleHook } from "../../components/indexComponents";
+import { AppBarSystemManagement, ErrorPage, LoudingPage, CustomField, CustomSelect, SelectFactoryMultipleHook, TimedAlert } from "../../components/indexComponents";
 import { Box, Typography, CircularProgress, Button, Stack, Grid, Chip, Divider, IconButton, ListItemText, FormControlLabel, Switch } from "@mui/material";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { FilterRow } from "../../components/filters/FilterRow";
@@ -130,6 +130,7 @@ export const Products = () => {
                                         onDelete={() => handleDeletePrice(i)}
                                     />
                                 ))}
+                                {errorNewPrice && <TimedAlert message={errorNewPrice}  />}
                             </Grid>
                             <Grid item xs={6} >
                                 <CustomSelect
@@ -159,10 +160,8 @@ export const Products = () => {
                         </Grid>
                     </Box>
                     <SelectFactoryMultipleHook set={handleSelectBranch} form={newProduct} />
-
-                    {error && <Typography variant="button" color="error" >{error.message}</Typography>}
-                    {errorNewPrice && <Typography variant="button" color="error" >{errorNewPrice}</Typography>}
-                    {dataCreateProduct && <Typography variant="button" color="success">{dataCreateProduct.message}</Typography>}
+                    {error && <TimedAlert message={error}  />}
+                    {dataCreateProduct && <TimedAlert message={dataCreateProduct} severity={'success'} /> }
                     <Button onClick={handleSaveNewProduct} color="primary" variant="contained" disabled={isLoadingCreateProdact}>
                         {isLoadingCreateProdact ? <CircularProgress size={24} /> : 'שמור'}
                     </Button>
@@ -287,7 +286,7 @@ const EditProduct = props => {
             setOpenDialog={setShowEditProduct}
             sendOrder={() => handleEditItem(formEdit)}
             isLoudingSendOrder={isLoadingEdit}
-            errorMessage={errorEdit || errorRemoveProduct?.data || errorRemoveProduct}
+            errorMessage={errorEdit || errorRemoveProduct}
             labelDelete="מחק לצמיתות"
             actionDelete={() => deleteProduct(product._id)}
             isLoadingDelete={isLoudingDelete}

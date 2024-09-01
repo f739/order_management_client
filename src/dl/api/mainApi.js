@@ -30,7 +30,7 @@ const baseQueryWithHeaders = fetchBaseQuery({
 export const mainApi = createApi({
     reducerPath: 'mainApi',
     baseQuery: baseQueryWithHeaders,
-    tagTypes: ['ActiveOrder', 'OldOrder', 'Category', 'Measure', 'Product', 'Supplier', 'User', 'Branch'],
+    tagTypes: ['ActiveOrder', 'OldOrder', 'Category', 'Measure', 'Product', 'Supplier', 'User', 'Branch','Users'],
     endpoints: (builder) => ({
 
     }),
