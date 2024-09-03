@@ -1,12 +1,15 @@
-import { handleFormHook } from '../hooks/HandleFormHook';
-import { MenuItem, TextField } from '@mui/material';
+import React from 'react';
+import { handleFormHook } from '../hooks/HandleFormHook';;
+import { Select, MenuItem, FormControl, InputBase, withStyles, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
+
+const getNestedValue = (obj, path) => {
+    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+}
 
 export const CustomSelect = (
     { set, disabled, nameField, value = '', label, options, optionsValue, optionsValueToShow = false, ifFunc = false, showAllFactoryLine = false }
 ) => {
-    const getNestedValue = (obj, path) => {
-        return path.split('.').reduce((acc, part) => acc && acc[part], obj);
-    }
     return (
         <TextField
             id="filled-select-currency"
@@ -49,6 +52,42 @@ export const CustomSelect = (
                     {getNestedValue(item, optionsValue)}
                 </MenuItem>
             ))}
+        </TextField>
+    )
+}
+
+export const CustomSelectStandard = (
+    { set, nameField, value = '', options, optionsValue, optionsValueToShow = false, ifFunc = false, showAllFactoryLine = false }
+) => {
+
+    return (
+        <TextField
+            name={nameField}
+            value={value}
+            onChange={e => handleFormHook(e.target, set, ifFunc)}
+            select
+            fullWidth
+            variant="standard"
+            sx={{ 
+                '& .MuiInput-underline:before': {
+                    borderBottom: 'none',
+                },
+                '& .MuiInput-underline:after': {
+                    borderBottom: 'none',
+                },
+                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                    borderBottom: 'none',
+                },  
+            }}
+        >
+            {options && options.length > 0 ? options.map(item => (
+                <MenuItem
+                    key={item._id}
+                    value={optionsValueToShow ? getNestedValue(item, optionsValueToShow) : getNestedValue(item, optionsValue)}
+                >
+                    {getNestedValue(item, optionsValue)}
+                </MenuItem>
+            )) : <MenuItem disabled>אין ספקים</MenuItem>}
         </TextField>
     )
 }

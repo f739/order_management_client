@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import {  IconButton } from '@mui/material';
+import {  IconButton, Box } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import { TooltipComponent } from '../TooltipComponent';
 
@@ -17,23 +17,21 @@ const handleTooltipOpen = () => {
 
   return (
     <TooltipComponent title={title} open={open} handleTooltipClose={handleTooltipClose}>
-      <IconButton 
-        onClick={e => action(e)} 
-        onMouseEnter={handleTooltipOpen}
-        onMouseLeave={handleTooltipClose}
-        sx={{
-          border: '1px solid rgba(0, 0, 0, 0.12)',
-          borderRadius: '4px', 
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', 
-          padding: '8px',
-          color: '#64b5f6', 
-          '&:hover': {
-            backgroundColor: 'rgba(0, 0, 255, 0.1)',
-          }
-        }} 
+      <Box 
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="flex-end"
+        height="100%"
+        width="100%"
+      >
+        <IconButton 
+          onClick={e => action(e)} 
+          onMouseEnter={handleTooltipOpen}
+          onMouseLeave={handleTooltipClose}
         >
-        <EditIcon fontSize='mediume'  />
-      </IconButton>
+          <EditIcon fontSize='small' />
+        </IconButton>
+      </Box>
     </TooltipComponent>
   )
 } 

@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { NumericFormat } from 'react-number-format';
 import { FormControl, InputLabel, OutlinedInput, InputAdornment, TextField } from '@mui/material';
 import { TooltipComponent } from './TooltipComponent';
@@ -25,7 +24,8 @@ const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(props,
   );
 });
 
-export const InputNumberPrice  = ({value, setValue}) => {
+
+export const InputNumberPrice = ({ value, setValue }) => {
   const [open, setOpen] = useState(false);
   
   const handleTooltipClose = () => {
@@ -41,31 +41,43 @@ export const InputNumberPrice  = ({value, setValue}) => {
   };
 
   return (
-    <TooltipComponent title={'שנה מחיר בהזמנה זו'} open={open} handleTooltipClose={handleTooltipClose}>
-      <FormControl variant="standard">
-        <TextField 
-          variant="standard"
-          label='מחיר'
-          value={value}
-          onChange={handleChange}
-          name="numberformat"
-          InputProps={{
-            startAdornment: <InputAdornment position="start">₪</InputAdornment>,
-            inputComponent: NumericFormatCustom,
-          }}
-          onMouseEnter={handleTooltipOpen}
-          onMouseLeave={handleTooltipClose}
-          sx={{
-              '& .MuiInputBase-input': {
-                padding: '3px 2px', 
-              },
-            }}
-        />
-      </FormControl>
-    </TooltipComponent>
+    <TextField 
+      variant="standard"
+      value={value}
+      onChange={handleChange}
+      name="numberformat"
+      InputProps={{
+        startAdornment: <InputAdornment position="start">₪</InputAdornment>,
+        inputComponent: NumericFormatCustom,
+        disableUnderline: false,
+      }}
+      onMouseEnter={handleTooltipOpen}
+      onMouseLeave={handleTooltipClose}
+      sx={{
+        '& .MuiInputBase-root': {
+          '&:before': {
+            borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
+          },
+          '&:hover:not(.Mui-disabled):before': {
+            borderBottom: '2px solid rgba(0, 0, 0, 0.87)',
+          },
+          '&.Mui-focused:after': {
+            borderBottom: '2px solid #1976d2',
+          },
+        },
+        '& .MuiInputBase-input': {
+          padding: '3px 2px',
+        },
+        '& .MuiFormLabel-root': {
+          display: 'none',
+        },
+      }}
+    />
   );
 };
-export const InputNumberQuantity = ({value, setValue}) => {
+
+
+export const InputNumberQuantity = ({ value, setValue }) => {
   const [open, setOpen] = useState(false);
   
   const handleTooltipClose = () => {
@@ -80,29 +92,40 @@ export const InputNumberQuantity = ({value, setValue}) => {
     setValue(event);
   };
 
-
   return (
-    <TooltipComponent title={'שנה כמות מהמוצר'} open={open} handleTooltipClose={handleTooltipClose}>
-      <FormControl variant="standard">
-        <TextField
-          label='כמות'
-          value={value}
-          onChange={handleChange}
-          name="numberformat"
-          InputProps={{inputComponent: NumericFormatCustom}}
-          variant="standard"
-          onMouseEnter={handleTooltipOpen}
-          onMouseLeave={handleTooltipClose}
-          sx={{
-              '& .MuiInputBase-input': {
-                padding: '3px 2px', 
-                minWidth: '40px',
-                maxWidth: '50px'
-              },
-            }}
-        />
-      </FormControl>
-    </TooltipComponent>
+    <TextField
+      variant="standard"
+      value={value}
+      onChange={handleChange}
+      name="numberformat"
+      InputProps={{
+        inputComponent: NumericFormatCustom,
+        disableUnderline: false,
+      }}
+      onMouseEnter={handleTooltipOpen}
+      onMouseLeave={handleTooltipClose}
+      sx={{
+        '& .MuiInputBase-root': {
+          '&:before': {
+            borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
+          },
+          '&:hover:not(.Mui-disabled):before': {
+            borderBottom: '2px solid rgba(0, 0, 0, 0.87)',
+          },
+          '&.Mui-focused:after': {
+            borderBottom: '2px solid #1976d2',
+          },
+        },
+        '& .MuiInputBase-input': {
+          padding: '3px 2px',
+          // minWidth: '40px',
+          // maxWidth: '50px',
+        },
+        '& .MuiFormLabel-root': {
+          display: 'none',
+        },
+      }}
+    />
   );
 };
 
