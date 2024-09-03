@@ -60,7 +60,7 @@ const NewBranch = ({setShowAddBranch}) => {
             <Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Typography variant="body1">יצירת סניף חדש</Typography>
                 <IconButton onClick={() => setShowAddBranch(false)} >
-                    <Typography variant="body2">רשימת הסניפים</Typography>
+                    <Typography variant="body2">סניפים</Typography>
                     <ArrowBackIosIcon />
                 </IconButton>
             </Stack>
@@ -104,7 +104,9 @@ const ShowBranches = () => {
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allBranches}>
                 <Box>
-                <Typography variant="h6">רשימת הסניפים</Typography>
+                <Typography variant="h5" sx={{  textAlign: 'right', color: 'text.primary' }}>
+                    סניפים
+                </Typography>
                 {filteredData.length > 0 ? (
                         filteredData.map(branch => (
                             <React.Fragment key={branch._id}>

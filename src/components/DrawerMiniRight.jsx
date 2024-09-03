@@ -169,7 +169,7 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
                 <ListItemIcon
                   sx={{
                     minWidth: 0,
-                    mr: open ? 3 : 'auto',
+                    mr: open ? 1 : 'auto',
                     justifyContent: 'center',
                   }}
                 >
@@ -199,7 +199,7 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
                     component={Link}
                     to={page.path}
                     sx={{
-                      minHeight: 48,
+                      minHeight: 18,
                       justifyContent: open ? 'initial' : 'center',
                       px: 2.5,
                     }}
@@ -207,7 +207,7 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
                     <ListItemIcon
                       sx={{
                         minWidth: 0,
-                        mr: open ? 3 : 'auto',
+                        mr: open ? 1 : 'auto',
                         justifyContent: 'center',
                       }}
                     >

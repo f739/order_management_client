@@ -11,9 +11,8 @@ import { useGetCategoriesQuery } from "../../dl/api/categoriesApi";
 import { useGetMeasuresQuery } from "../../dl/api/measuresApi";
 import { useGetSuppliersQuery } from "../../dl/api/suppliersApi";
 import { useGetBranchesQuery } from "../../dl/api/branchesApi"
-import { AppBarSystemManagement, ErrorPage, LoudingPage, CustomField, CustomSelect, SelectFactoryMultipleHook, TimedAlert } from "../../components/indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Chip, Divider, IconButton, ListItemText, FormControlLabel, Switch, Fab } from "@mui/material";
-import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import { ErrorPage, LoudingPage, CustomField, CustomSelect, SelectFactoryMultipleHook, TimedAlert } from "../../components/indexComponents";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Chip, Divider, IconButton, FormControlLabel, Switch, Fab, Paper } from "@mui/material";
 import { FilterRow } from "../../components/filters/FilterRow";
 import { useFilters } from '../../hooks/useFilters';
 import { BoxEditPrices } from "../../components/BoxEditPrices";
@@ -22,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useActiveInactiveSort } from "../../hooks/useActiveInactiveSort";
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { StyledPaper } from "../../css/styles/paper";
 
 export const Products = () => {
     const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
@@ -210,42 +210,52 @@ const ShowProducts = ({ allCategories, allMeasures }) => {
     return (
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} >
-                <Box>
-                <Typography variant="h6">רשימת המוצרים</Typography>
-                    {filteredData.length > 0 ? (
-                        filteredData.map(product => (
-                            <div key={product._id}>
-                                <Grid container alignItems="center" justifyContent="space-between">
-                                    <Grid item xs={5} sx={{ minWidth: '100px' }}>
-                                        <ListItemText
-                                            primary={product.nameProduct}
-                                            secondary={product.branch.nameBranch}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={6} sx={{ minWidth: '100px' }}>
-                                        <ListItemText
-                                            primary={product.category?.nameCategory}
-                                            secondary={product.unitOfMeasure?.measureName}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={1} >
-                                        <IconButton onClick={() => setShowEditProduct(product)}>
-                                            <MoreVertOutlinedIcon />
-                                        </IconButton>
-                                    </Grid>
-                                </Grid>
-                                <Divider />
-                                {showEditProduct._id === product._id &&
-                                    <EditProduct
-                                        product={product}
-                                        setShowEditProduct={setShowEditProduct}
-                                        allCategories={allCategories}
-                                        allMeasures={allMeasures}
-                                    />
-                                }
-                            </div>
-                        ))) : (<Typography>אין מוצרים להצגה</Typography>)
-                    }
+            <Box>
+                <Typography variant="h5" sx={{ textAlign: 'right', color: 'text.primary' }}>
+                    מוצרים
+                </Typography>
+                {filteredData.length > 0 ? (
+                    filteredData.map(product => (
+                    <React.Fragment key={product._id}>
+                    <StyledPaper 
+                        elevation={2}
+                        onClick={() => setShowEditProduct(product)}
+                    >
+                        <Grid container spacing={1} justifyContent="space-between" alignItems="center">
+                        <Grid item xs={7} sx={{ textAlign: 'right' }}>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                            {product.nameProduct}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                            {product.branch.nameBranch}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={5} sx={{ textAlign: 'left' }}>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                                {product.category?.nameCategory}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {product.unitOfMeasure?.measureName}
+                            </Typography>
+                        </Grid>
+                        </Grid>
+                    </StyledPaper>
+                    <Divider />
+                    {showEditProduct._id === product._id && (
+                    <EditProduct
+                        product={product}
+                        setShowEditProduct={setShowEditProduct}
+                        allCategories={allCategories}
+                        allMeasures={allMeasures}
+                    />
+                    )}
+                </React.Fragment>
+                    ))
+                ) : (
+                    <Typography sx={{ textAlign: 'center', color: 'text.secondary' }}>
+                    אין מוצרים להצגה
+                    </Typography>
+                )}
                 </Box>
             </FilterRow>
         </Box>

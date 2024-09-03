@@ -15,15 +15,16 @@ import { useActiveInactiveSort } from "../../hooks/useActiveInactiveSort";
 import { ErrorPage, DialogSendInvitation } from "../../components/indexComponents";
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { StyledPaper } from "../../css/styles/paper";
 
 export const Supplier = () => {
     const [showAddSupplier, setShowAddSupplier] = useState(false);
 
     return (
-        <Box sx={{ margin: '20px 5px'}}>
+        <Box sx={{ margin: '20px 5px' }}>
             {showAddSupplier ?
                 <NewSupplier setShowAddSupplier={setShowAddSupplier} /> :
-                <ShowSuppliers /> 
+                <ShowSuppliers />
             }
             {!showAddSupplier && <Fab
                 color="primary"
@@ -41,7 +42,7 @@ export const Supplier = () => {
 };
 
 
-const NewSupplier = ({setShowAddSupplier}) => {
+const NewSupplier = ({ setShowAddSupplier }) => {
     const [newSupplier, setNewSupplier] = useState({ nameSupplier: '', tel: '', email: '', supplierNumber: '' });
     const [createNewSupplier, { error, isLoading, data }] = useCreateNewSupplierMutation();
 
@@ -54,9 +55,9 @@ const NewSupplier = ({setShowAddSupplier}) => {
 
     const fields = [
         { name: 'nameSupplier', label: 'שם ספק', typeInput: 'text', type: 'input' },
-        { name: 'supplierNumber', label: 'מספר ספק', typeInput: 'text', type: 'input' },
-        { name: 'tel', label: 'פלאפון ספק', typeInput: 'tel', type: 'input' },
-        { name: 'email', label: 'אימייל ספק', typeInput: 'email', type: 'input' },
+        { name: 'supplierNumber', label: 'מספר ח.פ.', typeInput: 'text', type: 'input' },
+        { name: 'tel', label: 'טלפון', typeInput: 'tel', type: 'input' },
+        { name: 'email', label: 'אימייל', typeInput: 'email', type: 'input' },
     ];
 
     return (
@@ -68,9 +69,9 @@ const NewSupplier = ({setShowAddSupplier}) => {
                     <ArrowBackIosIcon />
                 </IconButton>
             </Stack>
-            { fields.map( field => (
+            {fields.map(field => (
                 <React.Fragment key={field.name}>
-                    <CustomField 
+                    <CustomField
                         name={field.name}
                         value={newSupplier[field.name]}
                         label={field.label}
@@ -78,15 +79,15 @@ const NewSupplier = ({setShowAddSupplier}) => {
                     />
                 </React.Fragment>
             ))}
-            {error && <TimedAlert message={error}  />}
-            {data && <TimedAlert message={data} severity={'success'} /> }                    
+            {error && <TimedAlert message={error} />}
+            {data && <TimedAlert message={data} severity={'success'} />}
             <Button onClick={handleSaveNewSupplier} color="primary" variant="contained" disabled={isLoading}>
                 {isLoading ? <CircularProgress size={24} /> : 'שמור'}
             </Button>
         </Stack>
     )
 }
-const ShowSuppliers = ({ secondaryTabValue }) => {
+const ShowSuppliers = () => {
     const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
     const [showEditSupplier, setShowEditSupplier] = useState(false);
 
@@ -106,39 +107,47 @@ const ShowSuppliers = ({ secondaryTabValue }) => {
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={data}>
                 <Box>
-                    <Typography variant="h6">רשימת הספקים</Typography>
+                    <Typography variant="h5" sx={{  textAlign: 'right', color: 'text.primary' }}>
+                        ספקים
+                    </Typography>
                     {filteredData.length > 0 ? (
-                      filteredData.map(supplier => (
-                            <div key={supplier._id}>
-                                <Grid container alignItems="center" justifyContent="space-between">
-                                    <Grid item xs={5} sx={{ minWidth: '100px' }}>
-                                        <ListItemText
-                                            primary={supplier.nameSupplier}
-                                            secondary={supplier.supplierNumber}
-                                        />
+                        filteredData.map(supplier => (
+                            <React.Fragment key={supplier._id}>
+                                <StyledPaper
+                                    elevation={2}
+                                    onClick={() => setShowEditSupplier(supplier)}
+                                >
+                                    <Grid container spacing={1} alignItems="center" justifyContent="space-between">
+                                        <Grid item  sx={{ textAlign: 'right' }}>
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                                                {supplier.nameSupplier}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                {supplier.supplierNumber}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item  sx={{ textAlign: 'left' }}>
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                                                {supplier.email}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                {supplier.tel}
+                                            </Typography>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={6} sx={{ minWidth: '100px' }}>
-                                        <ListItemText
-                                            primary={supplier.email}
-                                            secondary={supplier.tel}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={1} >
-                                        <IconButton onClick={() => setShowEditSupplier(supplier)}>
-                                            <MoreVertOutlinedIcon />
-                                        </IconButton>
-                                    </Grid>
-                                </Grid>
+                                </StyledPaper>
                                 <Divider />
-
                                 {showEditSupplier._id === supplier._id &&
                                     <EditSupplier
                                         setShowEditSupplier={setShowEditSupplier}
                                         supplier={supplier}
                                     />
                                 }
-                            </div>
-                        ))) : (<div>אין ספקים להצגה</div>)
+                            </React.Fragment>
+                        ))) :
+                        <Typography sx={{ textAlign: 'center', color: 'text.secondary' }}>
+                            אין ספקים להצגה
+                        </Typography>
                     }
                 </Box>
             </FilterRow>
@@ -150,7 +159,7 @@ const EditSupplier = props => {
     const { setShowEditSupplier, supplier } = props;
     const [removeSupplier, { error: errorRemoveSupplier, isLoading: isLoadingDelete }] = useRemoveSupplierMutation();
     const [editSupplier, { error: errorEdit, isLoading: isLoadingEdit }] = useEditSupplierMutation();
-    const [formEdit, setFormEdit] = useState({_id: supplier._id, active: supplier.active ,nameSupplier: '', tel: '', email: '', supplierNumber: ''});
+    const [formEdit, setFormEdit] = useState({ _id: supplier._id, active: supplier.active, nameSupplier: '', tel: '', email: '', supplierNumber: '' });
 
     const fields = [
         { name: 'nameSupplier', label: 'שם ספק', typeInput: 'text', type: 'input' },

@@ -33,7 +33,7 @@ export const FilterWrapper = ({ filters, filterFields, updateFilter }) => {
             case 'supplier':
                 return 'ספקים'
             case 'active': 
-                return 'האם פעיל'
+                return 'פעיל'
             default:
                 return ''
         }

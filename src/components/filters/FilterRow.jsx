@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { FilterDrawer } from "./FilterDrawer";
 import { FilterWrapper } from "./FilterWrapper";
-// import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import { Box, IconButton, Chip, useMediaQuery } from "@mui/material";
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
@@ -14,10 +14,10 @@ import StarBorderPurple500Icon from '@mui/icons-material/StarBorderPurple500';
 
 export const FilterRow = props => {
     const {filters, updateFilter, filterFields, children } = props;
-    // const theme = useTheme();
+    const theme = useTheme();
     const anchorRef = useRef(null);
-    // const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-    const [openFilters, setOpenFilters] = useState(false);
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const [openFilters, setOpenFilters] = useState(isSmallScreen ? false : true);
 
     return (
         <>

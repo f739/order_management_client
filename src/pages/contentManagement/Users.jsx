@@ -17,6 +17,7 @@ import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { ErrorPage, DialogSendInvitation, CustomSelect } from "../../components/indexComponents";
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { StyledPaper } from '../../css/styles/paper';
 
 export const Users = () => {
     const { data: allBranches, error: errorGetBranches, isLoading: isLoadingGetBranches } = useGetBranchesQuery();
@@ -125,29 +126,36 @@ const ShowUsers = ({ allBranches }) => {
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allUsers}>
                 <Box>
-                    <Typography variant="h6">רשימת המשתמשים</Typography>
+                    <Typography variant="h5" sx={{ textAlign: 'right', color: 'text.primary' }}>
+                        משתמשים
+                    </Typography>
                     {filteredData.length > 0 ? (
                        filteredData.map(user => (
                             <React.Fragment key={user._id}>
-                                <Grid container alignItems="center" justifyContent="space-between">
-                                    <Grid item xs={5} sx={{ minWidth: '100px' }}>
-                                        <ListItemText
-                                            primary={user.userName}
-                                            secondary={user?.branch?.nameBranch}
-                                        />
+                                <StyledPaper 
+                                    elevation={2}
+                                    onClick={() => setShowEditUser(user)}
+                                >
+                                <Grid container spacing={1} alignItems="center" justifyContent="space-between">
+                                    <Grid item xs={5} sx={{ minWidth: '100px', textAlign: 'right' }}>
+                                        <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                                            {user.userName}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {user?.branch?.nameBranch}
+                                        </Typography>
                                     </Grid>
-                                    <Grid item xs={6} sx={{ minWidth: '100px' }}>
-                                        <ListItemText
-                                            primary={user.email}
-                                            secondary={user.role}
-                                        />
+                                    <Grid item xs={7} sx={{ minWidth: '100px', textAlign: 'left' }}>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                                            {user.email}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {user.role}
+                                        </Typography>
                                     </Grid>
-                                    <Grid item xs={1} >
-                                        <IconButton onClick={() => setShowEditUser(user)}>
-                                            <MoreVertOutlinedIcon />
-                                        </IconButton>
-                                    </Grid>
+                                    
                                 </Grid>
+                                </StyledPaper>
                                 <Divider />
                                 {showEditUser._id === user._id &&
                                     <EditUser
@@ -157,7 +165,9 @@ const ShowUsers = ({ allBranches }) => {
                                     />
                                 }
                             </React.Fragment>
-                        ))) : <Typography>אין משתמשים להצגה</Typography>
+                        ))) : <Typography sx={{ textAlign: 'center', color: 'text.secondary' }}>
+                                לא נמצאו משתמשים
+                            </Typography>
                     }
                 </Box>
             </FilterRow>
