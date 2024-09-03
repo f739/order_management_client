@@ -18,7 +18,8 @@ const baseQueryWithHeaders = fetchBaseQuery({
             if (email) {
                 headers.set('x-email', email);
             }
-
+            // headers.set('Cache-Control', 'no-cache');
+            
         } catch (error) {
             console.error('Error preparing headers:', error);
         }

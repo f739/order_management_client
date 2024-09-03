@@ -12,7 +12,7 @@ import { useGetMeasuresQuery } from "../../dl/api/measuresApi";
 import { useGetSuppliersQuery } from "../../dl/api/suppliersApi";
 import { useGetBranchesQuery } from "../../dl/api/branchesApi"
 import { AppBarSystemManagement, ErrorPage, LoudingPage, CustomField, CustomSelect, SelectFactoryMultipleHook, TimedAlert } from "../../components/indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Chip, Divider, IconButton, ListItemText, FormControlLabel, Switch } from "@mui/material";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Chip, Divider, IconButton, ListItemText, FormControlLabel, Switch, Fab } from "@mui/material";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { FilterRow } from "../../components/filters/FilterRow";
 import { useFilters } from '../../hooks/useFilters';
@@ -20,17 +20,50 @@ import { BoxEditPrices } from "../../components/BoxEditPrices";
 import { actions } from "../../dl/slices/products";
 import { useDispatch, useSelector } from "react-redux";
 import { useActiveInactiveSort } from "../../hooks/useActiveInactiveSort";
+import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export const Products = () => {
-    const dispatch = useDispatch();
-    const { newPrice, newProduct, errorNewPrice } = useSelector(state => state.products);
     const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
     const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
-    const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
 
+    const [showAddProduct, setShowAddProduct] = useState(false);
+
+    if (errorGetCategories) return <ErrorPage error={errorGetCategories} />
+    if (errorGetMeasures) return <ErrorPage error={errorGetMeasures} />
+    if (isLoadingGetCategories || isLoadingGetMeasures) return <LoudingPage />;
+    return (
+        <Box sx={{ margin: '20px 5px'}}>
+            {showAddProduct ?
+                <NewProduct 
+                    setShowAddProduct={setShowAddProduct} 
+                    allCategories={allCategories}
+                    allMeasures={allMeasures}
+                /> :
+                <ShowProducts 
+                    allCategories={allCategories}
+                    allMeasures={allMeasures}
+                />
+            }
+            {!showAddProduct && <Fab
+                color="primary"
+                onClick={() => setShowAddProduct(true)}
+                sx={{
+                    position: 'fixed',
+                    bottom: 40,
+                    left: 46,
+                }}
+            >
+                <AddIcon />
+            </Fab>}
+        </Box>
+    )
+}
+const NewProduct = ({setShowAddProduct, allCategories, allMeasures}) => {
+    const dispatch = useDispatch();
+    const { newPrice, newProduct, errorNewPrice } = useSelector(state => state.products);
+    const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
     const [createNewProduct, { error, isLoading: isLoadingCreateProdact, data: dataCreateProduct }] = useCreateNewProductMutation();
-    const [secondaryTabValue, setSecondaryTabValue] = useState(1);
-    const secondaryTabs = ['צור מוצר חדש', 'מוצרים פעילים', 'מוצרים שאינם פעילים'];
 
     const fields = [
         { label: 'שם מוצר', type: 'input', typeInput: 'text', name: 'nameProduct' },
@@ -74,113 +107,95 @@ export const Products = () => {
         return allSuppliers?.find(supp => supp._id === _idSupplier);
     }
 
-    const changeTab = (e, newValue) => {
-        setSecondaryTabValue(newValue)
-    }
-    if (errorGetCategories) return <ErrorPage error={errorGetCategories} />
-    if (errorGetMeasures) return <ErrorPage error={errorGetMeasures} />
     if (errorGetsuppliers) return <ErrorPage error={errorGetsuppliers} />
-    if (isLoadingGetCategories || isLoadingGetMeasures || isLoadingGetsuppliers) return <LoudingPage />;
+    if (isLoadingGetsuppliers) return <LoudingPage />;
 
     return (
-        <Box sx={{
-            bgcolor: 'background.paper',
-            position: 'relative',
-            minHeight: 500,
-            boxShadow: '1px 1px 4px',
-            margin: '0px 5px'
-        }}>
-            <AppBarSystemManagement
-                secondaryTabs={secondaryTabs}
-                secondaryTabValue={secondaryTabValue}
-                onSecondaryTabChange={changeTab}
-            />
-            {secondaryTabValue === 0 ?
-                (<Stack sx={{ p: '20px' }} spacing={1}>
-                    {fields.map(field => (
-                        <React.Fragment key={field.name}>
-                            {field.type === 'input' ?
-                                <CustomField
-                                    name={field.name}
-                                    value={newProduct[field.name] || ''}
-                                    label={field.label}
-                                    onChange={e => handleFormHook(e.target, handleUpdateNewPrpduct, true)}
-                                /> : field.type === 'select' ?
-                                    <CustomSelect
-                                        set={handleUpdateNewPrpduct}
-                                        ifFunc={true}
-                                        nameField={field.name}
-                                        value={newProduct[field.name] || ''}
-                                        label={field.label}
-                                        options={field.options}
-                                        optionsValue={field.optionValue}
-                                        optionsValueToShow={field.optionsValueToShow ?? null}
-                                    /> :
-                                    null
-                            }
-                        </React.Fragment>
-                    ))}
-                    <Box>
-                        <Grid container spacing={2} alignItems="center">
-                            <Grid item xs={12} >
-                                מחירים:
-                                {newProduct.price && newProduct.price.map((price, i) => (
-                                    <Chip sx={{ marginRight: '5px', p: 1 }} variant="outlined" color="success" size="small" key={price._idSupplier}
-                                        label={`${getDetalesSupplier(price._idSupplier)?.nameSupplier || ''} - ${price.price}`}
-                                        onDelete={() => handleDeletePrice(i)}
-                                    />
-                                ))}
-                                {errorNewPrice && <TimedAlert message={errorNewPrice}  />}
-                            </Grid>
-                            <Grid item xs={6} >
-                                <CustomSelect
-                                    set={handleUpdateNewPrice}
-                                    ifFunc={true}
-                                    nameField='_idSupplier'
-                                    value={newPrice._idSupplier}
-                                    label='ספק'
-                                    options={allSuppliers}
-                                    optionsValue='nameSupplier'
-                                    optionsValueToShow='_id'
-                                />
-                            </Grid>
-                            <Grid item xs={3} >
-                                <CustomField
-                                    name="price"
-                                    value={newPrice.price}
-                                    label='מחיר'
-                                    onChange={e => handleUpdateNewPrice(e.target.value, e.target.name)}
-                                />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <Button color="primary" variant="contained" onClick={handleSaveNewPrice}>
-                                    שמור מחיר
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                    <SelectFactoryMultipleHook set={handleSelectBranch} form={newProduct} />
-                    {error && <TimedAlert message={error}  />}
-                    {dataCreateProduct && <TimedAlert message={dataCreateProduct} severity={'success'} /> }
-                    <Button onClick={handleSaveNewProduct} color="primary" variant="contained" disabled={isLoadingCreateProdact}>
-                        {isLoadingCreateProdact ? <CircularProgress size={24} /> : 'שמור'}
-                    </Button>
-                </Stack>) :
-                <ShowProducts 
-                    secondaryTabValue={secondaryTabValue} 
-                    allCategories={allCategories}
-                    allMeasures={allMeasures}
-                />
-            }
-        </Box>
+        <Stack sx={{ p: '5px' }} spacing={1}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="body1">יצירת מוצר חדש</Typography>
+                <IconButton onClick={() => setShowAddProduct(false)} >
+                    <Typography variant="body2">רשימת המוצרים</Typography>
+                    <ArrowBackIosIcon />
+                </IconButton>
+            </Stack>
+            {fields.map(field => (
+                <React.Fragment key={field.name}>
+                    {field.type === 'input' ?
+                        <CustomField
+                            name={field.name}
+                            value={newProduct[field.name] || ''}
+                            label={field.label}
+                            onChange={e => handleFormHook(e.target, handleUpdateNewPrpduct, true)}
+                        /> : field.type === 'select' ?
+                            <CustomSelect
+                                set={handleUpdateNewPrpduct}
+                                ifFunc={true}
+                                nameField={field.name}
+                                value={newProduct[field.name] || ''}
+                                label={field.label}
+                                options={field.options}
+                                optionsValue={field.optionValue}
+                                optionsValueToShow={field.optionsValueToShow ?? null}
+                            /> :
+                            null
+                    }
+                </React.Fragment>
+            ))}
+            <Box>
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12} >
+                        מחירים:
+                        {newProduct.price && newProduct.price.map((price, i) => (
+                            <Chip sx={{ marginRight: '5px', p: 1 }} variant="outlined" color="success" size="small" key={price._idSupplier}
+                                label={`${getDetalesSupplier(price._idSupplier)?.nameSupplier || ''} - ${price.price}`}
+                                onDelete={() => handleDeletePrice(i)}
+                            />
+                        ))}
+                        {errorNewPrice && <TimedAlert message={errorNewPrice}  />}
+                    </Grid>
+                    <Grid item xs={6} >
+                        <CustomSelect
+                            set={handleUpdateNewPrice}
+                            ifFunc={true}
+                            nameField='_idSupplier'
+                            value={newPrice._idSupplier}
+                            label='ספק'
+                            options={allSuppliers}
+                            optionsValue='nameSupplier'
+                            optionsValueToShow='_id'
+                        />
+                    </Grid>
+                    <Grid item xs={3} >
+                        <CustomField
+                            name="price"
+                            value={newPrice.price}
+                            label='מחיר'
+                            onChange={e => handleUpdateNewPrice(e.target.value, e.target.name)}
+                        />
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Button color="primary" variant="contained" onClick={handleSaveNewPrice}>
+                            שמור מחיר
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Box>
+            <SelectFactoryMultipleHook set={handleSelectBranch} form={newProduct} />
+            {error && <TimedAlert message={error}  />}
+            {dataCreateProduct && <TimedAlert message={dataCreateProduct} severity={'success'} /> }
+            <Button onClick={handleSaveNewProduct} color="primary" variant="contained" disabled={isLoadingCreateProdact}>
+                {isLoadingCreateProdact ? <CircularProgress size={24} /> : 'שמור'}
+            </Button>
+        </Stack>
     )
 }
 
-const ShowProducts = ({ secondaryTabValue, allCategories, allMeasures }) => {
+const ShowProducts = ({ allCategories, allMeasures }) => {
     const { data: allProducts, error: errorGetProducts, isLoading: isLoadingGetProducts } = useGetProductsQuery();
     const [showEditProduct, setShowEditProduct] = useState('');
 
-    const filterFields = ['category', 'branch', 'unitOfMeasure'];
+    const filterFields = ['category', 'branch', 'unitOfMeasure', 'active'];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
     useEffect(() => {
@@ -189,19 +204,18 @@ const ShowProducts = ({ secondaryTabValue, allCategories, allMeasures }) => {
         }
     }, [allProducts]);
 
-    const [productsActive, productsOff] = useActiveInactiveSort(filteredData);
-
     if (errorGetProducts) return <ErrorPage error={errorGetProducts} />
     if (isLoadingGetProducts) return <LoudingPage />;
 
     return (
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} >
-                <Box sx={{ p: 2 }}>
-                    {(secondaryTabValue === 1 ? productsActive : productsOff).length > 0 ? (
-                        (secondaryTabValue === 1 ? productsActive : productsOff).map(product => (
+                <Box>
+                <Typography variant="h6">רשימת המוצרים</Typography>
+                    {filteredData.length > 0 ? (
+                        filteredData.map(product => (
                             <div key={product._id}>
-                                <Grid container alignItems="center" spacing={1}>
+                                <Grid container alignItems="center" justifyContent="space-between">
                                     <Grid item xs={5} sx={{ minWidth: '100px' }}>
                                         <ListItemText
                                             primary={product.nameProduct}

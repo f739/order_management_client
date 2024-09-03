@@ -22,14 +22,13 @@ export const CompanyDetails = () => {
 
   return (
     <Box sx={{ p: 5 }}>
-      <Alert variant="standard" severity="warning">לא ניתן לשלוח אימיילים כל עוד שלא אומתו</Alert>
       <Typography variant="h4" sx={{ marginBottom: '40px' }}>
         הגדרות חברה
       </Typography>
 
       <GeneralCompanyInfo company={company} />
       <Typography variant="h4" sx={{ marginBottom: '40px' }}>
-        הגדרות שליחת אימיילים
+        הגדרות שליחת הודעות
       </Typography>
       <EmailDetails 
         isUser={false}

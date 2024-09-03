@@ -6,18 +6,47 @@ import {
     useRemoveBranchMutation,
     useEditBranchMutation
 } from '../../dl/api/branchesApi';
-import { AppBarSystemManagement, LoudingPage, CustomField, ErrorPage, DialogSendInvitation, TimedAlert} from "../../components/indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText, IconButton, FormControlLabel, Switch } from "@mui/material";
+import { LoudingPage, CustomField, ErrorPage, DialogSendInvitation, TimedAlert} from "../../components/indexComponents";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText, IconButton, FormControlLabel, Switch, Fab } from "@mui/material";
 import { useFilters } from '../../hooks/useFilters';
 import { FilterRow } from "../../components/filters/FilterRow";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { useActiveInactiveSort } from "../../hooks/useActiveInactiveSort";
+import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export const Branches = () => {
+    const [showAddBranch, setShowAddBranch] = useState(false);
+
+    return (
+        <Box sx={{ margin: '20px 5px'}}>
+            {showAddBranch ?
+                <NewBranch setShowAddBranch={setShowAddBranch} /> :
+                <ShowBranches /> 
+            }
+            {!showAddBranch && <Fab
+                color="primary"
+                onClick={() => setShowAddBranch(true)}
+                sx={{
+                    position: 'fixed',
+                    bottom: 40,
+                    left: 46,
+                }}
+            >
+                <AddIcon />
+            </Fab>}
+        </Box>
+    )
+};
+
+const NewBranch = ({setShowAddBranch}) => {
     const [newBranch, setNewBranch] = useState({ nameBranch: '', address: '' });
     const [createNewBranch, { error, isLoading, data }] = useCreateNewBranchMutation();
-    const [secondaryTabValue, setSecondaryTabValue] = useState(1);
-    const secondaryTabs = ['צור סניף חדש', 'סניפים פעילים', 'סניפים שאינם פעילים'];
+
+    const fields = [
+        { name: 'nameBranch', label: 'שם סניף', typeInput: 'text', type: 'input' },
+        { name: 'address', label: 'כתובת', typeInput: 'text', type: 'input' },
+    ];
 
     const handleSaveNewCategory = async () => {
         try {
@@ -26,59 +55,40 @@ export const Branches = () => {
         } catch (err) { return }
     }
 
-    const changeTab = (e, newValue) => {
-        setSecondaryTabValue(newValue)
-    }
-
-    const fields = [
-        { name: 'nameBranch', label: 'שם סניף', typeInput: 'text', type: 'input' },
-        { name: 'address', label: 'כתובת', typeInput: 'text', type: 'input' },
-    ];
-
     return (
-        <Box sx={{
-            bgcolor: 'background.paper',
-            position: 'relative',
-            minHeight: 500,
-            boxShadow: '1px 1px 4px',
-            margin: '0px 5px'
-        }}>
-            <AppBarSystemManagement
-                secondaryTabs={secondaryTabs}
-                secondaryTabValue={secondaryTabValue}
-                onSecondaryTabChange={changeTab}
-            />
-            {secondaryTabValue === 0 ?
-                (<Stack sx={{ p: '20px' }} spacing={1}>
-                    { fields.map( field => (
-                        <React.Fragment key={field.name}>
-                        <CustomField 
-                        name={field.name}
-                        value={newBranch[field.name]}
-                        label={field.label}
-                        onChange={e => handleFormHook(e.target, setNewBranch)}
-                        />
-                        </React.Fragment>
-                    ))}
-                    {error && <TimedAlert message={error}  />}
-                    {data && <TimedAlert message={data} severity={'success'} /> }
-                    <Button onClick={handleSaveNewCategory} color="primary" variant="contained" disabled={isLoading}>
-                        {isLoading ? <CircularProgress size={24} /> : 'שמור'}
-                    </Button>
-                </Stack>) : 
-                (
-                    <ShowBranches secondaryTabValue={secondaryTabValue} />
-                )
-            }
-        </Box>
-    )
-};
+        <Stack spacing={1} sx={{ padding: '5px' }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="body1">יצירת סניף חדש</Typography>
+                <IconButton onClick={() => setShowAddBranch(false)} >
+                    <Typography variant="body2">רשימת הסניפים</Typography>
+                    <ArrowBackIosIcon />
+                </IconButton>
+            </Stack>
 
-const ShowBranches = ({secondaryTabValue}) => {
+            { fields.map( field => (
+                <React.Fragment key={field.name}>
+                <CustomField 
+                name={field.name}
+                value={newBranch[field.name]}
+                label={field.label}
+                onChange={e => handleFormHook(e.target, setNewBranch)}
+                />
+                </React.Fragment>
+            ))}
+            {error && <TimedAlert message={error}  />}
+            {data && <TimedAlert message={data} severity={'success'} /> }
+            <Button onClick={handleSaveNewCategory} color="primary" variant="contained" disabled={isLoading}>
+                {isLoading ? <CircularProgress size={24} /> : 'שמור'}
+            </Button>
+        </Stack>
+    )
+}
+
+const ShowBranches = () => {
     const { data: allBranches, error: errorGetBranches, isLoading: isLoadingGetBranches } = useGetBranchesQuery();
     const [showEditBranch, setShowEditBranch] = useState(false);
 
-    const filterFields = [];
+    const filterFields = ['active'];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
     useEffect(() => {
@@ -87,17 +97,16 @@ const ShowBranches = ({secondaryTabValue}) => {
         }
     }, [allBranches]);
 
-    const [branchesActive, branchesOff] = useActiveInactiveSort(filteredData);
-
     if (errorGetBranches) return <ErrorPage error={errorGetBranches} />
     if (isLoadingGetBranches) return <LoudingPage />;
 
     return (
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allBranches}>
-                <Box sx={{ p: 2 }}>
-                {(secondaryTabValue === 1 ? branchesActive : branchesOff).length > 0 ? (
-                        (secondaryTabValue === 1 ? branchesActive : branchesOff).map(branch => (
+                <Box>
+                <Typography variant="h6">רשימת הסניפים</Typography>
+                {filteredData.length > 0 ? (
+                        filteredData.map(branch => (
                             <React.Fragment key={branch._id}>
                                 <Grid container alignItems="center" justifyContent="space-between" >
                                     <Grid item>

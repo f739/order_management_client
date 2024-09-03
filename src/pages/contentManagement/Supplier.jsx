@@ -7,28 +7,49 @@ import {
     useEditSupplierMutation
 } from '../../dl/api/suppliersApi';
 import { AppBarSystemManagement, LoudingPage, CustomField, TimedAlert } from '../../components/indexComponents'
-import { Box, Button, Stack, ListItemText, IconButton, Grid, Divider, CircularProgress, Chip, Typography, useMediaQuery, Switch, FormControlLabel } from '@mui/material'
+import { Box, Button, Stack, ListItemText, IconButton, Grid, Divider, CircularProgress, Chip, Typography, useMediaQuery, Switch, FormControlLabel, Fab } from '@mui/material'
 import { useFilters } from '../../hooks/useFilters';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { FilterRow } from "../../components/filters/FilterRow";
 import { useActiveInactiveSort } from "../../hooks/useActiveInactiveSort";
 import { ErrorPage, DialogSendInvitation } from "../../components/indexComponents";
+import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export const Supplier = () => {
+    const [showAddSupplier, setShowAddSupplier] = useState(false);
+
+    return (
+        <Box sx={{ margin: '20px 5px'}}>
+            {showAddSupplier ?
+                <NewSupplier setShowAddSupplier={setShowAddSupplier} /> :
+                <ShowSuppliers /> 
+            }
+            {!showAddSupplier && <Fab
+                color="primary"
+                onClick={() => setShowAddSupplier(true)}
+                sx={{
+                    position: 'fixed',
+                    bottom: 40,
+                    left: 46,
+                }}
+            >
+                <AddIcon />
+            </Fab>}
+        </Box>
+    )
+};
+
+
+const NewSupplier = ({setShowAddSupplier}) => {
     const [newSupplier, setNewSupplier] = useState({ nameSupplier: '', tel: '', email: '', supplierNumber: '' });
     const [createNewSupplier, { error, isLoading, data }] = useCreateNewSupplierMutation();
-    const [secondaryTabValue, setSecondaryTabValue] = useState(1);
-    const secondaryTabs = ['צור חדש', 'ספקים פעילים', 'ספקים שאינם פעילים'];
 
     const handleSaveNewSupplier = async () => {
         try {
             await createNewSupplier({ newSupplier }).unwrap();
             setNewSupplier({ nameSupplier: '', tel: '', email: '', supplierNumber: '' })
         } catch (err) { return }
-    }
-
-    const changeTab = (e, newValue) => {
-        setSecondaryTabValue(newValue)
     }
 
     const fields = [
@@ -39,49 +60,37 @@ export const Supplier = () => {
     ];
 
     return (
-        <Box sx={{
-            bgcolor: 'background.paper',
-            position: 'relative',
-            minHeight: 500,
-            boxShadow: '1px 1px 4px',
-            margin: '0px 5px'
-        }}>
-            <AppBarSystemManagement
-                secondaryTabs={secondaryTabs}
-                secondaryTabValue={secondaryTabValue}
-                onSecondaryTabChange={changeTab}
-            />
-            {secondaryTabValue === 0 ?
-                (<Stack sx={{ p: '20px' }} spacing={1}>
-                    { fields.map( field => (
-                        <React.Fragment key={field.name}>
-                            <CustomField 
-                                name={field.name}
-                                value={newSupplier[field.name]}
-                                label={field.label}
-                                onChange={e => handleFormHook(e.target, setNewSupplier)}
-                            />
-                        </React.Fragment>
-                    ))}
-                    {error && <TimedAlert message={error}  />}
-                    {data && <TimedAlert message={data} severity={'success'} /> }                    
-                    <Button onClick={handleSaveNewSupplier} color="primary" variant="contained" disabled={isLoading}>
-                        {isLoading ? <CircularProgress size={24} /> : 'שמור'}
-                    </Button>
-                </Stack>) :
-                (
-                    <ShowSuppliers secondaryTabValue={secondaryTabValue} />
-                )
-            }
-        </Box>
+        <Stack sx={{ p: '5px' }} spacing={1}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="body1">יצירת ספק חדש</Typography>
+                <IconButton onClick={() => setShowAddSupplier(false)} >
+                    <Typography variant="body2">רשימת ספקים</Typography>
+                    <ArrowBackIosIcon />
+                </IconButton>
+            </Stack>
+            { fields.map( field => (
+                <React.Fragment key={field.name}>
+                    <CustomField 
+                        name={field.name}
+                        value={newSupplier[field.name]}
+                        label={field.label}
+                        onChange={e => handleFormHook(e.target, setNewSupplier)}
+                    />
+                </React.Fragment>
+            ))}
+            {error && <TimedAlert message={error}  />}
+            {data && <TimedAlert message={data} severity={'success'} /> }                    
+            <Button onClick={handleSaveNewSupplier} color="primary" variant="contained" disabled={isLoading}>
+                {isLoading ? <CircularProgress size={24} /> : 'שמור'}
+            </Button>
+        </Stack>
     )
-};
-
+}
 const ShowSuppliers = ({ secondaryTabValue }) => {
     const { data: allSuppliers, error: errorGetsuppliers, isLoading: isLoadingGetsuppliers } = useGetSuppliersQuery();
     const [showEditSupplier, setShowEditSupplier] = useState(false);
 
-    const filterFields = [];
+    const filterFields = ['active'];
     const { filteredData, filters, updateFilter, setData, data } = useFilters(filterFields);
 
     useEffect(() => {
@@ -90,19 +99,18 @@ const ShowSuppliers = ({ secondaryTabValue }) => {
         }
     }, [allSuppliers]);
 
-    const [suppliersActive, suppliersOff] = useActiveInactiveSort(filteredData);
-
     if (errorGetsuppliers) return <ErrorPage error={errorGetsuppliers} />
     if (isLoadingGetsuppliers) return <LoudingPage />;
 
     return (
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={data}>
-                <Box sx={{ p: 2 }}>
-                    {(secondaryTabValue === 1 ? suppliersActive : suppliersOff).length > 0 ? (
-                        (secondaryTabValue === 1 ? suppliersActive : suppliersOff).map(supplier => (
+                <Box>
+                    <Typography variant="h6">רשימת הספקים</Typography>
+                    {filteredData.length > 0 ? (
+                      filteredData.map(supplier => (
                             <div key={supplier._id}>
-                                <Grid container alignItems="center" spacing={1}>
+                                <Grid container alignItems="center" justifyContent="space-between">
                                     <Grid item xs={5} sx={{ minWidth: '100px' }}>
                                         <ListItemText
                                             primary={supplier.nameSupplier}

@@ -9,36 +9,54 @@ import {
 } from '../../dl/api/usersApi';
 import { useGetBranchesQuery } from "../../dl/api/branchesApi"
 import { AppBarSystemManagement, LoudingPage, CustomField, TimedAlert } from "../../components/indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText, FormControlLabel, Switch, IconButton } from "@mui/material";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText, FormControlLabel, Switch, IconButton, Fab } from "@mui/material";
 import { FilterRow } from "../../components/filters/FilterRow";
 import { useFilters } from '../../hooks/useFilters';
 import { useActiveInactiveSort } from '../../hooks/useActiveInactiveSort';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { ErrorPage, DialogSendInvitation, CustomSelect } from "../../components/indexComponents";
+import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export const Users = () => {
+    const { data: allBranches, error: errorGetBranches, isLoading: isLoadingGetBranches } = useGetBranchesQuery();
+    const [showAddUser, setShowAddUser] = useState(false);
+
+    if (errorGetBranches) return <ErrorPage error={errorGetBranches} />
+    if (isLoadingGetBranches) return <LoudingPage />
+
+    return (
+        <Box sx={{ margin: '20px 5px'}}>
+            {showAddUser ?
+                <NewUser setShowAddUser={setShowAddUser} allBranches={allBranches} /> :
+                <ShowUsers allBranches={allBranches} /> 
+            }
+            {!showAddUser && <Fab
+                color="primary"
+                onClick={() => setShowAddUser(true)}
+                sx={{
+                    position: 'fixed',
+                    bottom: 40,
+                    left: 46,
+                }}
+            >
+                <AddIcon />
+            </Fab>}
+        </Box>
+    )
+}
+
+const NewUser = ({setShowAddUser, allBranches}) => {
     const [formCreateUser, setFormCreateUser] = useState(
         { userName: '', email: '', role: '', branch: '' });
-
-    const { data: allBranches, error: errorGetBranches, isLoading: isLoadingGetBranches } = useGetBranchesQuery();
-    const [createNewUser, { error, isLoading, data }] = useCreateNewUserMutation();
-    
-    const [secondaryTabValue, setSecondaryTabValue] = useState(1);
-    const secondaryTabs = ['צור משתמש חדש', 'משתמשים פעילים', 'משתמשים שאינם פעילים'];
-    
+    const [createNewUser, { error, isLoading, data }] = useCreateNewUserMutation();  
+  
     const createUser = async () => {
         try {
             await createNewUser(formCreateUser).unwrap();
             setFormCreateUser({ userName: '', password: '', email: '', role: '', branch: '' });
         } catch (err) { }
     }
-    
-    const changeTab = (e, newValue) => {
-        setSecondaryTabValue(newValue)
-    }
-
-    if (errorGetBranches) return <ErrorPage error={errorGetBranches} />
-    if (isLoadingGetBranches) return <LoudingPage />
 
     const fields = [
         { name: 'userName', label: 'שם משתמש', typeInput: 'text', type: 'input' },
@@ -48,57 +66,50 @@ export const Users = () => {
     ];
     
     return (
-        <Box sx={{
-            bgcolor: 'background.paper',
-            position: 'relative',
-            minHeight: 500,
-            boxShadow: '1px 1px 4px',
-            margin: '0px 5px'
-        }}>
-            <AppBarSystemManagement
-                secondaryTabs={secondaryTabs}
-                secondaryTabValue={secondaryTabValue}
-                onSecondaryTabChange={changeTab}
-            />
-            {secondaryTabValue === 0 ?
-                (<Stack sx={{ p: '20px' }} spacing={1}>
-                    { fields.map( filed => (
-                        <React.Fragment key={filed.name}>
-                            {filed.type === 'input' ?
-                            <CustomField 
-                                name={filed.name}
-                                type={filed.type}
-                                value={formCreateUser[filed.name]}
-                                label={filed.label}
-                                onChange={e => handleFormHook(e.target, setFormCreateUser)}
-                            /> :
-                            <CustomSelect 
-                                set={setFormCreateUser}
-                                nameField={filed.name}
-                                value={formCreateUser[filed.name] || ''}
-                                label={filed.label}
-                                options={filed.options}
-                                optionsValue={filed.optionsValue}
-                                optionsValueToShow={filed.optionsValueToShow ?? null}
-                            />}
-                        </React.Fragment>
-                    )) }
-                     {error && <TimedAlert message={error}  />}
-                     {data && <TimedAlert message={data} severity={'success'} /> } 
-                    <Button onClick={createUser} color="primary" variant="contained" disabled={isLoading}>
-                        {isLoading ? <CircularProgress size={24} /> : 'שמור'}
-                    </Button>
-                </Stack>) : <ShowUsers secondaryTabValue={secondaryTabValue} allBranches={allBranches} />
-            }
-        </Box>
+        <Stack sx={{ p: '5px' }} spacing={1}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="body1">יצירת משתמש חדש</Typography>
+                <IconButton onClick={() => setShowAddUser(false)} >
+                    <Typography variant="body2">רשימת המשתמשים</Typography>
+                    <ArrowBackIosIcon />
+                </IconButton>
+            </Stack>
+
+            { fields.map( filed => (
+                <React.Fragment key={filed.name}>
+                    {filed.type === 'input' ?
+                    <CustomField 
+                        name={filed.name}
+                        type={filed.type}
+                        value={formCreateUser[filed.name]}
+                        label={filed.label}
+                        onChange={e => handleFormHook(e.target, setFormCreateUser)}
+                    /> :
+                    <CustomSelect 
+                        set={setFormCreateUser}
+                        nameField={filed.name}
+                        value={formCreateUser[filed.name] || ''}
+                        label={filed.label}
+                        options={filed.options}
+                        optionsValue={filed.optionsValue}
+                        optionsValueToShow={filed.optionsValueToShow ?? null}
+                    />}
+                </React.Fragment>
+            )) }
+                {error && <TimedAlert message={error}  />}
+                {data && <TimedAlert message={data} severity={'success'} /> } 
+            <Button onClick={createUser} color="primary" variant="contained" disabled={isLoading}>
+                {isLoading ? <CircularProgress size={24} /> : 'שמור'}
+            </Button>
+        </Stack>
     )
 }
 
-const ShowUsers = ({ secondaryTabValue, allBranches }) => {
+const ShowUsers = ({ allBranches }) => {
     const { data: allUsers, error: errorGetUsers, isLoading: isLoadingGetUsers } = useGetUsersQuery();
     const [showEditUser, setShowEditUser] = useState(false);
 
-    const filterFields = [];
+    const filterFields = ['active'];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
     useEffect(() => {
@@ -107,17 +118,16 @@ const ShowUsers = ({ secondaryTabValue, allBranches }) => {
         }
     }, [allUsers]);
 
-    const [usersActive, usersOff] = useActiveInactiveSort(filteredData);
-
     if (errorGetUsers) return <ErrorPage error={errorGetUsers} />;
     if (isLoadingGetUsers) return <LoudingPage />;
 
     return (
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allUsers}>
-                <Box sx={{ p: 2 }}>
-                    {(secondaryTabValue === 1 ? usersActive : usersOff).length > 0 ? (
-                        (secondaryTabValue === 1 ? usersActive : usersOff).map(user => (
+                <Box>
+                    <Typography variant="h6">רשימת המשתמשים</Typography>
+                    {filteredData.length > 0 ? (
+                       filteredData.map(user => (
                             <React.Fragment key={user._id}>
                                 <Grid container alignItems="center" justifyContent="space-between">
                                     <Grid item xs={5} sx={{ minWidth: '100px' }}>

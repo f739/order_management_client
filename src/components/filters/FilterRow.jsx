@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { FilterDrawer } from "./FilterDrawer";
 import { FilterWrapper } from "./FilterWrapper";
-import { useTheme } from '@mui/material/styles';
+// import { useTheme } from '@mui/material/styles';
 import { Box, IconButton, Chip, useMediaQuery } from "@mui/material";
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
@@ -10,13 +10,14 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import ScaleIcon from '@mui/icons-material/Scale';
 import DomainIcon from '@mui/icons-material/Domain';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import StarBorderPurple500Icon from '@mui/icons-material/StarBorderPurple500';
 
 export const FilterRow = props => {
     const {filters, updateFilter, filterFields, children } = props;
-    const theme = useTheme();
+    // const theme = useTheme();
     const anchorRef = useRef(null);
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-    const [openFilters, setOpenFilters] = useState(isSmallScreen ? false : true);
+    // const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const [openFilters, setOpenFilters] = useState(false);
 
     return (
         <>
@@ -65,6 +66,8 @@ const Chips = ({filters, updateFilter}) => {
             return <DomainIcon />
         case 'supplier':
             return <LocalShippingIcon />
+        case 'active': 
+           return <StarBorderPurple500Icon />
     }
   }
     return (

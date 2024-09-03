@@ -54,6 +54,7 @@ export const FilterDrawer = props => {
         overflow: 'hidden',
         height: '100%',
         boxShadow: openFilters ? 3 : 0,
+        marginLeft: '10px'
       }}
     >
       <Paper>{drawerContent}</Paper>

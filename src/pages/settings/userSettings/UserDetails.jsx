@@ -19,14 +19,13 @@ export const UserDetails = () => {
 
   return (
     <Box sx={{ p: 5 }}>
-      <Alert variant="standard" severity="warning">לא ניתן לשלוח אימיילים כל עוד שלא אומתו</Alert>
       <Typography variant="h4" sx={{ marginBottom: '40px' }}>
         הגדרות משתמש
       </Typography>
 
       <GeneralUserInfo user={user} />
       <Typography variant="h4" sx={{ marginBottom: '40px' }}>
-        הגדרות שליחת אימיילים
+        הגדרות שליחת הודעות
       </Typography>
       <EmailDetails 
         isUser={true}

@@ -6,18 +6,42 @@ import {
     useRemoveMeasureMutation,
     useEditMeasureMutation
 } from '../../dl/api/measuresApi';
-import { AppBarSystemManagement, LoudingPage, CustomField, ErrorPage, DialogSendInvitation, TimedAlert } from "../../components/indexComponents";
-import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, FormControlLabel, Switch, IconButton } from "@mui/material";
+import { LoudingPage, CustomField, ErrorPage, DialogSendInvitation, TimedAlert } from "../../components/indexComponents";
+import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, FormControlLabel, Switch, IconButton, Fab } from "@mui/material";
 import { useFilters } from '../../hooks/useFilters';
 import { FilterRow } from "../../components/filters/FilterRow";
 import { useActiveInactiveSort } from "../../hooks/useActiveInactiveSort";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export const Measure = () => {
+    const [showAddMeasure, setShowAddMeasure] = useState(false);
+
+    return (
+        <Box sx={{ margin: '20px 5px'}}>
+            {showAddMeasure ?
+                <NewMeasure setShowAddMeasure={setShowAddMeasure} /> :
+                <ShowMeasures /> 
+            }
+            {!showAddMeasure && <Fab
+                color="primary"
+                onClick={() => setShowAddMeasure(true)}
+                sx={{
+                    position: 'fixed',
+                    bottom: 40,
+                    left: 46,
+                }}
+            >
+                <AddIcon />
+            </Fab>}
+        </Box>
+    )
+};
+
+const NewMeasure = ({setShowAddMeasure}) => {
     const [newMeasure, setNewMeasure] = useState({ measureName: '' });
     const [createNewMeasure, { error, isLoading, data }] = useCreateNewMeasureMutation();
-    const [secondaryTabValue, setSecondaryTabValue] = useState(1);
-    const secondaryTabs = ['צור יחידת מידה חדשה', 'יחידות מידה פעילות', 'יחידות מידה שאינן פעילות'];
 
     const handleSaveNewMeasure = async () => {
         try {
@@ -26,48 +50,36 @@ export const Measure = () => {
         } catch (err) { return }
     }
 
-    const changeTab = (e, newValue) => {
-        setSecondaryTabValue(newValue)
-    }
-
     return (
-        <Box sx={{
-            bgcolor: 'background.paper',
-            position: 'relative',
-            minHeight: 500,
-            boxShadow: '1px 1px 4px',
-            margin: '0px 5px'
-        }}>
-            <AppBarSystemManagement
-                secondaryTabs={secondaryTabs}
-                secondaryTabValue={secondaryTabValue}
-                onSecondaryTabChange={changeTab}
+        <Stack sx={{ p: '5px' }} spacing={1}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="body1">יצירת יחידת מידה חדשה</Typography>
+                <IconButton onClick={() => setShowAddMeasure(false)} >
+                    <Typography variant="body2">רשימת יחידות המידה</Typography>
+                    <ArrowBackIosIcon />
+                </IconButton>
+            </Stack>
+            <CustomField
+                name="measureName"
+                value={newMeasure.measureName}
+                label="שם יחידת מידה"
+                onChange={e => handleFormHook(e.target, setNewMeasure)}
             />
-            {secondaryTabValue === 0 ?
-                (<Stack sx={{ p: '20px' }} spacing={1}>
-                    <CustomField
-                        name="measureName"
-                        value={newMeasure.measureName}
-                        label="שם יחידת מידה"
-                        onChange={e => handleFormHook(e.target, setNewMeasure)}
-                    />
 
-                    {error && <TimedAlert message={error}  />}
-                    {data && <TimedAlert message={data} severity={'success'} /> }
-                    <Button onClick={handleSaveNewMeasure} color="primary" variant="contained" disabled={isLoading}>
-                        {isLoading ? <CircularProgress size={24} /> : 'שמור'}
-                    </Button>
-                </Stack>) : <ShowMeasures secondaryTabValue={secondaryTabValue} />
-            }
-        </Box>
+            {error && <TimedAlert message={error}  />}
+            {data && <TimedAlert message={data} severity={'success'} /> }
+            <Button onClick={handleSaveNewMeasure} color="primary" variant="contained" disabled={isLoading}>
+                {isLoading ? <CircularProgress size={24} /> : 'שמור'}
+            </Button>
+        </Stack>
     )
-};
+}
 
-const ShowMeasures = ({ secondaryTabValue }) => {
+const ShowMeasures = () => {
     const { data: allMeasures, error: errorGetMeasures, isLoading: isLoadingGetMeasures } = useGetMeasuresQuery();
     const [showEditMeasure, setShowEditMeasure] = useState(false);
 
-    const filterFields = [];
+    const filterFields = ['active'];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
     useEffect(() => {
@@ -76,17 +88,16 @@ const ShowMeasures = ({ secondaryTabValue }) => {
         }
     }, [allMeasures]);
 
-    const [measursActive, measursOff] = useActiveInactiveSort(filteredData);
-
     if (errorGetMeasures) return <ErrorPage error={errorGetMeasures} />
     if (isLoadingGetMeasures) return <LoudingPage />;
 
     return (
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allMeasures}>
-                <Box sx={{ p: 2 }}>
-                    {(secondaryTabValue === 1 ? measursActive : measursOff).length > 0 ? (
-                        (secondaryTabValue === 1 ? measursActive : measursOff).map(measure => (
+                <Box>
+                    <Typography variant="h6">רשימת יחידות מידה</Typography>
+                    {filteredData.length > 0 ? (
+                       filteredData.map(measure => (
                             <div key={measure._id}>
                                 <Grid container alignItems="center" justifyContent="space-between" >
                                     <Grid item>

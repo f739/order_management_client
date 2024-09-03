@@ -11,12 +11,14 @@ export const FilterWrapper = ({ filters, filterFields, updateFilter }) => {
     const { data: allProducts, error: errorGetProducts } = useGetProductsQuery();
     const { data: allSuppliers, error: errorGetSuppliers } = useGetSuppliersQuery();
     const { data: allBranches, error: errorGetBranches } = useGetBranchesQuery();
+
     const filterOptions = {
         category: allCategories || [],
         product: allProducts || [],
         unitOfMeasure: allMeasures || [],
         branch: allBranches || [],
         supplier: allSuppliers || [],
+        active: [{_id: 0, label: 'true'}, {_id: 1, label: 'false'}]
     }
     const getTitleLabel = (filterType) => {
         switch (filterType) {
@@ -30,6 +32,8 @@ export const FilterWrapper = ({ filters, filterFields, updateFilter }) => {
                 return 'סניפים'
             case 'supplier':
                 return 'ספקים'
+            case 'active': 
+                return 'האם פעיל'
             default:
                 return ''
         }
@@ -46,6 +50,8 @@ export const FilterWrapper = ({ filters, filterFields, updateFilter }) => {
                 return option.nameBranch;
             case 'supplier':
                 return option.nameSupplier
+            case 'active':
+                return option.label
             default:
                 return '';
         }

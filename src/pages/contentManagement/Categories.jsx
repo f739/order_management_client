@@ -6,71 +6,82 @@ import {
     useRemoveCategoryMutation,
     useEditCategoryMutation
 } from '../../dl/api/categoriesApi';
-import { AppBarSystemManagement, LoudingPage, CustomField, ErrorPage, DialogSendInvitation, TimedAlert } from "../../components/indexComponents";
-import { Box, Typography, IconButton ,CircularProgress, Button, Stack, Grid, Divider, FormControlLabel, Switch } from "@mui/material";
+import { LoudingPage, CustomField, ErrorPage, DialogSendInvitation, TimedAlert } from "../../components/indexComponents";
+import { Box, Typography, IconButton ,CircularProgress, Button, Stack, Grid, Divider, FormControlLabel, Switch, Fab } from "@mui/material";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { useFilters } from '../../hooks/useFilters';
 import { FilterRow } from "../../components/filters/FilterRow";
 import { useActiveInactiveSort } from "../../hooks/useActiveInactiveSort";
+import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export const Categories = () => {
-    const [newCategory, setNewCategory] = useState({ nameCategory: '' });
-    const [createNewCategory, { error, isLoading, data }] = useCreateNewCategoryMutation();
-    const [secondaryTabValue, setSecondaryTabValue] = useState(1);
-    const secondaryTabs = ['צור קטגוריה חדשה', 'קטגוריות פעילות', 'קטגוריות שאינן פעילות'];
-
-    const handleSaveNewCategory = async () => {
-        try {
-            await createNewCategory({ newCategory }).unwrap();
-            setNewCategory({ nameCategory: '' })
-        } catch (err) { }
-    }
-
-    const changeTab = (e, newValue) => {
-        setSecondaryTabValue(newValue)
-    }
+    const [showAddCategory, setShowAddCategory] = useState(false);
 
     return (
-        <Box sx={{
-            bgcolor: 'background.paper',
-            position: 'relative',
-            minHeight: 500,
-            boxShadow: '1px 1px 4px',
-            margin: '0px 5px'
-        }}>
-            <AppBarSystemManagement
-                secondaryTabs={secondaryTabs}
-                secondaryTabValue={secondaryTabValue}
-                onSecondaryTabChange={changeTab}
-            />
-            {secondaryTabValue === 0 ?
-                (<Stack sx={{ p: '20px' }} spacing={1}>
-                    <CustomField
-                        name="nameCategory"
-                        value={newCategory.nameCategory}
-                        label="שם קטגוריה"
-                        onChange={e => handleFormHook(e.target, setNewCategory)}
-                    />
-
-                    {error && <TimedAlert message={error}  />}
-                    {data && <TimedAlert message={data} severity={'success'} /> }
-                    <Button onClick={handleSaveNewCategory} color="primary" variant="contained" disabled={isLoading}>
-                        {isLoading ? <CircularProgress size={24} /> : 'שמור'}
-                    </Button>
-                </Stack>) :
-                (
-                    <ShowCategories secondaryTabValue={secondaryTabValue} />
-                )
+        <Box sx={{ margin: '20px 5px'}}>
+            {showAddCategory ?
+                <NewCategory setShowAddCategory={setShowAddCategory} /> :
+                <ShowCategories /> 
             }
+            {!showAddCategory && <Fab
+                color="primary"
+                onClick={() => setShowAddCategory(true)}
+                sx={{
+                    position: 'fixed',
+                    bottom: 40,
+                    left: 46,
+                }}
+            >
+                <AddIcon />
+            </Fab>}
         </Box>
     )
 };
 
-const ShowCategories = ({ secondaryTabValue }) => {
+const NewCategory = ({ setShowAddCategory }) => {
+    const [newCategory, setNewCategory] = useState({ nameCategory: '' });
+    const [createNewCategory, { error, isLoading, data }] = useCreateNewCategoryMutation();
+
+    const handleSaveNewCategory = async () => {
+        try {
+            await createNewCategory({ newCategory }).unwrap();
+            setNewCategory({ nameCategory: '' });
+        } catch (err) { }
+    };
+
+    return (
+        <Stack spacing={1} sx={{ padding: '5px' }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="body1">יצירת קטגוריה חדשה</Typography>
+                <IconButton onClick={() => setShowAddCategory(false)} >
+                    <Typography variant="body2">רשימת הקטגוריות</Typography>
+                    <ArrowBackIosIcon />
+                </IconButton>
+            </Stack>
+
+            <CustomField
+                name="nameCategory"
+                value={newCategory.nameCategory}
+                label="שם קטגוריה"
+                onChange={e => handleFormHook(e.target, setNewCategory)}
+            />
+
+            {error && <TimedAlert message={error} />}
+            {data && <TimedAlert message={data} severity={'success'} />}
+            <Button onClick={handleSaveNewCategory} color="primary" variant="contained" disabled={isLoading}>
+                {isLoading ? <CircularProgress size={24} /> : 'שמור'}
+            </Button>
+        </Stack>
+    );
+};
+
+
+const ShowCategories = () => {
     const { data: allCategories, error: errorGetCategories, isLoading: isLoadingGetCategories } = useGetCategoriesQuery();
     const [showEditCategory, setShowEditCategory] = useState(false);
 
-    const filterFields = [];
+    const filterFields = ['active'];
     const { filteredData, filters, updateFilter, setData } = useFilters(filterFields);
 
     useEffect(() => {
@@ -79,17 +90,16 @@ const ShowCategories = ({ secondaryTabValue }) => {
         }
     }, [allCategories]);
 
-    const [categoriesActive, categoriesOff] = useActiveInactiveSort(filteredData);
-
     if (errorGetCategories) return <ErrorPage error={errorGetCategories}/>
     if (isLoadingGetCategories) return <LoudingPage />;
 
     return (
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allCategories}>
-                <Box sx={{ p: 2 }}>
-                    {(secondaryTabValue === 1 ? categoriesActive : categoriesOff).length > 0 ? (
-                        (secondaryTabValue === 1 ? categoriesActive : categoriesOff).map(category => (
+                <Box >
+                    <Typography variant="h6">רשימת הקטגוריות</Typography>
+                    {filteredData.length > 0 ? (
+                        filteredData.map(category => (
                             <div key={category._id}>
                                 <Grid container alignItems="center" justifyContent="space-between" >
                                     <Grid item>
