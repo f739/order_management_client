@@ -107,7 +107,12 @@ export const InputNumberQuantity = ({ value, setValue }) => {
       sx={{
         '& .MuiInputBase-root': {
           '&:before': {
-            borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
+            borderBottom: 'none',
+            paddingBottom: '0px',
+            paddingTop: '0px',
+            marginTop: '0px',
+            marginBottom: '0px',
+            fontSize: ''
           },
           '&:hover:not(.Mui-disabled):before': {
             borderBottom: '2px solid rgba(0, 0, 0, 0.87)',
@@ -117,9 +122,8 @@ export const InputNumberQuantity = ({ value, setValue }) => {
           },
         },
         '& .MuiInputBase-input': {
-          padding: '3px 2px',
-          // minWidth: '40px',
-          // maxWidth: '50px',
+          padding: '0px',
+          fontSize: '14px',
         },
         '& .MuiFormLabel-root': {
           display: 'none',
@@ -128,7 +132,25 @@ export const InputNumberQuantity = ({ value, setValue }) => {
     />
   );
 };
-
+// !smallSize ? {
+//   '& .MuiInputBase-root': {
+//     '&:before': {
+//       borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
+//     },
+//     '&:hover:not(.Mui-disabled):before': {
+//       borderBottom: '2px solid rgba(0, 0, 0, 0.87)',
+//     },
+//     '&.Mui-focused:after': {
+//       borderBottom: '2px solid #1976d2',
+//     },
+//   },
+//   '& .MuiInputBase-input': {
+//     padding: '3px 2px',
+//   },
+//   '& .MuiFormLabel-root': {
+//     display: 'none',
+//   },
+// } :
 
 export const ChangeQuantity = props => {
   const { quantity, action, title } = props;

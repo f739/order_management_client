@@ -17,21 +17,21 @@ const handleTooltipOpen = () => {
 
   return (
     <TooltipComponent title={title} open={open} handleTooltipClose={handleTooltipClose}>
-      <Box 
-        display="flex"
-        justifyContent="flex-end"
-        alignItems="flex-end"
-        height="100%"
-        width="100%"
-      >
+      
         <IconButton 
           onClick={e => action(e)} 
           onMouseEnter={handleTooltipOpen}
           onMouseLeave={handleTooltipClose}
+          sx={{
+            position: 'absolute',
+            left: '6%',
+            top: '50%', 
+            transform: 'translateY(-50%)'
+          }}
         >
           <EditIcon fontSize='small' />
         </IconButton>
-      </Box>
+     
     </TooltipComponent>
   )
 } 

@@ -15,9 +15,10 @@ import {
     ErrorPage
 } from '../components/indexComponents';
 import moment from 'moment';
-import { Grid, Typography, Link, ListItemText, Divider, Box } from "@mui/material";
+import { Grid, Typography, Link, ListItemText, Divider, Box, IconButton, Collapse } from "@mui/material";
 import { FilterRow } from "../components/filters/FilterRow";
 import { useFilters } from "../hooks/useFilters";
+import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 
 export const OldOrders = () => {
     const { data: allOldOrders, error: errorGetOldOrders, isLoading: isLoadingGetOldOrders } = useGetOldOrdersQuery();
@@ -146,7 +147,8 @@ const ShowOldOrder = props => {
     const { idOrderList, branch, order, time, date, _idSupplier } = props;
     const { quantity, price, product } = order;
     const { _id, nameProduct, unitOfMeasure, category } = product;
-
+    
+    const [showIcons, setShowIcons] = useState(false);
     const [productReceived, { error: errorProductReceived }] = useProductReceivedMutation();
     const [returnProduct, { error: errorReturnProduct }] = useReturnProductMutation();
     const [removeProductInOldOrder, { error: errorRemoveProductInOldOrder }] = useRemoveProductInOldOrderMutation();
@@ -181,27 +183,49 @@ const ShowOldOrder = props => {
         setValueTemporaryQuantity(newQuantity);
     }
     return (
-        <Grid container spacing={2} alignItems={'center'}>
-            <Grid item xs={3} sm={1}>
+        <Grid container spacing={1} alignItems='center' sx={{p: 1}} justifyContent="space-between">
+            <Grid item >
+                <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                    {nameProduct}
+                </Typography>
                 <InputNumberQuantity value={valueTemporaryQuantity} setValue={handleEditQuantity} />
             </Grid>
-            <Grid item xs={5} sm={4}>
-                <ListItemText primary={nameProduct} secondary={unitOfMeasure?.measureName} />
+            <Grid item>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                    מחיר
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    {price}
+                </Typography>
+            </Grid> 
+                {showIcons && (
+                <Grid item sx={{order: {xs: 1 ,sm: 0}}}>
+                    <Grid container spacing={1} direction="row" sx={{justifyContent: 'end'}} >
+                        <Grid item>
+                            <IconCheckButton
+                                action={ProductReceived}
+                                title={errorProductReceived?.message ?? 'אשר קבלת מוצר'}
+                            />
+                        </Grid>
+                        <Grid item>
+                            <IconReturnButton
+                                action={returnToOrderManagement}
+                                title={errorReturnProduct?.message ?? 'החזר מוצר להזמנות בתהליך'}
+                            />
+                        </Grid>
+                        <Grid item>
+                            <IconDeleteButton
+                                action={deleteProduct}
+                                title={errorRemoveProductInOldOrder?.message ?? 'מחק מוצר'}
+                            />
+                        </Grid>
+                    </Grid>
             </Grid>
-            <Grid item xs={2} sm={2}>
-                <ListItemText primary={'מחיר'} secondary={price} />
-            </Grid>
-            <Grid item xs={4} sm={1}>
-                <IconCheckButton action={ProductReceived}
-                    title={errorProductReceived?.message ?? 'אשר קבלת מוצר'} />
-            </Grid>
-            <Grid item xs={4} sm={1}>
-                <IconReturnButton action={returnToOrderManagement}
-                    title={errorReturnProduct?.message ?? 'החזר מוצר להזמנות בתהליך'} />
-            </Grid>
-            <Grid item xs={4} sm={1}>
-                <IconDeleteButton action={deleteProduct}
-                    title={errorRemoveProductInOldOrder?.message ?? 'מחק מוצר'} />
+                )}
+                <Grid item sx={{order: {xs: 0 ,sm: 1}}}>
+                <IconButton onClick={() => setShowIcons( old => !old)}>
+                    <MoreVertOutlinedIcon />
+                </IconButton>
             </Grid>
         </Grid>
     );

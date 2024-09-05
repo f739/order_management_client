@@ -85,7 +85,7 @@ export const Orders = () => {
                                     {ability.can('read', 'Order', item.branch._id) ? (
                                         <div>
                                             <ItemsBox item={item} />
-                                            {i < filteredData.length - 1 && <Divider />}
+                                            {/* {i < filteredData.length - 1 && <Divider />} */}
                                         </div>
                                     ) : null}
                                 </Item>

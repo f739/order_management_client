@@ -29,15 +29,16 @@ const [open, setOpen] = useState(false);
             onMouseEnter={handleTooltipOpen}
             onMouseLeave={handleTooltipClose}
             sx={{
-            border: '1px solid rgba(0, 0, 0, 0.12)',
-            borderRadius: '4px', 
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', 
-            padding: '8px', 
-            color: '#64B5F6', 
-            '&:hover': {
-              backgroundColor: 'rgba(0, 0, 255, 0.1)',
-            }
-          }}>
+          //   border: '1px solid rgba(0, 0, 0, 0.12)',
+          //   borderRadius: '4px', 
+          //   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', 
+          //   padding: '8px', 
+            // color: '#64B5F6', 
+          //   '&:hover': {
+          //     backgroundColor: 'rgba(0, 0, 255, 0.1)',
+          //   }
+          }}
+          >
           <ReplayIcon fontSize='mediume' />
         </IconButton>
       </Tooltip>

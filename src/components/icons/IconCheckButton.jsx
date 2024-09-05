@@ -27,16 +27,18 @@ export const IconCheckButton = props => {
                 handleTooltipOpen();
             }}
               onMouseEnter={handleTooltipOpen}
-              onMouseLeave={handleTooltipClose}  sx={{
-              border: '1px solid rgba(0, 0, 0, 0.12)',
-              borderRadius: '4px', 
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', 
-              padding: '8px', 
-              color: '#81C784', 
-              '&:hover': {
-                backgroundColor: 'rgba(255, 0, 0, 0.1)',
-              }
-            }}>
+              onMouseLeave={handleTooltipClose}  
+              sx={{
+              // border: '1px solid rgba(0, 0, 0, 0.12)',
+              // borderRadius: '4px', 
+              // boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', 
+              // padding: '8px', 
+              // color: '#81C784', 
+              // '&:hover': {
+              //   // backgroundColor: 'rgba(81C784, 0, 0, 0.1)',
+              // }
+            }}
+            >
             <CheckCircleIcon  fontSize='mediume' />
           </IconButton>
         </Tooltip>
