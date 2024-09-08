@@ -11,11 +11,10 @@ import { defineAbilitiesFor } from '../auth/abilities';
 import {
     IconDeleteButton, IconCameraButton, IconCheckButton,
     IconReturnButton, LoudingPage, AccordionComponent,
-    InputNumberQuantity, StackChips, AppBarSystemManagement,
-    ErrorPage
+    InputNumberQuantity, StackChips, ErrorPage
 } from '../components/indexComponents';
 import moment from 'moment';
-import { Grid, Typography, Link, ListItemText, Divider, Box, IconButton, Collapse } from "@mui/material";
+import { Grid, Typography, Link, Divider, Box, IconButton } from "@mui/material";
 import { FilterRow } from "../components/filters/FilterRow";
 import { useFilters } from "../hooks/useFilters";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
@@ -43,51 +42,31 @@ export const OldOrders = () => {
         }
     }, [allOldOrders]);
 
-    const [valueTab, setValueTab] = useState(1);
-    const changeTab = (e, newValue) => {
-        setValueTab(newValue)
-    }
-
-    // useEffect(() => {
-    //     if (!allOldOrders) return;
-    //         let oldOrdersFiltered = [...allOldOrders];
-    //         oldOrdersFiltered = oldOrdersFiltered.sort((a, b) => a.date > b.date);
-    //         const groupBySupplier = oldOrdersFiltered.reduce((acc, order) => {
-    //             const nameSupplier = order.supplier.nameSupplier; 
-    //             acc[nameSupplier] = acc[nameSupplier] || [];
-    //             acc[nameSupplier].push(order);
-    //             return acc;
-    //         }, {});
-    //         setGroupedOrders(groupBySupplier);
-    // }, [allOldOrders]);
-
     if (errorGetOldOrders) return <ErrorPage error={errorGetOldOrders} />
     if (isLoadingGetOldOrders) return <LoudingPage />;
 
     return (
-        <div>
-            <AppBarSystemManagement secondaryTabValue={valueTab} onSecondaryTabChange={changeTab} />
-            <Box sx={{ display: 'flex', p: 1 }}>
-                <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allOldOrders}>
-                    <Box sx={{ p: 1 }}>
-                        {filteredData && filteredData.length > 0 ? filteredData.map(invitation => (
-                            ability.can('read', 'PendingOrders', invitation.branch._id) ? (
-                                <Invitation
-                                    key={`${invitation._id}-${invitation.listProducts.length}`}
-                                    invitation={invitation}
-                                    supplierName={invitation.supplier.nameSupplier} />
-                            ) : null
-                        )) : <p>אין הזמנות לטיפול</p>}
-                    </Box>
-                </FilterRow>
-            </Box>
-        </div>
+        <Box sx={{ display: 'flex', p: 1 }}>
+            <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allOldOrders}>
+                <Box sx={{ p: 1 }}>
+                    {filteredData && filteredData.length > 0 ? filteredData.map(invitation => (
+                        ability.can('read', 'PendingOrders', invitation.branch._id) ? (
+                            <Invitation
+                                key={`${invitation._id}-${invitation.listProducts.length}`}
+                                invitation={invitation}
+                                _idSupplier={invitation.supplier._id}
+                                supplierName={invitation.supplier.nameSupplier} />
+                        ) : null
+                    )) : <Typography>אין הזמנות לטיפול</Typography>}
+                </Box>
+            </FilterRow>
+        </Box>
     );
 };
 
 
-const Invitation = ({ invitation, supplierName }) => {
-    const { listProducts, branch, date, time, _id, _idSupplier } = invitation;
+const Invitation = ({ invitation, supplierName, _idSupplier }) => {
+    const { listProducts, branch, date, time, _id } = invitation;
     // const listProductsSorted = [...listProducts].sort((a, b) => a.category.localeCompare(b.category));
     const [showCamera, setShowCamera] = useState(false);
     const [imageSrc, setImageSrc] = useState('');
@@ -105,14 +84,14 @@ const Invitation = ({ invitation, supplierName }) => {
                                 {_id.substring(0, 8)}
                             </Typography>
                         </Grid>
-                        <Grid item xs={2} sx={{ display: { xs: 'none', sm: 'block' } }}>
-                            <Typography>
-                                {time}
-                            </Typography>
-                        </Grid>
                         <Grid item xs={4}>
                             <Typography>
                                 {moment.unix(date).format("DD.MM.YYYY")}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={2} sx={{ display: { xs: 'none', sm: 'block' } }}>
+                            <Typography>
+                                {time}
                             </Typography>
                         </Grid>
                         <Grid item xs={1} sx={{ display: showCamera ? 'none' : 'block' }} >

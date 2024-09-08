@@ -21,7 +21,7 @@ export const CompanyDetails = () => {
   if (errorGetCompany) return <ErrorPage error={errorGetCompany} />;
 
   return (
-    <Box sx={{ p: 5 }}>
+    <Box sx={{ p: 3 }}>
       <Typography variant="h4" sx={{ marginBottom: '40px' }}>
         הגדרות חברה
       </Typography>

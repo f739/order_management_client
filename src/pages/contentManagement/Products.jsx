@@ -219,6 +219,7 @@ const ShowProducts = ({ allCategories, allMeasures }) => {
                     <React.Fragment key={product._id}>
                     <StyledPaper 
                         elevation={2}
+                        active={product.active}
                         onClick={() => setShowEditProduct(product)}
                     >
                         <Grid container spacing={1} justifyContent="space-between" alignItems="center">

@@ -23,7 +23,7 @@ export const WhatsAppDetails = ({ whatsAppDetails }) => {
   };
 
   return (
-    <Box sx={{ p: 5 }}>
+    <Box sx={{ p: 1 }}>
       <Typography variant="h5">פרטי ווצאפ</Typography>
       <CustomField 
         name="phone"

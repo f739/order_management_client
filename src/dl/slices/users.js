@@ -24,8 +24,8 @@ export const slice = createSlice({
         },
         extraReducers: builder => {
             builder.addCase(updateUserInfo, (state, action) => {
-              const { role, email, company, _id, ifVerifiedEmail } = action.payload;
-              Object.assign(state.user, { role, _id, email, company, ifVerifiedEmail });
+              const { role, email, company, _id, userName, ifVerifiedEmail, branch } = action.payload;
+              Object.assign(state.user, { role, _id, branch, email, company, userName, ifVerifiedEmail });
             });
             builder.addCase(logOut, (state, action) => {
               state.user = initialState.user;
@@ -51,12 +51,11 @@ export const slice = createSlice({
               state.allUsers = state.allUsers.filter( el => el._id !== action.payload._id);
             });
             builder.addMatcher( mainApi.endpoints.connectUser.matchFulfilled, (state, action) => {
-              const { token, ifVerifiedEmail, tokenCompany, branch } = action.payload.user;
+              const { token, ifVerifiedEmail, tokenCompany } = action.payload.user;
                 
                 localStorage.setItem('tokenCompany', tokenCompany);
                 localStorage.setItem('userToken', token);
                 localStorage.setItem('ifVerifiedEmail', ifVerifiedEmail);
-                localStorage.setItem('branch', branch);
                 state.user = {...action.payload.user};
               }
             );
@@ -73,11 +72,9 @@ export const slice = createSlice({
                 state.user.ifVerifiedEmail = true;
                 localStorage.setItem('ifVerifiedEmail', true);
             });
-
             builder.addMatcher(
               mainApi.endpoints.editUserDetails.matchFulfilled, (state, action) => {
                 const { user } = action.payload;
-                
                 state.user.email = user.email;
                 state.user.userName = user.userName;
                 state.user.ifVerifiedEmail = false;

@@ -115,6 +115,7 @@ const ShowSuppliers = () => {
                             <React.Fragment key={supplier._id}>
                                 <StyledPaper
                                     elevation={2}
+                                    active={supplier.active}
                                     onClick={() => setShowEditSupplier(supplier)}
                                 >
                                     <Grid container spacing={1} alignItems="center" justifyContent="space-between">

@@ -35,7 +35,7 @@ export const EmailDetails = props => {
   const labelChooseEmail = 'שלח הודעות מהאימייל הפרטי';
 
   return (
-    <Box sx={{ p: 5 }}>
+    <Box sx={{ p: 1 }}>
       <Typography variant="h5">פרטי אימייל</Typography>
       {errorUpdateEmail && <SimpleAlert message={errorUpdateEmail} />}
       <CustomField

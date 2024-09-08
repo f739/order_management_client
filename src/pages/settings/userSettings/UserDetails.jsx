@@ -18,13 +18,13 @@ export const UserDetails = () => {
   if (errorGetuser) return <ErrorPage error={errorGetuser} />;
 
   return (
-    <Box sx={{ p: 5 }}>
-      <Typography variant="h4" sx={{ marginBottom: '40px' }}>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h5" sx={{ marginBottom: '30px' }}>
         הגדרות משתמש
       </Typography>
 
       <GeneralUserInfo user={user} />
-      <Typography variant="h4" sx={{ marginBottom: '40px' }}>
+      <Typography variant="h5" sx={{ marginBottom: '30px' }}>
         הגדרות שליחת הודעות
       </Typography>
       <EmailDetails 

@@ -24,9 +24,11 @@ export const useJwtParser = (emailUser) => {
             naigate('/noEntry');
           } else {
             dispatch(actions.updateUserInfo({
-              email: decoded.email,
-              role: decoded.role,
               _id: decoded._id,
+              email: decoded.email,
+              userName: decoded.userName,
+              role: decoded.role,
+              branch: decoded.branch,
               company: decodedCompany.companyId,
               ifVerifiedEmail: ifVerifiedEmail ?? false,
             }));
@@ -44,8 +46,6 @@ export const useJwtParser = (emailUser) => {
   }, [dispatch, emailUser]);
 
   const handleLogout = () => {
-    // localStorage.removeItem('userToken');
-    // localStorage.removeItem('tokenCompany');
     dispatch(actions.logOut());
   };
 

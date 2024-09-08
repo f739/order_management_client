@@ -30,7 +30,7 @@ export const GeneralCompanyInfo = ({ company }) => {
         { name: 'phone', label: 'טלפון', typeInput: 'tel', type: 'input' },
     ];
   return (
-    <Box sx={{ p: 5 }}>
+    <Box sx={{ p: 1 }}>
       <Typography variant="h5">פרטי חברה</Typography>
       <SimpleAlert message={'פרטים אלו נכתבים בדף ההזמנה לספק'} severity={'info'} />
       { fields.map( field => (

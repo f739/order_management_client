@@ -104,6 +104,7 @@ const ShowMeasures = () => {
                         <React.Fragment key={measure._id}>
                             <StyledPaper 
                                 elevation={2}
+                                active={measure.active}
                                 onClick={() => setShowEditMeasure(measure)}
                             >
                                 <Grid container spacing={1} alignItems="center" justifyContent="space-between">

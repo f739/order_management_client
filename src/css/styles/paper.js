@@ -1,8 +1,9 @@
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-export const StyledPaper = styled(Box)(({ theme }) => ({
+export const StyledPaper = styled(Box)(({ theme, active }) => ({
     padding: theme.spacing(1),
+    backgroundColor: !active ? theme.palette.grey[200] : theme.palette.background.default,
     // paddingTop: '5px',
     // paddingRight: '5px',
     // paddingBottom: '5px',

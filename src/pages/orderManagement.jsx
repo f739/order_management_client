@@ -97,7 +97,7 @@ const Invitation = ({ invitation }) => {
   return (
     <AccordionComponent
       summary={
-        <Grid container spacing={2} alignItems="center" justifyContent="flex-start" >
+        <Grid container spacing={1} alignItems="center" justifyContent="flex-start" >
           <Grid item xs={12} sm="auto" >
             <StackChips branch={branch} name={userName} />
           </Grid>

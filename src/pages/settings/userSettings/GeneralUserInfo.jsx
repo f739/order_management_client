@@ -27,10 +27,11 @@ export const GeneralUserInfo = ({ user }) => {
         { name: 'userName', label: "שם משתמש", typeInput: 'text', type: 'input' },
         { name: 'email', label: "אימייל", typeInput: 'email', type: 'input', icon: <TaskAltIcon /> },
         { name: 'role', label: 'תפקיד', typeInput: 'text', type: 'input', disabled: true },
+        { name: 'branch', label: 'סניף', typeInput: 'text', type: 'input', disabled: true },
 
     ];
   return (
-    <Box sx={{ p: 5 }}>
+    <Box sx={{ p: 1 }}>
       <Typography variant="h5">פרטי משתמש</Typography>
       { fields.map( field => (
         <React.Fragment key={field.name}>

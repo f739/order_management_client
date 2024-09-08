@@ -37,10 +37,10 @@ export const defineAbilitiesFor = user => defineAbility((can, cannot) => {
     case 'מנהל':
       defineAdminAbilities(can, cannot);
       break;
-    case 'purchasingManager':
+    case 'מנהל רכש':
       defineAdminAbilities(can, cannot);
       break;
-    case "מנהל רכש":
+    case "טבח":
       defineEmployeeAbilities(can, cannot, user);
       break;
     case 'accountant':

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { useGetProductsQuery } from '../dl/api/productsApi';
 import { useSendAnInvitationMutation } from "../dl/api/ordersApi";
@@ -58,18 +58,11 @@ export const Orders = () => {
         // padding: '20px 20px 0px 0px'
     }));
 
-    const [valueTab, setValueTab] = useState(1);
-
-    const changeTab = (e, newValue) => {
-        setValueTab(newValue)
-    }
-
     if (errorGetProducts) return <ErrorPage error={errorGetProducts} />
     if (isLoadingGetProducts) return <LoudingPage />;
     
     return (
         <>
-            <AppBarSystemManagement secondaryTabValue={valueTab} onSecondaryTabChange={changeTab} />
             <Box sx={{ display: 'flex', p: 1 }}>
                 <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allProducts}>
                     <Stack
@@ -81,14 +74,13 @@ export const Orders = () => {
                     >
                         {filteredData.length > 0 ? (
                             filteredData.map((item, i) => (
-                                <Item key={item._id}>
+                                <React.Fragment key={item._id}>
                                     {ability.can('read', 'Order', item.branch._id) ? (
-                                        <div>
+                                        <Item>
                                             <ItemsBox item={item} />
-                                            {/* {i < filteredData.length - 1 && <Divider />} */}
-                                        </div>
+                                        </Item>
                                     ) : null}
-                                </Item>
+                                </React.Fragment>
                             ))) : <Typography>אין מוצרים להצגה</Typography>
                         }
                     </Stack>

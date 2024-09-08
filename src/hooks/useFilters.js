@@ -75,9 +75,14 @@ export const useFilters = (filterFields) => {
     }, []);
   }, [filterFields]);
   
+  const sortByActive = data => {
+    return data.sort((a, b) => b.active - a.active);
+  }
+
   useEffect(() => {
     const newFilteredData = filterData(data, filters);
-    setFilteredData(newFilteredData);
+    const sortedData = sortByActive(newFilteredData)
+    setFilteredData(sortedData);
   }, [data, filters]);
 
   const updateFilter = (filterType, value) => {
