@@ -75,6 +75,13 @@ export const compamyApi = mainApi.injectEndpoints({
       },
       invalidatesTags: [{ type: 'Company', _id: 'LIST' }],
     }),
+    buyLicense: builder.mutation({
+      query: () => ({        
+        url:  '/companies/buyLicense',
+        headers: { 'x-action': 'update', 'x-subject': 'Company' },
+      }),
+      invalidatesTags: [{ type: 'Company', _id: 'LIST' }],
+    }),
     // removeCompany: builder.mutation({
     //   query: _id => ({
     //     url: `/companies/${_id}/deleteCompany`,
@@ -93,4 +100,5 @@ export const {
     useEditCompanyDetailsMutation,
     useEditingCompanyEmailDetailsMutation,
     useEditingCompanyWhatsappDetailsMutation,
+    useBuyLicenseMutation,
   } = compamyApi;

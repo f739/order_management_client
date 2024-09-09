@@ -6,14 +6,17 @@ const baseQueryWithHeaders = fetchBaseQuery({
     credentials: 'include',
     prepareHeaders: (headers, { getState ,extra }) => {
         try {
-            const { company, _id, email } = getState().users.user;
+            const { email } = getState().users.user;
             
             // authorization
-            if (company) {
-                headers.set('x-company', company);
+            const companyToken = localStorage.getItem('tokenCompany');
+            const userToken = localStorage.getItem('userToken');
+            
+            if (companyToken) {
+                headers.set('x-token-company', companyToken)
             }
-            if (_id) {
-                headers.set('x-idUser', _id);
+            if (userToken) {
+                headers.set('x-token-user', userToken)
             }
             if (email) {
                 headers.set('x-email', email);

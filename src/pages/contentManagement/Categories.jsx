@@ -109,7 +109,7 @@ const ShowCategories = () => {
                             <React.Fragment key={category._id}>
                                 <StyledPaper 
                                     elevation={2}
-                                    active={category.active}
+                                    active={category.active.toString()}
                                     onClick={() => setShowEditCategory(category)}
                                 >
                                 <Grid container spacing={1} alignItems="center" justifyContent="space-between">

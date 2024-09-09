@@ -17,22 +17,23 @@ export const useJwtParser = (emailUser) => {
         try {
           const decoded = jwtDecode(userToken);
           const decodedCompany = jwtDecode(tokenCompany);
-
-          const currentTime = Date.now() / 1000;
-          if (decodedCompany?.exp < currentTime) {
-            handleLogout();
-            naigate('/noEntry');
-          } else {
-            dispatch(actions.updateUserInfo({
-              _id: decoded._id,
-              email: decoded.email,
-              userName: decoded.userName,
-              role: decoded.role,
-              branch: decoded.branch,
-              company: decodedCompany.companyId,
-              ifVerifiedEmail: ifVerifiedEmail ?? false,
-            }));
-          }
+          console.log(decodedCompany.exp);
+          
+          // const currentTime = Date.now() / 1000;
+          // if (decodedCompany?.exp > currentTime) {
+          //   // handleLogout();
+          //   naigate('/companySettings/companyDetails', {message: 'הרישיון של החברה נגמר לא ניתן לבצע פעולות באתר'});
+          // } 
+          dispatch(actions.updateUserInfo({
+            _id: decoded._id,
+            email: decoded.email,
+            userName: decoded.userName,
+            role: decoded.role,
+            branch: decoded.branch,
+            company: decodedCompany.companyId,
+            ifVerifiedEmail: ifVerifiedEmail ?? false,
+          }));
+          
         } catch (error) {
           console.error('שגיאה בפענוח הטוקן:', error);
           // handleLogout();

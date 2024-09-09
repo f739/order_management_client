@@ -6,23 +6,23 @@ import {
     useRemoveBranchMutation,
     useEditBranchMutation
 } from '../../dl/api/branchesApi';
-import { LoudingPage, CustomField, ErrorPage, DialogSendInvitation, TimedAlert} from "../../components/indexComponents";
+import { LoudingPage, CustomField, ErrorPage, DialogSendInvitation, TimedAlert } from "../../components/indexComponents";
 import { Box, Typography, CircularProgress, Button, Stack, Grid, Divider, ListItemText, IconButton, FormControlLabel, Switch, Fab } from "@mui/material";
 import { useFilters } from '../../hooks/useFilters';
 import { FilterRow } from "../../components/filters/FilterRow";
-import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import { useActiveInactiveSort } from "../../hooks/useActiveInactiveSort";
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { StyledPaper } from "../../css/styles/paper";
 
 export const Branches = () => {
     const [showAddBranch, setShowAddBranch] = useState(false);
 
     return (
-        <Box sx={{ margin: '20px 5px'}}>
+        <Box sx={{ margin: '20px 5px' }}>
             {showAddBranch ?
                 <NewBranch setShowAddBranch={setShowAddBranch} /> :
-                <ShowBranches /> 
+                <ShowBranches />
             }
             {!showAddBranch && <Fab
                 color="primary"
@@ -39,7 +39,7 @@ export const Branches = () => {
     )
 };
 
-const NewBranch = ({setShowAddBranch}) => {
+const NewBranch = ({ setShowAddBranch }) => {
     const [newBranch, setNewBranch] = useState({ nameBranch: '', address: '' });
     const [createNewBranch, { error, isLoading, data }] = useCreateNewBranchMutation();
 
@@ -65,18 +65,18 @@ const NewBranch = ({setShowAddBranch}) => {
                 </IconButton>
             </Stack>
 
-            { fields.map( field => (
+            {fields.map(field => (
                 <React.Fragment key={field.name}>
-                <CustomField 
-                name={field.name}
-                value={newBranch[field.name]}
-                label={field.label}
-                onChange={e => handleFormHook(e.target, setNewBranch)}
-                />
+                    <CustomField
+                        name={field.name}
+                        value={newBranch[field.name]}
+                        label={field.label}
+                        onChange={e => handleFormHook(e.target, setNewBranch)}
+                    />
                 </React.Fragment>
             ))}
-            {error && <TimedAlert message={error}  />}
-            {data && <TimedAlert message={data} severity={'success'} /> }
+            {error && <TimedAlert message={error} />}
+            {data && <TimedAlert message={data} severity={'success'} />}
             <Button onClick={handleSaveNewCategory} color="primary" variant="contained" disabled={isLoading}>
                 {isLoading ? <CircularProgress size={24} /> : 'שמור'}
             </Button>
@@ -104,25 +104,28 @@ const ShowBranches = () => {
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} data={allBranches}>
                 <Box>
-                <Typography variant="h5" sx={{  textAlign: 'right', color: 'text.primary' }}>
-                    סניפים
-                </Typography>
-                {filteredData.length > 0 ? (
+                    <Typography variant="h5" sx={{ textAlign: 'right', color: 'text.primary' }}>
+                        סניפים
+                    </Typography>
+                    {filteredData.length > 0 ? (
                         filteredData.map(branch => (
                             <React.Fragment key={branch._id}>
-                                <Grid container alignItems="center" justifyContent="space-between" >
-                                    <Grid item>
-                                        <ListItemText
-                                            primary={branch.nameBranch}
-                                            secondary={branch.address}
-                                        />
+                                <StyledPaper
+                                    elevation={2}
+                                    active={branch.active.toString()}
+                                    onClick={() => setShowEditBranch(branch)}
+                                >
+                                    <Grid container alignItems="center" justifyContent="space-between" >
+                                        <Grid item>
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                                                {branch.nameBranch}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                {branch.address}
+                                            </Typography>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item >
-                                        <IconButton onClick={() => setShowEditBranch(branch)}>
-                                            <MoreVertOutlinedIcon />
-                                        </IconButton>
-                                    </Grid>
-                                </Grid>
+                                </StyledPaper>
                                 <Divider />
                                 {showEditBranch._id === branch._id &&
                                     <EditBranch
@@ -131,8 +134,10 @@ const ShowBranches = () => {
                                     />
                                 }
                             </React.Fragment>
-                            )
-                        )) : <Typography>אין סניפים להצגה</Typography>
+                        )
+                        )) : <Typography sx={{ textAlign: 'center', color: 'text.secondary' }}>
+                        אין סניפים להצגה
+                    </Typography>
                     }
                 </Box>
             </FilterRow>
@@ -145,7 +150,7 @@ const EditBranch = props => {
     const { setShowEditBranch, branch } = props;
     const [removeBranch, { error: errorRemoveBranch, isLoading: isLoadingDelete }] = useRemoveBranchMutation();
     const [editBranch, { error: errorEdit, isLoading: isLoadingEdit }] = useEditBranchMutation();
-    const [formEdit, setFormEdit] = useState({_id: branch._id, active: branch.active ,branchName: '', address: ''});
+    const [formEdit, setFormEdit] = useState({ _id: branch._id, active: branch.active, branchName: '', address: '' });
 
     const fields = [
         { name: 'nameBranch', label: 'שם סניף', typeInput: 'text', type: 'input' },
@@ -187,14 +192,14 @@ const EditBranch = props => {
                                 checked={formEdit.active || false}
                                 onChange={e => setFormEdit(old => ({ ...old, active: e.target.checked }))}
                             />
-                        } 
+                        }
                     />
                     {fields.map(field => (
                         <React.Fragment key={field.name}>
                             <CustomField
                                 name={field.name}
                                 initialValue={branch[field.name]}
-                                value={formEdit[field.name]}                                label={field.label}
+                                value={formEdit[field.name]} label={field.label}
                                 onChange={e => handleFormHook(e.target, setFormEdit)}
                                 type={field.typeInput}
                                 disabled={!formEdit.active || formEdit.disabled}

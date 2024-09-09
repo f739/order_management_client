@@ -75,29 +75,29 @@ const Invitation = ({ invitation, supplierName, _idSupplier }) => {
             {showCamera && <Camera setShowCamera={setShowCamera} numberOrder={_id} setImageSrc={setImageSrc} />}
             <AccordionComponent
                 summary={
-                    <Grid container spacing={1} alignItems="center">
-                        <Grid item xs={12} sx={{ maxHeight: '30px' }}>
+                    <Grid container spacing={1} alignItems="center" justifyContent="space-between">
+                        <Grid item xs={12} sm='auto'>
                             <StackChips branch={branch} name={supplierName} />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item >
                             <Typography>
                                 {_id.substring(0, 8)}
                             </Typography>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item >
                             <Typography>
                                 {moment.unix(date).format("DD.MM.YYYY")}
                             </Typography>
                         </Grid>
-                        <Grid item xs={2} sx={{ display: { xs: 'none', sm: 'block' } }}>
+                        <Grid item  sx={{ display: { xs: 'none', sm: 'block' } }}>
                             <Typography>
                                 {time}
                             </Typography>
                         </Grid>
-                        <Grid item xs={1} sx={{ display: showCamera ? 'none' : 'block' }} >
+                        <Grid item xs='auto' sx={{ display: showCamera ? 'none' : 'block' }} >
                             <IconCameraButton action={() => setShowCamera(old => !old)} title='צלם תעודת הזמנה' />
                         </Grid>
-                        <Grid item xs={12} sx={{ display: imageSrc === '' ? 'none' : 'block' }}>
+                        <Grid item xs='auto' sx={{ display: imageSrc === '' ? 'none' : 'block' }}>
                             <Link href={`https://deliverycertificate.s3.us-east-1.amazonaws.com/${_id}.jpeg`}>לצפייה בתמונה</Link>
                         </Grid>
                     </Grid>
@@ -105,7 +105,6 @@ const Invitation = ({ invitation, supplierName, _idSupplier }) => {
                 details={
                     listProducts.map(order => (
                         <React.Fragment key={order._id}>
-                            <Divider sx={{ paddingBottom: '1px' }} />
                             <ShowOldOrder key={`${order._id}-${order.quantity}`}
                                 time={time}
                                 date={date}
@@ -113,6 +112,7 @@ const Invitation = ({ invitation, supplierName, _idSupplier }) => {
                                 _idSupplier={_idSupplier}
                                 order={order}
                                 idOrderList={_id} />
+                            <Divider sx={{ paddingBottom: '1px' }} />
                         </React.Fragment>
                     ))
                 }>

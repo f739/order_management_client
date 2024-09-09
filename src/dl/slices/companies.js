@@ -13,7 +13,14 @@ export const slice = createSlice({
       
       },
       extraReducers: builder => {
-        
+        builder.addMatcher(
+          mainApi.endpoints.buyLicense.matchFulfilled, (state, action) => {
+            const { newToken } = action.payload;
+            
+            localStorage.setItem('tokenCompany', newToken)
+          }
+
+        )
       }
   })
 

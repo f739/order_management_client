@@ -134,7 +134,7 @@ const ShowUsers = ({ allBranches }) => {
                             <React.Fragment key={user._id}>
                                 <StyledPaper 
                                     elevation={2}
-                                    active={user.active}
+                                    active={user.active.toString()}
                                     onClick={() => setShowEditUser(user)}
                                 >
                                 <Grid container spacing={1} alignItems="center" justifyContent="space-between">

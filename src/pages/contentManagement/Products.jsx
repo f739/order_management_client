@@ -206,7 +206,7 @@ const ShowProducts = ({ allCategories, allMeasures }) => {
 
     if (errorGetProducts) return <ErrorPage error={errorGetProducts} />
     if (isLoadingGetProducts) return <LoudingPage />;
-
+    
     return (
         <Box sx={{ display: 'flex', p: 1 }}>
             <FilterRow filters={filters} updateFilter={updateFilter} filterFields={filterFields} >
@@ -216,10 +216,10 @@ const ShowProducts = ({ allCategories, allMeasures }) => {
                 </Typography>
                 {filteredData.length > 0 ? (
                     filteredData.map(product => (
-                    <React.Fragment key={product._id}>
+                        <React.Fragment key={product._id}>
                     <StyledPaper 
                         elevation={2}
-                        active={product.active}
+                        active={product.active.toString()}
                         onClick={() => setShowEditProduct(product)}
                     >
                         <Grid container spacing={1} justifyContent="space-between" alignItems="center">

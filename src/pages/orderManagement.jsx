@@ -97,7 +97,7 @@ const Invitation = ({ invitation }) => {
   return (
     <AccordionComponent
       summary={
-        <Grid container spacing={1} alignItems="center" justifyContent="flex-start" >
+        <Grid container spacing={1} alignItems="center" justifyContent="space-between" >
           <Grid item xs={12} sm="auto" >
             <StackChips branch={branch} name={userName} />
           </Grid>
@@ -107,7 +107,6 @@ const Invitation = ({ invitation }) => {
           <Grid item >
             <Typography>{time}</Typography>
           </Grid>
-          <Grid item xs></Grid>
           <Grid item xs="auto" sx={{ order: { xs: 4, md: 5 } }}>
             <IconDeleteButton action={handleDeleteInvitation} />
           </Grid>
@@ -121,11 +120,11 @@ const Invitation = ({ invitation }) => {
           {listProducts && listProducts.filter(pr => pr.product)
             .map(product => (
               <React.Fragment key={product._id}>
-                <Divider sx={{ pb: 1, pt: 1 }} />
                 <Product
                   allProduct={product}
                   idInvitation={_id}
                 />
+                {/* <Divider /> */}
               </React.Fragment>
             ))}
         </>

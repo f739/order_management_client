@@ -19,12 +19,12 @@ export const authApi = mainApi.injectEndpoints({
       },
     }),
     verifyEmailAndUpdatePass: builder.mutation({
-      queryFn: async ({tempPassword ,newPassword, confirmPassword}, {getState}, ex, baseQuery) => {
+      queryFn: async ({tempPassword ,newPassword, confirmPassword, email}, {getState}, ex, baseQuery) => {
         if (!arePasswordsEqual(newPassword, confirmPassword)) {return { error: { message: 'הסיסמאות אינן שוות'}}};
           return await baseQuery({
             url: `/auth/verifyEmailAndUpdatePass`,
             method: 'PUT',
-            body: {tempPassword, newPassword},
+            body: {tempPassword, newPassword, email},
             headers: { 'x-action': 'auth', 'x-subject': 'Company' },
          });
       },

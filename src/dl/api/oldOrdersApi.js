@@ -11,8 +11,8 @@ export const oldOrdersApi = mainApi.injectEndpoints({
       transformResponse: res => res.oldOrders,
       providesTags: result =>
         result ? 
-        [...result.map(({ _id }) => ({ type: 'OldOrder', _id })), { type: 'OldOrder', _id: 'LIST' }] :
-        [{ type: 'OldOrder', _id: 'LIST' }],
+        [...result.map(({ _id }) => ({ type: 'OldOrder', id: _id })), { type: 'OldOrder', id: 'LIST' }] :
+        [{ type: 'OldOrder', id: 'LIST' }],
     }),
     returnProduct: builder.mutation({
       query: data => ({
@@ -21,7 +21,7 @@ export const oldOrdersApi = mainApi.injectEndpoints({
         body: data,
         headers: { 'x-action': 'delete', 'x-subject': 'OldOrder' },
       }),
-      invalidatesTags: [{ type: 'ActiveOrder', _id: 'LIST' }, { type: 'OldOrder', _id: 'LIST' }],
+      invalidatesTags: [{ type: 'ActiveOrder', id: 'LIST' }, { type: 'OldOrder', id: 'LIST' }],
     }),
     removeProductInOldOrder: builder.mutation({
       query: ({ _id, idOrderList }) => ({
@@ -30,7 +30,7 @@ export const oldOrdersApi = mainApi.injectEndpoints({
         headers: { 'x-action': 'delete', 'x-subject': 'OldOrder' },
       }),
       transformResponse: res => res.doc,
-      invalidatesTags: [{ type: 'OldOrder', _id: 'LIST' }],
+      invalidatesTags: [{ type: 'OldOrder', id: 'LIST' }],
     }),
     productReceived: builder.mutation({
       query: productData => ({
@@ -40,7 +40,16 @@ export const oldOrdersApi = mainApi.injectEndpoints({
         headers: { 'x-action': 'update', 'x-subject': 'OldOrder' },
       }),
       transformResponse: res => res.orderUpdated,
-      invalidatesTags: [{ type: 'OldOrder', _id: 'LIST' }],
+      invalidatesTags: [{ type: 'OldOrder', id: 'LIST' }],
+    }),
+    sendingPhoto: builder.mutation({
+      query: ({image, numberOrder}) => ({
+        url: `/oldOrders/sendingPhotoOfADeliveryCertificate`,
+        method: 'POST',
+        body: {image, numberOrder},
+        headers: { 'x-action': 'update', 'x-subject': 'OldOrder' },
+      }),
+      invalidatesTags: [{ type: 'OldOrder', id: 'LIST' }],
     }),
   }),
 });
@@ -50,5 +59,6 @@ export const {
   useGetOldOrdersQuery,
   useReturnProductMutation,
   useRemoveProductInOldOrderMutation,
-  useProductReceivedMutation
+  useProductReceivedMutation,
+  useSendingPhotoMutation
  } = oldOrdersApi;

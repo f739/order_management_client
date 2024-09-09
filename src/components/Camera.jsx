@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { Box, Button, IconButton } from '@mui/material';
+import { Box, Button, CircularProgress, IconButton } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-const URL = import.meta.env.VITE_API_URL;
-import $ from 'axios';
+import { useSendingPhotoMutation } from '../dl/api/oldOrdersApi'
+import { TimedAlert } from './TimedAlert';
 
 export const Camera = ({ setShowCamera, numberOrder, setImageSrc }) => {
   const videoRef = useRef(null);
-
+  const [sendingPhoto, {error, isLouding}] = useSendingPhotoMutation();
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
       .then((stream) => {
@@ -47,7 +47,7 @@ export const Camera = ({ setShowCamera, numberOrder, setImageSrc }) => {
       setImageSrc(imageSrc);
 
       try {
-        const response = await $.post(`${URL}/oldOrders/sendingPhotoOfADeliveryCertificate`, { image: imageSrc, numberOrder });
+        await sendingPhoto({ image: imageSrc, numberOrder }).unwrap();
         setShowCamera(false);
         console.log('Image sent successfully', response);
       } catch (error) {
@@ -99,7 +99,7 @@ export const Camera = ({ setShowCamera, numberOrder, setImageSrc }) => {
           },
         }}
       >
-        <PhotoCameraIcon sx={{ fontSize: 48 }} />
+        {isLouding ? <CircularProgress size={24} /> : <PhotoCameraIcon sx={{ fontSize: 48 }} />}
       </IconButton>
       <IconButton
         onClick={() => setShowCamera(false)}
@@ -112,6 +112,7 @@ export const Camera = ({ setShowCamera, numberOrder, setImageSrc }) => {
       >
         <ArrowBackIcon sx={{ fontSize: 32 }} />
       </IconButton>
+      {error && <TimedAlert  message={error} />}
     </Box>
   );
 };

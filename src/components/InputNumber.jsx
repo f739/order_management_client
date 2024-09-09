@@ -124,6 +124,7 @@ export const InputNumberQuantity = ({ value, setValue }) => {
         '& .MuiInputBase-input': {
           padding: '0px',
           fontSize: '14px',
+          width: '50px',
         },
         '& .MuiFormLabel-root': {
           display: 'none',
