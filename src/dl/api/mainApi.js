@@ -5,10 +5,7 @@ const baseQueryWithHeaders = fetchBaseQuery({
     baseUrl: URL,
     credentials: 'include',
     prepareHeaders: (headers, { getState ,extra }) => {
-        try {
-            const { email } = getState().users.user;
-            
-            // authorization
+        try {            
             const companyToken = localStorage.getItem('tokenCompany');
             const userToken = localStorage.getItem('userToken');
             
@@ -17,9 +14,6 @@ const baseQueryWithHeaders = fetchBaseQuery({
             }
             if (userToken) {
                 headers.set('x-token-user', userToken)
-            }
-            if (email) {
-                headers.set('x-email', email);
             }
             // headers.set('Cache-Control', 'no-cache');
             
@@ -31,9 +25,27 @@ const baseQueryWithHeaders = fetchBaseQuery({
     }
 })
 
+const baseQueryWithReauth = async (args, api, extraOptions) => {
+    let result = await baseQueryWithHeaders(args, api, extraOptions);
+    
+    if (result.meta?.response?.headers) {
+        const userToken = result.meta.response.headers.get('x-new-token-user');
+        const companyToken = result.meta.response.headers.get('x-new-token-company');
+        if (companyToken) {
+            localStorage.setItem('tokenCompany', companyToken);
+        }
+        if (userToken) {
+            localStorage.setItem('userToken', userToken);
+        }
+    }
+    // if (result.error && result.error.status === 401) { }
+
+    return result;
+}
+
 export const mainApi = createApi({
     reducerPath: 'mainApi',
-    baseQuery: baseQueryWithHeaders,
+    baseQuery: baseQueryWithReauth,
     tagTypes: ['ActiveOrder', 'OldOrder', 'Category', 'Measure', 'Product', 'Supplier', 'User', 'Branch','Users'],
     endpoints: (builder) => ({
 

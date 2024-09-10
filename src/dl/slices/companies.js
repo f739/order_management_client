@@ -10,7 +10,11 @@ export const slice = createSlice({
   name: 'companies',
   initialState,
   reducers: {
-      
+      company: {
+        expirationDate: '',
+        companyCreationDate: '',
+
+      }
       },
       extraReducers: builder => {
         builder.addMatcher(

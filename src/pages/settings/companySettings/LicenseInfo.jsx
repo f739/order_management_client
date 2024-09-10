@@ -2,7 +2,10 @@ import React from "react";
 import { Box, Typography } from '@mui/material';
 import { ButtonConfirm, TimedAlert } from '../../../components/indexComponents'
 import { useBuyLicenseMutation } from '../../../dl/api/companyApi';
-export const LicenseInfo = () => {
+import moment from 'moment';
+
+export const LicenseInfo = ({company}) => {
+  
   const [buyLicense,
     { 
       data,
@@ -20,8 +23,8 @@ export const LicenseInfo = () => {
   return (
     <Box sx={{ p: 1 }}>
       <Typography variant="h5">רישיון חברה</Typography>
-      <Typography variant="h6">תחילת שימוש: 16.03.2023</Typography>
-      <Typography variant="h6">תאריך תפוגה: 28.03.2023</Typography>
+      <Typography variant="h6">תאריך יצירת חברה: {moment.unix(company.companyCreationDate).format("DD.MM.YYYY")}</Typography>
+      <Typography variant="h6">תאריך תפוגה: {moment.unix(company.expirationDate).format("DD.MM.YYYY")} </Typography>
       <ButtonConfirm
         confirmLabel="הארך תקופת ניסיון"
         confirmAction={() => handleSave()}

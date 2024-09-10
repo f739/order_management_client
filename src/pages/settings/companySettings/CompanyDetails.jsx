@@ -41,7 +41,7 @@ export const CompanyDetails = () => {
       <WhatsAppDetails 
         whatsAppDetails={company.sendingMessages.watsapp} 
       />
-      <LicenseInfo />
+      <LicenseInfo company={company} />
     </Box>
   );
 };
