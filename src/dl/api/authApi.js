@@ -31,7 +31,6 @@ export const authApi = mainApi.injectEndpoints({
     }),
     resetPassword: builder.mutation({
       queryFn: async ({email}, {getState}, ex, baseQuery) => {
-        console.log('email', email);
         if (!email) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
         
           return await baseQuery({

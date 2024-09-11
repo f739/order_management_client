@@ -13,7 +13,7 @@ export const IssuingReports = () => {
     const dispatch = useDispatch()
     const [formToDeliver, setFormToDeliver] = useState(
         { _idSupplier: '', skuProduct: '', dateStart: '', dateEnd: '', branch: '' });
-    const { license, email } = useSelector(state => state.users.user);
+    const { email } = useSelector(state => state.users.user);
     const [message, setMessage] = useState('');
     const [messageBookkeepingReport, setMessageBookkeepingReport] = useState('');
 

@@ -17,8 +17,7 @@ export const GeneralUserInfo = ({ user }) => {
 
   const handleSave = async UserUpdated => {
     try {
-      await updateUserDetails(UserUpdated).unwrap();
-     
+      await updateUserDetails(UserUpdated).unwrap();  
     } catch (error) {
      console.log(error);
     }
@@ -42,7 +41,6 @@ export const GeneralUserInfo = ({ user }) => {
               label={field.label}
               disabled={field.disabled ?? false}
               onChange={e => handleFormHook(e.target, setEditUserDetails)}
-              icon={user.ifVerifiedEmail && field.icon ? field.icon : false}
             />
         </React.Fragment>
       ))}

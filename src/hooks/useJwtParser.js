@@ -12,7 +12,6 @@ export const useJwtParser = (emailUser) => {
     const parseAndValidateToken = () => {
       const userToken = localStorage.getItem('userToken');
       const tokenCompany = localStorage.getItem('tokenCompany');
-      const ifVerifiedEmail = localStorage.getItem('ifVerifiedEmail');
       if (userToken && tokenCompany) {
         try {
           const decoded = jwtDecode(userToken);
@@ -31,7 +30,6 @@ export const useJwtParser = (emailUser) => {
             role: decoded.role,
             branch: decoded.branch,
             company: decodedCompany.companyId,
-            ifVerifiedEmail: ifVerifiedEmail ?? false,
           }));
           
         } catch (error) {

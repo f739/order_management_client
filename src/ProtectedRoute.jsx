@@ -10,7 +10,7 @@ const ProtectedRoute = ({ element: Component, action, subject }) => {
   const location = useLocation();
   const { user } = useSelector(state => state.users);
   const [isLoading, setIsLoading] = useState(true);
-  const ability = defineAbilitiesFor(user || { license: 'guest' });
+  const ability = defineAbilitiesFor(user || { role: 'guest' });
 
   useJwtParser(user.email);
 

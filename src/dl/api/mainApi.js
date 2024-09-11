@@ -29,12 +29,15 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     let result = await baseQueryWithHeaders(args, api, extraOptions);
     
     if (result.meta?.response?.headers) {
-        const userToken = result.meta.response.headers.get('x-new-token-user');
-        const companyToken = result.meta.response.headers.get('x-new-token-company');
+        const userToken = result.meta.response.headers.get('X-New-Token-User');
+        const companyToken = result.meta.response.headers.get('X-New-Token-Company');
+        
         if (companyToken) {
             localStorage.setItem('tokenCompany', companyToken);
         }
-        if (userToken) {
+        if (userToken) {   
+            console.log('userToken: ' ,userToken);
+                     
             localStorage.setItem('userToken', userToken);
         }
     }

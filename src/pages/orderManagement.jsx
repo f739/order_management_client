@@ -60,7 +60,7 @@ export const OrderManagement = () => {
                   invitation={invitation}
                   filteredData={filteredData} />
               ) : null
-            )) : <p>אין הזמנות לטיפול</p>}
+            )) : <Typography>אין הזמנות לטיפול</Typography>}
             {!showSendEmail ?
               // <TooltipComponent title='שלח הזמנה'>
               <Fab
@@ -124,7 +124,7 @@ const Invitation = ({ invitation }) => {
                   allProduct={product}
                   idInvitation={_id}
                 />
-                {/* <Divider /> */}
+                <Divider sx={{ mt: 1 }} />
               </React.Fragment>
             ))}
         </>
@@ -183,6 +183,10 @@ const Product = ({ allProduct, idInvitation }) => {
     dispatch(actions.editQuantity({ newQuantity, idProduct }))
   }
 
+  const filterByActive = prices => {
+    return prices.filter(price => price._idSupplier.active)
+  }
+
   const deleteProduct = async e => {
     try {
       await removeProduct({ _id: product._id, idInvitation });
@@ -191,54 +195,54 @@ const Product = ({ allProduct, idInvitation }) => {
 
   return (
     <>
-  <Grid 
-  container 
-  spacing={1} 
-  alignItems="center" 
-  sx={{ 
-    flexWrap: { xs: 'wrap', sm: 'nowrap' },
-    justifyContent: 'flex-start',
-    pt: 1
-  }}
->
-  <Grid item xs={3} sm="auto" sx={{ order: { xs: 2, sm: 0 } }}>
-    <Checkbox onChange={e => addToOrder(e, product, editQuantityToDeliver)} checked={isSelected} />
-  </Grid>
-  
-  <Grid item xs={9} sm={4} sx={{ order: { xs: 0, sm: 1 }, textAlign: 'right' }}>
-    <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
-      {product.nameProduct}
-    </Typography>
-    <InputNumberQuantity value={quantityToDeliver} setValue={handleEditQuantity} />
-  </Grid>
-  
-  <Grid item xs={2} sm="auto" sx={{ order: { xs: 1, sm: 3 }, textAlign: 'left' }}>
-    <IconDeleteButton action={deleteProduct} title={'מחק מוצר'} />
-  </Grid>
-  
-  <Grid item xs={9} sm={7} sx={{ order: { xs: 3, sm: 2 } }}>
-    {priceToDeliver ? (
-      <Box sx={{ maxWidth: { xs: '100%', sm: '250px' } }}>
-        <CustomSelectStandard
-          set={changeSupplier}
-          ifFunc={true}
-          nameField='_idSupplier'
-          value={priceToDeliver._idSupplier || ''}
-          label='ספק'
-          options={product.price}
-          optionsValue='_idSupplier.nameSupplier'
-          optionsValueToShow='_idSupplier._id'
-        />
-        <Box sx={{ position: 'relative', mt: 1 }}>
-          <InputNumberPrice value={priceToDeliver.price} setValue={changePriceToDeliver} />
-          <IconEditButton action={() => setShowEditPrices(old => !old)} title={'ערוך מחירים'} />
-        </Box>
-      </Box>
-    ) : (
-      <Alert severity='warning'>לא הוגדרו מחירים</Alert>
-    )}
-  </Grid>
-</Grid>
+      <Grid
+        container
+        spacing={1}
+        alignItems="center"
+        sx={{
+          flexWrap: { xs: 'wrap', sm: 'nowrap' },
+          justifyContent: 'flex-start',
+          pt: 1
+        }}
+      >
+        <Grid item xs={3} sm="auto" sx={{ order: { xs: 2, sm: 0 } }}>
+          <Checkbox onChange={e => addToOrder(e, product, editQuantityToDeliver)} checked={isSelected} />
+        </Grid>
+
+        <Grid item xs={9} sm={4} sx={{ order: { xs: 0, sm: 1 }, textAlign: 'right' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+            {product.nameProduct}
+          </Typography>
+          <InputNumberQuantity value={quantityToDeliver} setValue={handleEditQuantity} />
+        </Grid>
+
+        <Grid item xs={2} sm="auto" sx={{ order: { xs: 1, sm: 3 }, textAlign: 'left' }}>
+          <IconDeleteButton action={deleteProduct} title={'מחק מוצר'} />
+        </Grid>
+
+        <Grid item xs={9} sm={7} sx={{ order: { xs: 3, sm: 2 } }}>
+          {priceToDeliver ? (
+            <Box sx={{ maxWidth: { xs: '100%', sm: '250px' } }}>
+              <CustomSelectStandard
+                set={changeSupplier}
+                ifFunc={true}
+                nameField='_idSupplier'
+                value={priceToDeliver._idSupplier || ''}
+                label='ספק'
+                options={filterByActive(product.price)}
+                optionsValue='_idSupplier.nameSupplier'
+                optionsValueToShow='_idSupplier._id'
+              />
+              <Box sx={{ position: 'relative', mt: 1 }}>
+                <InputNumberPrice value={priceToDeliver.price} setValue={changePriceToDeliver} />
+                <IconEditButton action={() => setShowEditPrices(old => !old)} title={'ערוך מחירים'} />
+              </Box>
+            </Box>
+          ) : (
+            <SimpleAlert severity='warning' message="לא הוגדרו מחירים" />
+          )}
+        </Grid>
+      </Grid>
       {showEditPrices &&
         <BoxEditPrices product={product} setShowEditPrices={setShowEditPrices} />
       }

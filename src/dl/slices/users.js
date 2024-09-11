@@ -6,7 +6,6 @@ import { logOut, updateUserInfo } from "./auth";
 const initialState = {
   allUsers: [],
   user: {
-    ifVerifiedEmail: false,
     _id: '',
     email: '',
     userName: '',
@@ -24,18 +23,11 @@ export const slice = createSlice({
         },
         extraReducers: builder => {
             builder.addCase(updateUserInfo, (state, action) => {
-              const { role, email, company, _id, userName, ifVerifiedEmail, branch } = action.payload;
-              Object.assign(state.user, { role, _id, branch, email, company, userName, ifVerifiedEmail });
+              const { role, email, company, _id, userName, branch } = action.payload;
+              Object.assign(state.user, { role, _id, branch, email, company, userName });
             });
             builder.addCase(logOut, (state, action) => {
               state.user = initialState.user;
-            });
-            builder.addMatcher(
-              mainApi.endpoints.resetPassword.matchFulfilled, (state, action) => {
-                const { role, email, company, _id, ifVerifiedEmail, token, tokenCompany } = action.payload.userUpdated;
-                Object.assign(state.user, { role, _id, email, company, ifVerifiedEmail });
-                localStorage.setItem('tokenCompany', tokenCompany);
-                localStorage.setItem('userToken', token);
             });
             builder.addMatcher(
               usersApi.endpoints.getUsers.matchFulfilled,
@@ -51,11 +43,10 @@ export const slice = createSlice({
               state.allUsers = state.allUsers.filter( el => el._id !== action.payload._id);
             });
             builder.addMatcher( mainApi.endpoints.connectUser.matchFulfilled, (state, action) => {
-              const { token, ifVerifiedEmail, tokenCompany } = action.payload.user;
+              const { token, tokenCompany } = action.payload.user;
                 
                 localStorage.setItem('tokenCompany', tokenCompany);
                 localStorage.setItem('userToken', token);
-                localStorage.setItem('ifVerifiedEmail', ifVerifiedEmail);
                 state.user = {...action.payload.user};
               }
             );
@@ -69,18 +60,18 @@ export const slice = createSlice({
               });
             builder.addMatcher(
               mainApi.endpoints.verifyEmailAndUpdatePass.matchFulfilled, (state, action) => {
-                state.user.ifVerifiedEmail = true;
-                localStorage.setItem('ifVerifiedEmail', true);
+                const { tokenCompany, token } = action.payload;
+                console.log(tokenCompany, token);
+                localStorage.setItem('tokenCompany', tokenCompany);
+                localStorage.setItem('userToken', token);
             });
             builder.addMatcher(
               mainApi.endpoints.editUserDetails.matchFulfilled, (state, action) => {
-                const { user } = action.payload;
-                state.user.email = user.email;
-                state.user.userName = user.userName;
-                state.user.ifVerifiedEmail = false;
-                
-                localStorage.removeItem('ifVerifiedEmail');
-                localStorage.setItem('userToken', user.token);
+                const { userUpdated, newToken } = action.payload;
+                const { role, _id, branch, email, company, userName } = userUpdated;
+
+                Object.assign(state.user, { role, _id, branch, email, company, userName });
+                localStorage.setItem('userToken', newToken);
             });
             }
     })

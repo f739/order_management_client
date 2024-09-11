@@ -75,7 +75,7 @@ export const Orders = () => {
                         {filteredData.length > 0 ? (
                             filteredData.map((item, i) => (
                                 <React.Fragment key={item._id}>
-                                    {ability.can('read', 'Order', item.branch._id) ? (
+                                    {ability.can('read', 'Order', item.branch._id) && item.active ? (
                                         <Item>
                                             <ItemsBox item={item} />
                                         </Item>
