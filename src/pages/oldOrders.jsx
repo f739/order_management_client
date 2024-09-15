@@ -80,21 +80,21 @@ const Invitation = ({ invitation, supplierName, _idSupplier }) => {
                             <StackChips branch={branch} name={supplierName} />
                         </Grid>
                         <Grid item >
-                            <Typography>
+                            <Typography variant="body2" component="span">
                                 {_id.substring(0, 8)}
                             </Typography>
                         </Grid>
                         <Grid item >
-                            <Typography>
+                            <Typography variant="body2" component="span">
                                 {moment.unix(date).format("DD.MM.YYYY")}
                             </Typography>
                         </Grid>
                         <Grid item  sx={{ display: { xs: 'none', sm: 'block' } }}>
-                            <Typography>
+                            <Typography variant="body2" component="span">
                                 {time}
                             </Typography>
                         </Grid>
-                        <Grid item xs='auto' sx={{ display: showCamera ? 'none' : 'block' }} >
+                        <Grid item xs='auto' >
                             <IconCameraButton action={() => setShowCamera(old => !old)} title='צלם תעודת הזמנה' />
                         </Grid>
                         <Grid item xs='auto' sx={{ display: imageSrc === '' ? 'none' : 'block' }}>
@@ -123,9 +123,9 @@ const Invitation = ({ invitation, supplierName, _idSupplier }) => {
 
 
 const ShowOldOrder = props => {
-    const { idOrderList, branch, order, time, date, _idSupplier } = props;
+    const { idOrderList, order, time, date, _idSupplier } = props;
     const { quantity, price, product } = order;
-    const { _id, nameProduct, unitOfMeasure, category } = product;
+    const { _id, nameProduct, unitOfMeasure, category, branch } = product;
     
     const [showIcons, setShowIcons] = useState(false);
     const [productReceived, { error: errorProductReceived }] = useProductReceivedMutation();
@@ -138,8 +138,12 @@ const ShowOldOrder = props => {
     const ProductReceived = async () => {
         try {
             await productReceived({
-                numberOrder: idOrderList, time, date, branch, _idSupplier,
-                product: { ...order, temporaryQuantity: valueTemporaryQuantity }
+                numberOrder: idOrderList, time, date,
+                idProduct: _id,
+                branch: branch._id,
+                _idSupplier,
+                quantity: valueTemporaryQuantity,  
+                price,
             }).unwrap();
         } catch (err) { }
     }
@@ -164,16 +168,16 @@ const ShowOldOrder = props => {
     return (
         <Grid container spacing={1} alignItems='center' sx={{p: 1}} justifyContent="space-between">
             <Grid item >
-                <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                <Typography variant="subtitle1" component="div" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
                     {nameProduct}
                 </Typography>
                 <InputNumberQuantity value={valueTemporaryQuantity} setValue={handleEditQuantity} />
             </Grid>
             <Grid item>
-                <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+                <Typography variant="subtitle1" component="div" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
                     מחיר
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" component="span" color="text.secondary">
                     {price}
                 </Typography>
             </Grid> 

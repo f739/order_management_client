@@ -112,15 +112,20 @@ export const slice = createSlice({
       }
       state.errorCartToBookingManager.errorIncrease = '';
     },
-    decreaseOne( state, action) {
+    decreaseOne(state, action) {
       const _id = action.payload;
       const productIndex = state.cartToBookingManager.findIndex(pr => pr._id === _id);
-      if (isNaN(productIndex)) return;
+      if (productIndex === -1) return; 
       state.cartToBookingManager = state.cartToBookingManager.map((pr, i) => {
-        return i === productIndex && pr.quantity !== 0 ?
-         { ...pr, quantity: pr.quantity - 1 } : pr;
-      });
-      
+        if (i === productIndex && pr.quantity > 0) {
+          const updatedProduct = { ...pr, quantity: pr.quantity - 1 };
+          if (updatedProduct.quantity === 0) {
+            return removeItemFromCart(state.cartToBookingManager, _id);
+          }
+          return updatedProduct;
+        }
+        return pr;
+      }).flat();
     },
     changeQuantityToBookingManager(state, action) {
       const { _id, branch, quantity } = action.payload;

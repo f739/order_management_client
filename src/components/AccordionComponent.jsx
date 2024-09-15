@@ -37,10 +37,10 @@ export const AccordionComponent = ({ summary, details }) => {
         aria-controls="panel1a-content"
         id="panel1a-header"
       >
-        <Typography variant="subtitle1" fontWeight="medium">{summary}</Typography>
+        <Typography variant="subtitle1" component="div" fontWeight="medium">{summary}</Typography>
       </StyledAccordionSummary>
       <StyledAccordionDetails>
-        <Typography>{details}</Typography>
+        <Typography component="div">{details}</Typography>
       </StyledAccordionDetails>
     </StyledAccordion>
   );

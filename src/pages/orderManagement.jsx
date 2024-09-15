@@ -102,10 +102,10 @@ const Invitation = ({ invitation }) => {
             <StackChips branch={branch} name={userName} />
           </Grid>
           <Grid item >
-            <Typography>{moment.unix(date).format("DD.MM.YYYY")}</Typography>
+            <Typography variant="body2">{moment.unix(date).format("DD.MM.YYYY")}</Typography>
           </Grid>
           <Grid item >
-            <Typography>{time}</Typography>
+            <Typography variant="body2">{time}</Typography>
           </Grid>
           <Grid item xs="auto" sx={{ order: { xs: 4, md: 5 } }}>
             <IconDeleteButton action={handleDeleteInvitation} />
@@ -210,7 +210,7 @@ const Product = ({ allProduct, idInvitation }) => {
         </Grid>
 
         <Grid item xs={9} sm={4} sx={{ order: { xs: 0, sm: 1 }, textAlign: 'right' }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
+          <Typography variant="subtitle1" component="div" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
             {product.nameProduct}
           </Typography>
           <InputNumberQuantity value={quantityToDeliver} setValue={handleEditQuantity} />
