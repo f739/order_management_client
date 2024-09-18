@@ -38,9 +38,9 @@ export const CompanyDetails = () => {
         isSuccess={isSuccess}
         errorUpdateEmail={errorUpdateEmail}
       />
-      <WhatsAppDetails 
+      {/* <WhatsAppDetails 
         whatsAppDetails={company.sendingMessages.watsapp} 
-      />
+      /> */}
       <LicenseInfo company={company} />
     </Box>
   );

@@ -73,7 +73,7 @@ export const Orders = () => {
                         spacing={1}
                     >
                         {filteredData.length > 0 ? (
-                            filteredData.map((item, i) => (
+                            filteredData.map( item => (
                                 <React.Fragment key={item._id}>
                                     {ability.can('read', 'Order', item.branch._id) && item.active ? (
                                         <Item>
@@ -111,7 +111,7 @@ export const Orders = () => {
                     tableHead={
                         <TableHead>
                             <TableRow>
-                                <TableCell align="right">קטגוריה</TableCell>
+                                {/* <TableCell align="right">קטגוריה</TableCell> */}
                                 <TableCell align="right">שם מוצר</TableCell>
                                 <TableCell align="right">יחידת מידה</TableCell>
                                 <TableCell align="right">כמות</TableCell>
@@ -122,7 +122,7 @@ export const Orders = () => {
                         <TableBody>
                             {cartToBookingManager.map(item => (
                                 <TableRow key={item._id}>
-                                    <TableCell align="right">{item.category.nameCategory}</TableCell>
+                                    {/* <TableCell align="right">{item.category.nameCategory}</TableCell> */}
                                     <TableCell align="right">{item.nameProduct}</TableCell>
                                     <TableCell align="right">{item.unitOfMeasure.measureName}</TableCell>
                                     <TableCell align="right">{item.quantity}</TableCell>
@@ -132,12 +132,11 @@ export const Orders = () => {
                     }
                     fields={
                         <TextField
-                            id="outlined-multiline-static"
                             label="הוסף הערה"
                             multiline
                             rows={4}
                             placeholder="שים לב ל..."
-                            sx={{ mt: 2, width: '100%', minWidth: '300px' }}
+                            sx={{ mt: 2, width: '100%', minWidth: '200px' }}
                             onChange={e => setNoteToOrder(e.target.value)}
                         />
                     }

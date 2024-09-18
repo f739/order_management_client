@@ -13,7 +13,7 @@ import {
   InputNumberQuantity, IconDeleteButton, IconEditButton, StackChips, AppBarSystemManagement
 } from '../components/indexComponents';
 import moment from 'moment';
-import { Typography, Grid, Checkbox, Divider, ListItemText, Box, Fab, Alert } from '@mui/material';
+import { Typography, Grid, Checkbox, Divider, ListItemText, Box, Fab, Alert, Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useFilters } from '../hooks/useFilters';
 import { FilterRow } from '../components/filters/FilterRow';
@@ -183,10 +183,6 @@ const Product = ({ allProduct, idInvitation }) => {
     dispatch(actions.editQuantity({ newQuantity, idProduct }))
   }
 
-  const filterByActive = prices => {
-    return prices.filter(price => price._idSupplier.active)
-  }
-
   const deleteProduct = async e => {
     try {
       await removeProduct({ _id: product._id, idInvitation });
@@ -221,7 +217,7 @@ const Product = ({ allProduct, idInvitation }) => {
         </Grid>
 
         <Grid item xs={9} sm={7} sx={{ order: { xs: 3, sm: 2 } }}>
-          {priceToDeliver ? (
+          {priceToDeliver?.price ? (
             <Box sx={{ maxWidth: { xs: '100%', sm: '250px' } }}>
               <CustomSelectStandard
                 set={changeSupplier}
@@ -229,7 +225,7 @@ const Product = ({ allProduct, idInvitation }) => {
                 nameField='_idSupplier'
                 value={priceToDeliver._idSupplier || ''}
                 label='ספק'
-                options={filterByActive(product.price)}
+                options={product.price}
                 optionsValue='_idSupplier.nameSupplier'
                 optionsValueToShow='_idSupplier._id'
               />
@@ -239,7 +235,11 @@ const Product = ({ allProduct, idInvitation }) => {
               </Box>
             </Box>
           ) : (
-            <SimpleAlert severity='warning' message="לא הוגדרו מחירים" />
+            <SimpleAlert 
+              severity="warning" 
+              message="לא הוגדרו מחירים" 
+              action={() => setShowEditPrices(true)} 
+            /> 
           )}
         </Grid>
       </Grid>

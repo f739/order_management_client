@@ -30,7 +30,7 @@ export const DialogSendInvitation = props => {
         { to && 
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1">אל</Typography>
-            <Typography>{to}</Typography>
+            <Typography variant="body2">סניף {to}</Typography>
           </Box> 
         }
         { cart.length > 0  ? (
@@ -46,7 +46,7 @@ export const DialogSendInvitation = props => {
         }
         { showTable && tableHead && tableBody && (
           <TableContainer component={Paper} sx={{ mt: 2 }}>
-              <Table aria-label="cart items table">
+              <Table>
                 {tableHead}
                 {tableBody}
               </Table>

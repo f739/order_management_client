@@ -5,7 +5,7 @@ const defineAdminAbilities = (can, cannot) => {
 }
 
 const defineEmployeeAbilities = (can, cannot, user) => {
-  can('enter', ['Order', 'PendingOrders', 'OldOrder', 'UserDetails']);
+  can('enter', ['Order', 'PendingOrders', 'OldOrder', 'UserDetails', 'ContactForm']);
   can('manage', 'auth');
   cannot('enter', ['IssuingReport', 'contentManagement', 'Log', 'companySettings']);
   can('read', 'Order', [user.branch] );
@@ -20,13 +20,14 @@ const defineEmployeeAbilities = (can, cannot, user) => {
 }
 
 const defineAccountantAbilities = (can, cannot) => {
-  can('enter', 'IssuingReport');
+  can('enter', ['IssuingReport', 'ContactForm']);
   cannot('enter', ['Order', 'PendingOrders', 'OldOrder', 'contentManagement' ,'Log', 'CompanySettings']);
   cannot(['create', 'delete'], ['PendingOrders', 'Order'])
 }
 
 const defineGuestAbilities = (can, cannot) => {
     can('manage', 'auth');
+    can('enter', 'ContactForm');
     cannot('enter', ['PendingOrders', 'contentManagement']);
     can('create', 'Company');
 }

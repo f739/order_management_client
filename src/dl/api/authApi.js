@@ -46,7 +46,20 @@ export const authApi = mainApi.injectEndpoints({
         url: `/auth/verifyEmailDetails/${email}/${isUser}`,
         headers: { 'x-action': 'auth', 'x-subject': 'User' },
       })
-    })
+    }),
+    createContact: builder.mutation({
+      queryFn: async (form, {getState}, ex, baseQuery) => {
+        if (!fieldsAreNotEmpty(form)) { return  {error:{ message: 'חסר פרטים הכרחיים בטופס'}}}
+        if (!validEmail(form.email)) { return { error: {message: 'האימייל אינו תקני'}}} 
+
+          return await baseQuery({
+            url: `/auth/createContact`,
+            method: 'POST',
+            body: form,
+            headers: { 'x-action': 'create', 'x-subject': 'ContactForm' },
+         });
+      },
+    }),
   }),
 });
 
@@ -56,4 +69,5 @@ export const {
   useConnectUserMutation, 
   useResetPasswordMutation,
   useVerificationEmailAutoQuery,
+  useCreateContactMutation
   } = authApi;

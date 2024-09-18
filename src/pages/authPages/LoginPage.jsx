@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import { handleFormHook } from '../../hooks/HandleFormHook';
 import { useConnectUserMutation } from '../../dl/api/authApi';
 import { Box, Button, CircularProgress, Container, Typography, Paper } from '@mui/material';
@@ -8,7 +8,8 @@ import { SimpleAlert, CustomField } from '../../components/indexComponents';
 
 export const LoginPage = () => {
     const navigate = useNavigate();
-    const [form, setForm] = useState({ password: '', email: '' });
+    const { email } = useParams();
+    const [form, setForm] = useState({ password: '', email: email || '' });
      
     const fields = [
         { label: 'אמייל', type: 'input', typeInput: 'email', name: 'email' },

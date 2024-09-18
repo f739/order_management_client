@@ -1,7 +1,6 @@
 import React from 'react';
 import { handleFormHook } from '../hooks/HandleFormHook';;
-import { Select, MenuItem, FormControl, InputBase, withStyles, TextField } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import {  MenuItem, TextField } from '@mui/material';
 
 const getNestedValue = (obj, path) => {
     return path.split('.').reduce((acc, part) => acc && acc[part], obj);
@@ -47,6 +46,7 @@ export const CustomSelect = (
             {options && options.length > 0 && options.map(item => (
                 <MenuItem
                     key={item._id}
+                    disabled={!item.active}
                     value={optionsValueToShow ? getNestedValue(item, optionsValueToShow) : getNestedValue(item, optionsValue)}
                 >
                     {getNestedValue(item, optionsValue)}
@@ -83,6 +83,7 @@ export const CustomSelectStandard = (
             {options && options.length > 0 ? options.map(item => (
                 <MenuItem
                     key={item._id}
+                    disabled={!item.active}
                     value={optionsValueToShow ? getNestedValue(item, optionsValueToShow) : getNestedValue(item, optionsValue)}
                 >
                     {getNestedValue(item, optionsValue)}

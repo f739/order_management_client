@@ -16,7 +16,7 @@ export const ErrorPage = props => {
                     </Typography>
                     <MuiLink 
                         component={RouterLink} 
-                        to="../reportAnError" 
+                        to="../../contactForm" 
                         variant="body2" 
                         sx={{ 
                             display: 'block', 

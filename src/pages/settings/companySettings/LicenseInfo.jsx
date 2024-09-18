@@ -14,9 +14,9 @@ export const LicenseInfo = ({company}) => {
     }
   ] = useBuyLicenseMutation();
   
-  const handleSave = async () => {
+  const handleBuy = async timeUnit => {
     try {
-      await buyLicense({}).unwrap();
+      await buyLicense(timeUnit).unwrap();
     }catch (err) { console.log(err)  }
   }
 
@@ -26,8 +26,13 @@ export const LicenseInfo = ({company}) => {
       <Typography variant="h6">תאריך יצירת חברה: {moment.unix(company.companyCreationDate).format("DD.MM.YYYY")}</Typography>
       <Typography variant="h6">תאריך תפוגה: {moment.unix(company.expirationDate).format("DD.MM.YYYY")} </Typography>
       <ButtonConfirm
-        confirmLabel="הארך תקופת ניסיון"
-        confirmAction={() => handleSave()}
+        confirmLabel="רישיון חודשי"
+        confirmAction={() => handleBuy('M')}
+        isLoading={isLoadingBuyLicense}
+      />
+      <ButtonConfirm
+        confirmLabel="רישיון שנתי"
+        confirmAction={() => handleBuy('Y')}
         isLoading={isLoadingBuyLicense}
       />
       {errorBuyLicense && <TimedAlert message={errorBuyLicense}  />}

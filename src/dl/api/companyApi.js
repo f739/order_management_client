@@ -76,14 +76,13 @@ export const compamyApi = mainApi.injectEndpoints({
       invalidatesTags: [{ type: 'Company', _id: 'LIST' }],
     }),
     buyLicense: builder.mutation({
-      queryFn: async (_, {getState}, ex, baseQuery) => {    
+      queryFn: async (timeUnit, {getState}, ex, baseQuery) => {    
         const { company, email } = getState().users.user;
-        console.log(company, email);
-        
+
         return await baseQuery({
           url:  '/companies/buyLicense',
           method: 'PUT',
-          body: { email, companyId: company },
+          body: { email, companyId: company, timeUnit },
           headers: { 'x-action': 'updateLicense', 'x-subject': 'Company' },
         })
       },

@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export const CustomField = ({ id, name, value, initialValue = '', label, onChange,
    type = "text", disabled=false, required = false, variant = "filled", margin = "normal",
-    children, icon }) => {
+    children, icon, rows = 1 }) => {
 
     const [localValue, setLocalValue] = useState(value || initialValue );
     
@@ -31,6 +31,7 @@ export const CustomField = ({ id, name, value, initialValue = '', label, onChang
           onChange={handleChange}
           disabled={disabled}
           multiline={type === 'textarea'}
+          rows={rows}
           fullWidth
           margin={margin}
           variant={variant}

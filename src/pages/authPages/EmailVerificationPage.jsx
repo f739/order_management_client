@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useNavigate, Link as RouterLink, useParams } from 'react-router-dom';
 import { Box, Button, Typography, Container, Paper, Alert, CircularProgress } from '@mui/material';
 import { CustomField } from '../../components/CustomField';
 import { handleFormHook } from '../../hooks/HandleFormHook';
@@ -9,8 +9,9 @@ import { useSelector } from 'react-redux';
 
 export const EmailVerificationPage = () => {
   const navigate = useNavigate();
+  const { email } = useParams();
   const emailUser = useSelector(state => state.users.user.email);
-  const [formEmailVerification, setFormEmailVerification] = useState({ email: emailUser || '', tempPassword: '', newPassword: '', confirmPassword: '' });
+  const [formEmailVerification, setFormEmailVerification] = useState({email: email|| emailUser || '', tempPassword: '', newPassword: '', confirmPassword: '' });
   const [verifyEmail, { error: errorVerify, isLouding }] = useVerifyEmailAndUpdatePassMutation();
   const fields = [
     { name: 'email', label: "אימייל", type: 'email' },

@@ -20,6 +20,7 @@ import { EmailVerificationPage } from './pages/authPages/EmailVerificationPage.j
 import { LoginPage } from './pages/authPages/LoginPage.jsx';
 import { ResetPassword } from './pages/authPages/ResetPassword.jsx';
 import { Verification } from './pages/authPages/Verification.jsx';
+import { ContactForm } from './pages/ContactForm .jsx';
 
 export const routers = createBrowserRouter([{
     element: <Layout />,
@@ -45,6 +46,10 @@ export const routers = createBrowserRouter([{
             element: <ProtectedRoute element={IssuingReports} action="enter" subject="IssuingReport" />
         },
         {
+            path: "/contactForm",
+            element: <ProtectedRoute element={ContactForm} action="enter" subject="ContactForm" />
+        },
+        {
             path: "companySettings",
             children: [
                 { path: 'companyDetails', element: <ProtectedRoute element={CompanyDetails} action="enter" subject="CompanySettings" /> },
@@ -56,8 +61,8 @@ export const routers = createBrowserRouter([{
             path: "auth",
             children: [
                 { path: 'noEntry', element: <ProtectedRoute element={NoEntry} action="enter" subject="auth" /> },
-                { path: 'login', element: <ProtectedRoute element={LoginPage} action="enter" subject="auth" /> },
-                { path: 'emailVerificationPage', element: <ProtectedRoute element={EmailVerificationPage} action="enter" subject="auth" /> },
+                { path: 'login/:email?', element: <ProtectedRoute element={LoginPage} action="enter" subject="auth" /> },
+                { path: 'emailVerificationPage/:email?', element: <ProtectedRoute element={EmailVerificationPage} action="enter" subject="auth" /> },
                 { path: 'resetPassword', element: <ProtectedRoute element={ResetPassword} action="enter" subject="auth" /> },
                 { path: 'verification/:email/:isUser', element: <ProtectedRoute element={Verification} action="enter" subject="auth" /> },
             ]

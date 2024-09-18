@@ -54,8 +54,7 @@ export const slice = createSlice({
        const ifsupplierExist = 
        state.cartToDeliver[0]?._idSupplier ===  state.pricesToDeliver[newProduct._id]?._idSupplier 
        || state.cartToDeliver.length === 0;
-
-      if(newProduct.price.length === 0) {
+      if(!newProduct.price[0]?._idSupplier?.active) {
         state.errorAddOrRemoveToCart = 'הגדר מחיר תחילה';
         return
       }else if (!ifSameBranch) {
