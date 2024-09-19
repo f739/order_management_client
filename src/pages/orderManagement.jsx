@@ -62,19 +62,18 @@ export const OrderManagement = () => {
               ) : null
             )) : <Typography>אין הזמנות לטיפול</Typography>}
             {!showSendEmail ?
-              // <TooltipComponent title='שלח הזמנה'>
               <Fab
                 color="primary"
                 onClick={() => setShowSendEmail(old => !old)}
                 sx={{
                   position: 'fixed',
-                  bottom: 16,
-                  right: 76,
+                  bottom: 80,
+                  left: 50,
+                  zIndex: 999,
                 }}
               >
-                <SendIcon />
+                <SendIcon style={{ transform: 'rotate(180deg)' }} />
               </Fab>
-              // </TooltipComponent>
               : <NewOrderToDeliver setShowSendEmail={setShowSendEmail} />}
             {errorAddOrRemoveToCart && <SimpleAlert message={errorAddOrRemoveToCart} />}
           </Box>

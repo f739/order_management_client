@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { Outlet, RouterProvider } from "react-router-dom";
 import { routers } from "./routers";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import './css/main.css';
-import { MyAppBar, BottomNav, DrawerMiniRight, LoudingPage } from "./components/indexComponents";
+import { MyAppBar, Footer, DrawerMiniRight } from "./components/indexComponents";
 import { Box, CssBaseline, Toolbar } from "@mui/material";
+import './css/main.css';
 
 export function Layout () {
   const [open, setOpen] = useState(false);
@@ -26,9 +24,8 @@ export function Layout () {
       <Box component="main" sx={{ flexGrow: 1}}>
         <Toolbar /> 
         <Outlet />
+        <Footer />
       </Box>
-      <ToastContainer />
-      {/* <BottomNav /> */}
     </Box>
   );
 }

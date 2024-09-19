@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Alert } from '@mui/material';
+import { Box, Typography, Alert, Divider } from '@mui/material';
 import { useGetCompanyQuery, useEditingCompanyEmailDetailsMutation } from "../../../dl/api/companyApi";
 import { ErrorPage, LoudingPage } from '../../../components/indexComponents';
 import { GeneralCompanyInfo } from "./GeneralCompanyInfo";
@@ -22,14 +22,18 @@ export const CompanyDetails = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" sx={{ marginBottom: '40px' }}>
-        הגדרות חברה
-      </Typography>
+      <Divider sx={{ marginTop: '40px' }}>
+        <Typography variant="h6" >
+          הגדרות חברה
+        </Typography>
+      </Divider>
 
       <GeneralCompanyInfo company={company} />
-      <Typography variant="h4" sx={{ marginBottom: '40px' }}>
-        הגדרות שליחת הודעות
-      </Typography>
+      <Divider sx={{ marginTop: '40px' }}>
+        <Typography variant="h6" >
+          הגדרות שליחת הודעות
+        </Typography>
+      </Divider>
       <EmailDetails 
         isUser={false}
         emailDetails={company.sendingMessages.email} 

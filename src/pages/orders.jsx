@@ -90,11 +90,12 @@ export const Orders = () => {
                         onClick={() => setOpenDialog(true)}
                         sx={{
                             position: 'fixed',
-                            bottom: 16,
-                            right: 76,
+                            bottom: 80,
+                            left: 50,
+                            zIndex: 999,
                         }}
                     >
-                        <SendIcon />
+                        <SendIcon style={{ transform: 'rotate(180deg)' }}/>
                     </Fab>
                     {/* </TooltipComponent> */}
                 </FilterRow>

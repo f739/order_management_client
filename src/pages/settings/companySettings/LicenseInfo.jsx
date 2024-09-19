@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import { ButtonConfirm, TimedAlert } from '../../../components/indexComponents'
 import { useBuyLicenseMutation } from '../../../dl/api/companyApi';
 import moment from 'moment';
@@ -22,7 +22,11 @@ export const LicenseInfo = ({company}) => {
 
   return (
     <Box sx={{ p: 1 }}>
-      <Typography variant="h5">רישיון חברה</Typography>
+      <Divider sx={{ marginTop: '40px' }}>
+        <Typography variant="h6" >
+          רישיון חברה
+        </Typography>
+      </Divider>
       <Typography variant="h6">תאריך יצירת חברה: {moment.unix(company.companyCreationDate).format("DD.MM.YYYY")}</Typography>
       <Typography variant="h6">תאריך תפוגה: {moment.unix(company.expirationDate).format("DD.MM.YYYY")} </Typography>
       <ButtonConfirm

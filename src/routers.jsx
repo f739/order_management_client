@@ -13,7 +13,6 @@ import { Branches } from './pages/contentManagement/Branches.jsx';
 import { UserDetails } from './pages/settings/userSettings/UserDetails.jsx';
 import { IssuingReports } from './pages/IssuingReports.jsx';
 import { Logger } from './pages/logger.jsx';
-import { NoEntry } from './pages/authPages/noEntry.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import { CompanyDetails } from './pages/settings/companySettings/CompanyDetails.jsx';
 import { EmailVerificationPage } from './pages/authPages/EmailVerificationPage.jsx';
@@ -30,18 +29,6 @@ export const routers = createBrowserRouter([{
             element: <Home />
         },
         {
-            path: "/orders",
-            element: <ProtectedRoute element={Orders} action="enter" subject="Order" />
-        },
-        {
-            path: "/orderManagement",
-            element: <ProtectedRoute element={OrderManagement} action="enter" subject="PendingOrders" />
-        },
-        {
-            path: "/oldOrders",
-            element: <ProtectedRoute element={OldOrders} action="enter" subject="OldOrder" />
-        },
-        {
             path: "/issuingReports",
             element: <ProtectedRoute element={IssuingReports} action="enter" subject="IssuingReport" />
         },
@@ -50,17 +37,8 @@ export const routers = createBrowserRouter([{
             element: <ProtectedRoute element={ContactForm} action="enter" subject="ContactForm" />
         },
         {
-            path: "companySettings",
-            children: [
-                { path: 'companyDetails', element: <ProtectedRoute element={CompanyDetails} action="enter" subject="CompanySettings" /> },
-                { path: 'userDetails', element: <ProtectedRoute element={UserDetails} action="enter" subject="UserDetails" /> },
-
-            ]
-        },
-        {
             path: "auth",
             children: [
-                { path: 'noEntry', element: <ProtectedRoute element={NoEntry} action="enter" subject="auth" /> },
                 { path: 'login/:email?', element: <ProtectedRoute element={LoginPage} action="enter" subject="auth" /> },
                 { path: 'emailVerificationPage/:email?', element: <ProtectedRoute element={EmailVerificationPage} action="enter" subject="auth" /> },
                 { path: 'resetPassword', element: <ProtectedRoute element={ResetPassword} action="enter" subject="auth" /> },
@@ -68,7 +46,15 @@ export const routers = createBrowserRouter([{
             ]
         },
         {
-            path: "/contentManagement",
+            path: "orders",
+            children: [
+                { path: '', element: <ProtectedRoute element={Orders} action="enter" subject="Order" /> },
+                { path: 'orderManagement', element: <ProtectedRoute element={OrderManagement} action="enter" subject="PendingOrders" /> },
+                { path: 'oldOrders', element: <ProtectedRoute element={OldOrders} action="enter" subject="OldOrder" /> },
+            ]
+        },
+        {
+            path: "contentManagement",
             children: [
                 { path: "users", element: <ProtectedRoute element={Users} action="enter" subject="contentManagement" /> },
                 { path: "products", element: <ProtectedRoute element={Products} action="enter" subject="contentManagement" /> },
@@ -77,6 +63,14 @@ export const routers = createBrowserRouter([{
                 { path: "categories", element: <ProtectedRoute element={Categories} action="enter" subject="contentManagement" /> },
                 { path: "Branches", element: <ProtectedRoute element={Branches} action="enter" subject="contentManagement" /> },
                 { path: "logger", element: <ProtectedRoute element={Logger} action="enter" subject="Log" /> },
+            ]
+        },
+        {
+            path: "companySettings",
+            children: [
+                { path: 'companyDetails', element: <ProtectedRoute element={CompanyDetails} action="enter" subject="CompanySettings" /> },
+                { path: 'userDetails', element: <ProtectedRoute element={UserDetails} action="enter" subject="UserDetails" /> },
+
             ]
         },
 

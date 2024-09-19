@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Alert } from '@mui/material';
+import { Box, Typography, Alert, Divider } from '@mui/material';
 import { useGetUserQuery, useEditingUserEmailDetailsMutation} from "../../../dl/api/userSettingsApi";
 import { ButtonConfirm, ErrorPage, LoudingPage } from '../../../components/indexComponents';
 import { GeneralUserInfo } from "./GeneralUserInfo";
@@ -22,17 +22,21 @@ export const UserDetails = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" sx={{ marginBottom: '30px' }}>
-        הגדרות משתמש
-      </Typography>
+      <Divider sx={{ marginTop: '40px' }}>
+        <Typography variant="h6" >
+          הגדרות משתמש
+        </Typography>
+      </Divider>
       <ButtonConfirm
         confirmLabel="התנתק"
         confirmAction={() => dispatch(actions.logOut())}
       />
       <GeneralUserInfo user={user} />
-      <Typography variant="h5" sx={{ marginBottom: '30px' }}>
-        הגדרות שליחת הודעות
-      </Typography>
+      <Divider sx={{ marginTop: '40px' }}>
+        <Typography variant="h6" >
+          הגדרות שליחת הודעות
+        </Typography>
+      </Divider>
       <EmailDetails 
         isUser={true}
         emailDetails={user.sendingMessages.email} 

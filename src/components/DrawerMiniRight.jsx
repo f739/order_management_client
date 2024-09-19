@@ -24,7 +24,6 @@ import StoreIcon from '@mui/icons-material/Store';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
-import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
 
@@ -99,8 +98,8 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
 
     const orderPages = [
       {name: 'הזמנות', icon: <ReceiptIcon />, path: '/orders'},
-      {name: 'ניהול הזמנות', icon: <ShoppingCartIcon />, path: '/orderManagement'},
-      {name: 'היסטוריית הזמנות', icon: <MoveToInboxIcon />, path: '/oldOrders'},
+      {name: 'ניהול הזמנות', icon: <ShoppingCartIcon />, path: '/orders/orderManagement'},
+      {name: 'קבלת הזמנות', icon: <MoveToInboxIcon />, path: '/orders/oldOrders'},
     ];
 
     const companySettingsPages = [
@@ -111,7 +110,7 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
     useEffect(() => {
       if (location.pathname.startsWith('/contentManagement')) {
         setSubPages(contentManagementPages);
-      } else if (location.pathname.startsWith('/orders') || location.pathname.startsWith('/orderManagement') || location.pathname.startsWith('/oldOrders')) {
+      } else if (location.pathname.startsWith('/orders')) {
         setSubPages(orderPages);
       } else if (location.pathname.startsWith('/companySettings')) {
         setSubPages(companySettingsPages);
@@ -122,11 +121,13 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
 
     const isActive = (path) => {
       if (path === '/orders') {
-        return location.pathname.startsWith('/orders') || 
-               location.pathname.startsWith('/orderManagement') || 
-               location.pathname.startsWith('/oldOrders');
+        return location.pathname.startsWith('/orders');
+      } else if (path === '/contentManagement/products') {
+        return location.pathname.includes('/contentManagement');
+      } else if (path === '/companySettings/companyDetails') {
+        return location.pathname.includes('/companySettings');
       }
-      return location.pathname.startsWith(path);
+      return location.pathname === path;
     };
 
     return (
@@ -134,6 +135,9 @@ export const DrawerMiniRight = ({ open, handleDrawerClose }) => {
         variant="permanent"
         open={open}
         anchor="right"
+        ModalProps={{
+          keepMounted: true, 
+        }}
         sx={{
           '& .MuiDrawer-paper': { 
             borderRight: 'none',

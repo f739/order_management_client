@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { defineAbilitiesFor } from './auth/abilities';
 import { useJwtParser } from './hooks/useJwtParser';
 import { LoudingPage } from './components/LoudingPage';
-import { NoEntry } from './pages/authPages/noEntry';
+import { ErrorPage } from './components/ErrorPage';
 
 const ProtectedRoute = ({ element: Component, action, subject }) => {
   const location = useLocation();
@@ -19,13 +19,13 @@ const ProtectedRoute = ({ element: Component, action, subject }) => {
       setIsLoading(false);
     }
   }, [user]);
-
+  const error = {status: 403, data: { message: 'אינך מורשה להיכנס לעמוד זה'}}
   if (isLoading) {
     return <LoudingPage />;
   }else if (ability.can(action, subject)) {
     return <Component />;
   }else {
-    return <NoEntry />
+    return <ErrorPage error={error} />
   }
 };
 

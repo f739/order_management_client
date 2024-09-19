@@ -37,8 +37,9 @@ export const Users = () => {
                 onClick={() => setShowAddUser(true)}
                 sx={{
                     position: 'fixed',
-                    bottom: 40,
-                    left: 46,
+                    bottom: 80,
+                    left: 50,
+                    zIndex: 999,
                 }}
             >
                 <AddIcon />

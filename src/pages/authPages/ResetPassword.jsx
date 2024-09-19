@@ -21,7 +21,7 @@ export const ResetPassword = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Paper elevation={3} sx={{ mt: 8, p: 4 }}>
+      <Paper elevation={3} sx={{ mt: 8, p: 4, mb: 5 }}>
         <Typography component="h1" variant="h5" align="center">
           שחזור סיסמה
         </Typography>

@@ -16,7 +16,7 @@ export { ErrorPage } from './ErrorPage';
 export { StackChips } from './StackChips';
 export { TooltipComponent } from './TooltipComponent';
 export { MyAppBar } from './AppBar';
-export { BottomNav } from './BottomNav';
+export { Footer } from './Footer';
 export { AppBarSystemManagement } from './AppBarSystemManagement';
 export { DrawerMiniRight } from './DrawerMiniRight';
 export { CustomField } from './CustomField';
